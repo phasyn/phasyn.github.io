@@ -441,11 +441,11 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
               <col className="w-[8rem]" />
               <col className={kind === 'h3' ? 'w-[10.5rem]' : 'w-[11rem]'} />
               <col className="w-[11rem]" />
+              <col className="w-[10rem]" />
+              <col className="w-[7.5rem]" />
+              <col className="w-[8.5rem]" />
+              <col className="w-[9rem]" />
               <col className="w-[10.5rem]" />
-              <col className="w-[7rem]" />
-              <col className="w-[8.5rem]" />
-              <col className="w-[8.5rem]" />
-              <col className="w-[11rem]" />
             </colgroup>
             <thead>
               <tr className="bg-sunken/80 text-caption text-fg-tertiary">
@@ -463,7 +463,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                 </th>
                 <th scope="col" aria-sort={ariaSort('dit')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.dit} unit="s" hint={`${copy.speed.colHints.dit}. ${copy.speed.cols.compute}: ${copy.speed.colHints.compute}`} active={sort?.key === 'dit'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('dit')}>
-                    <span className="text-[10px] leading-snug font-normal text-fg-tertiary">
+                    <span className="text-[10px] leading-snug font-normal whitespace-nowrap text-fg-tertiary">
                       {copy.speed.wall} / {copy.speed.cols.compute}
                     </span>
                   </SortHeader>
@@ -473,7 +473,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                 </th>
                 <th scope="col" aria-sort={ariaSort('vram')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.vram} unit="GiB" hint={copy.speed.colHints.vram} active={sort?.key === 'vram'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('vram')}>
-                    <span className="font-mono text-[10px] leading-snug font-normal text-fg-tertiary">
+                    <span className="font-mono text-[10px] leading-snug font-normal whitespace-nowrap text-fg-tertiary">
                       {copy.speed.vramParts[0]} / {copy.speed.vramParts[1]}
                       <br />
                       {copy.speed.vramParts[2]}
