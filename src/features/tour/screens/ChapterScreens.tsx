@@ -3,13 +3,15 @@ import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react
 import { SpotlightCard } from '../../../components/fx/index.ts';
 import { cn } from '../../../lib/cn.ts';
 import type { TourCopy } from '../copy.ts';
-import { captureSrc, type UiKey } from '../screens.ts';
+import { THUMB_CROP, captureSrc, type UiKey } from '../screens.ts';
 import { ScreenViewer } from './ScreenViewer.tsx';
 
 interface ChapterScreensProps {
   keys: readonly UiKey[];
   title: string;
   screens: TourCopy['screens'];
+  /** `column`: stacked beside the steps on wide screens (two up on tablets); `row`: side by side. */
+  layout?: 'column' | 'row';
 }
 
 /**
@@ -17,7 +19,7 @@ interface ChapterScreensProps {
  * Esc and the backdrop close it, focus returns to the thumbnail); without JavaScript the thumbnail links to the image itself.
  * A capture that has not landed yet stays a plain "pending" frame, not a link.
  */
-export function ChapterScreens({ keys, title, screens }: ChapterScreensProps) {
+export function ChapterScreens({ keys, title, screens, layout = 'row' }: ChapterScreensProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const [open, setOpen] = useState<UiKey | null>(null);
@@ -44,7 +46,7 @@ export function ChapterScreens({ keys, title, screens }: ChapterScreensProps) {
         <span aria-hidden className="size-1.5 rounded-full bg-brand-cyan shadow-[0_0_8px_rgb(73_207_255)]" />
         {title}
       </h3>
-      <ul className={cn('grid gap-4', keys.length > 1 && 'sm:grid-cols-2', keys.length > 2 && 'xl:grid-cols-3')}>
+      <ul className={cn('grid gap-4', keys.length > 1 && 'sm:grid-cols-2', layout === 'column' ? 'lg:grid-cols-1' : keys.length > 2 && 'xl:grid-cols-3')}>
         {keys.map((key) => (
           <li key={key} className="min-w-0">
             <ScreenThumb capture={key} caption={screens.captures[key]} screens={screens} onOpen={show} />
@@ -101,10 +103,17 @@ function ScreenThumb({
   const pending = { title: screens.pendingTitle, body: screens.pendingBody };
   const media = (
     <div className="relative overflow-hidden rounded-[0.9rem] border border-line-subtle">
-      <ScreenViewer capture={capture} alt={caption} pending={pending} onAvailability={setAvailable} className="transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover/thumb:scale-[1.03]" />
-      <span aria-hidden lang="en" className="material-hud absolute top-2 left-2 inline-flex h-6 items-center gap-1.5 rounded-full px-2 font-mono text-[10px] tracking-[0.16em] text-fg">
-        <span className="size-1.5 rounded-full bg-brand-cyan shadow-[0_0_8px_rgb(73_207_255)]" />
-        REAL CAPTURE
+      <ScreenViewer
+        capture={capture}
+        alt={caption}
+        crop={THUMB_CROP[capture]}
+        pending={pending}
+        onAvailability={setAvailable}
+        className="transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover/thumb:scale-[1.03]"
+      />
+      <span aria-hidden lang="en" className="material-hud absolute top-1.5 left-1.5 inline-flex h-5 items-center gap-1 rounded-full px-1.5 font-mono text-[9px] tracking-[0.14em] text-fg">
+        <span className="size-1 rounded-full bg-brand-cyan shadow-[0_0_6px_rgb(73_207_255)]" />
+        REAL
       </span>
       {available ? (
         <span aria-hidden className="material-hud absolute right-2 bottom-2 inline-flex size-8 items-center justify-center rounded-full text-fg opacity-0 transition-opacity group-hover/thumb:opacity-100 group-focus-visible/thumb:opacity-100 pointer-coarse:opacity-100">

@@ -1,18 +1,17 @@
-import type { ChapterId } from './chapters.ts';
-import { RAIN_RUN, type DeviceKey } from './runs.ts';
-
 /*
- * Real Phasyn Studio screens (BRIEF §5, user feedback 2026-10-18: every UI on the Tour page is a real capture — nothing is
- * re-created). Captures of the live English UI land as `studio/out/final/ui/<key>@2x.png` (+ `<key>-panel@2x.png`, manifest.json)
- * and ship as `public/images/tour/ui/<key>.webp`. Until a file exists, the viewer shows a neutral "real capture pending" frame.
+ * Real Phasyn Studio screens (user feedback 2026-10-18: every UI on the Tour page is a real capture — nothing is re-created).
+ * Captures of the live English UI (privacy-masked by the recorder) ship as `public/images/tour/ui/<key>.webp` (1920 px wide).
+ * New captures land in studio/out/final/ui as recordings progress: copy the WebP in and add its key to a chapter in chapters.ts.
+ * Until a listed file exists, the viewer shows a neutral "real capture pending" frame.
  */
 
 export const UI_KEYS = [
   'image-studio-generating',
   'image-studio-takes',
-  'video-studio-editor',
+  'render-engine-image',
   'render-engine-three-machines',
   'render-progress',
+  'video-studio-editor',
   'references-mentions',
   'prompt-advisor',
   'timeline-effects',
@@ -30,86 +29,16 @@ export function captureSrc(key: UiKey): string {
   return `/images/tour/ui/${key}.webp`;
 }
 
-/**
- * Intrinsic size of each capture (from the capture manifest), so the frame never jumps. Unknown keys use the default 16:10
- * window until the image loads; the viewer then takes the real aspect ratio from the file.
- */
-export const CAPTURE_SIZE: Partial<Record<UiKey, { width: number; height: number }>> = {};
-export const DEFAULT_CAPTURE_SIZE = { width: 1600, height: 1000 } as const;
-
-/** The real screens shown in each chapter, in step order. */
-export const CHAPTER_SCREENS: Record<ChapterId, readonly UiKey[]> = {
-  v1: ['image-studio-generating', 'image-studio-takes'],
-  v2: ['video-studio-editor', 'render-engine-three-machines', 'render-progress'],
-  v3: ['references-mentions', 'prompt-advisor'],
-  v4: ['timeline-effects', 'export-dialog'],
-  v5: ['image-to-prompt-result'],
-  v6: ['components-pipeline-graph', 'component-inspector-precision'],
-  v7: ['records-run-steps', 'records-compare'],
-  v8: ['terminal-phasynctl'],
-};
+/** Captures are 16:9 (1920×1080 viewport, see work/real-ui/manifest.json); the viewer re-reads the real size on load. */
+export const CAPTURE_SIZE = { width: 1920, height: 1080 } as const;
 
 /** Region of a capture as fractions of its width and height: x, y, width, height. */
 export type Rect = readonly [number, number, number, number];
 
-export interface ExplainerStep {
-  key: UiKey;
-  /** The part of the capture this step explains. `null` until calibrated against the real capture: no highlight, no zoom. */
-  focus: Rect | null;
-  /** A measured time from today's runs, shown beside the step (only where the capture itself shows no time). */
-  readout?: { seconds: number; device: DeviceKey };
-}
-
-export type ExplainerId = 'render' | 'advisor' | 'records';
-
-export interface ExplainerSpec {
-  id: ExplainerId;
-  /** Short Latin HUD tag on the capture frame (decorative). */
-  hud: string;
-  /** Latin eyebrow over the step panel (decorative). */
-  eyebrow: string;
-  steps: readonly ExplainerStep[];
-}
-
-const rain = (id: 'te' | 'dit' | 'video' | 'audio') => {
-  const step = RAIN_RUN.steps.find((s) => s.id === id)!;
-  return { seconds: step.seconds, device: step.device };
+/**
+ * Thumbnail framing for captures whose subject is a small part of the screen (the lightbox always shows the whole capture).
+ * The Generation Engine sheet sits at the right edge over a dimmed workspace.
+ */
+export const THUMB_CROP: Partial<Record<UiKey, Rect>> = {
+  'render-engine-image': [0.725, 0.15, 0.275, 0.52],
 };
-
-export const EXPLAINERS: readonly ExplainerSpec[] = [
-  {
-    id: 'render',
-    hud: 'RENDER ENGINE',
-    eyebrow: 'ONE RENDER · 3 MACHINES',
-    steps: [
-      { key: 'render-engine-three-machines', focus: null, readout: rain('te') },
-      { key: 'render-engine-three-machines', focus: null, readout: rain('dit') },
-      { key: 'render-engine-three-machines', focus: null, readout: rain('video') },
-      { key: 'render-engine-three-machines', focus: null, readout: rain('audio') },
-      { key: 'render-progress', focus: null },
-      { key: 'render-progress', focus: null },
-    ],
-  },
-  {
-    id: 'advisor',
-    hud: 'PROMPT ADVISOR',
-    eyebrow: '74 RULES · CITED SOURCES',
-    steps: [
-      { key: 'references-mentions', focus: null },
-      { key: 'prompt-advisor', focus: null },
-      { key: 'prompt-advisor', focus: null },
-      { key: 'prompt-advisor', focus: null },
-    ],
-  },
-  {
-    id: 'records',
-    hud: 'RECORDS',
-    eyebrow: 'MEASURED · NEVER GUESSED',
-    steps: [
-      { key: 'records-run-steps', focus: null },
-      { key: 'records-run-steps', focus: null },
-      { key: 'records-compare', focus: null },
-      { key: 'records-compare', focus: null },
-    ],
-  },
-];

@@ -13,7 +13,6 @@
   font-size: 0.9em;
   font-weight: 500;
   color: var(--color-fg);
-  white-space: normal;
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
 }
@@ -63,43 +62,6 @@
     100% 100%;
   -webkit-mask-image: radial-gradient(85% 80% at 50% 50%, #000 40%, transparent 100%);
   mask-image: radial-gradient(85% 80% at 50% 50%, #000 40%, transparent 100%);
-}
-
-/* Hero chapter reel: slow push-in on the current poster (transform only) and a linear dwell bar. */
-@keyframes tour-kenburns {
-  from {
-    transform: scale(1.02) translate3d(0, 0, 0);
-  }
-  to {
-    transform: scale(1.09) translate3d(-1.4%, -0.8%, 0);
-  }
-}
-
-.tour-reel-frame {
-  transition: opacity 900ms var(--ease-standard);
-}
-
-.tour-reel-frame[data-active] {
-  animation: tour-kenburns 7s ease-out both;
-}
-
-.tour-reel-paused .tour-reel-frame[data-active],
-.tour-reel-paused .tour-reel-dwell {
-  animation-play-state: paused;
-}
-
-@keyframes tour-dwell {
-  from {
-    transform: scaleX(0);
-  }
-  to {
-    transform: scaleX(1);
-  }
-}
-
-.tour-reel-dwell {
-  transform-origin: left center;
-  animation: tour-dwell var(--tour-dwell, 4s) linear both;
 }
 
 /* Index rail: reading progress through the current chapter (linear, written by the rail on scroll). */

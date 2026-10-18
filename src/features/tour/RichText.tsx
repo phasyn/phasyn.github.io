@@ -15,9 +15,10 @@ export function RichText({ text }: { text: string }) {
     <>
       {parts.map((part, index) => {
         if (part.startsWith('[[') && part.endsWith(']]')) {
+          const label = part.slice(2, -2);
           return (
-            <span key={index} lang="en" className="tour-ui-label">
-              {part.slice(2, -2)}
+            <span key={index} lang="en" className={label.length <= 24 ? 'tour-ui-label whitespace-nowrap' : 'tour-ui-label'}>
+              {label}
             </span>
           );
         }

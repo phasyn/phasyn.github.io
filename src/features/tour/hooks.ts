@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
-import { mediaUrl } from '../../lib/media.ts';
+import { parseVtt, type Cue } from '../../components/media/captions.ts';
 import type { ChapterId } from './chapters.ts';
 
 // Reading line: a chapter is current while it crosses the band 40–45 % down the viewport.
@@ -130,50 +130,48 @@ export function useFilmControl(reducedMotion: boolean): FilmControl {
   return { wrapRef, time, playing, seek };
 }
 
-const cueCache = new Map<string, Promise<number[] | null>>();
+const cueCache = new Map<string, Promise<Cue[]>>();
 
-function parseCueStarts(vtt: string): number[] {
-  const starts: number[] = [];
-  for (const line of vtt.split(/\r?\n/)) {
-    const match = line.match(/^\s*(?:(\d+):)?(\d{1,2}):(\d{2})[.,](\d{3})\s+-->/);
-    if (!match) continue;
-    const [, h, m, s, ms] = match;
-    starts.push(Number(h ?? 0) * 3600 + Number(m) * 60 + Number(s) + Number(ms) / 1000);
-  }
-  return starts;
-}
-
-function loadCues(path: string): Promise<number[] | null> {
+function loadCues(path: string): Promise<Cue[]> {
   let request = cueCache.get(path);
   if (!request) {
-    request = fetch(mediaUrl(path))
-      .then(async (response) => {
-        if (!response.ok) return null;
-        const starts = parseCueStarts(await response.text());
-        return starts.length ? starts : null;
-      })
-      .catch(() => null);
+    request = fetch(path)
+      .then((response) => (response.ok ? response.text() : ''))
+      .then((text) => parseVtt(text))
+      .catch(() => []);
     cueCache.set(path, request);
   }
   return request;
 }
 
+const normalize = (text: string) => text.replace(/\s+/g, ' ').trim().toLowerCase();
+
 /**
- * Subtitle cue start times for a chapter: the pinned `cueStarts` if given, else read once from the WebVTT export next to the
- * video (all locales share one timing, so the English file is enough). Fetched only when `enabled` (the chapter is near the
- * viewport); a missing file simply means no timestamps.
+ * Where each step starts in the video: the first cue at or after the previous step whose text begins with the step's English
+ * anchor line. Read once from the site-hosted English subtitles (all locales share one timing) when `enabled` (the chapter is
+ * near the viewport). A missing file or an unmatched anchor simply means no timestamp for that step.
  */
-export function useCueStarts(path: string, pinned: readonly number[] | undefined, enabled: boolean): readonly number[] | null {
-  const [starts, setStarts] = useState<readonly number[] | null>(pinned ?? null);
+export function useStepTimes(path: string, anchors: readonly string[], enabled: boolean): readonly (number | null)[] | null {
+  const [times, setTimes] = useState<readonly (number | null)[] | null>(null);
+  const key = anchors.join('\u0000');
   useEffect(() => {
-    if (pinned || !enabled) return;
+    if (!enabled) return;
     let alive = true;
-    void loadCues(path).then((result) => {
-      if (alive && result) setStarts(result);
+    void loadCues(path).then((cues) => {
+      if (!alive || cues.length === 0) return;
+      let from = 0;
+      const found = key.split('\u0000').map((anchor) => {
+        const wanted = normalize(anchor);
+        const index = cues.findIndex((cue, i) => i >= from && normalize(cue.text).startsWith(wanted));
+        if (index < 0) return null;
+        from = index + 1;
+        return cues[index]?.start ?? null;
+      });
+      if (found.some((time) => time !== null)) setTimes(found);
     });
     return () => {
       alive = false;
     };
-  }, [path, pinned, enabled]);
-  return pinned ?? starts;
+  }, [path, key, enabled]);
+  return times;
 }

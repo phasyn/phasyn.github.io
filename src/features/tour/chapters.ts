@@ -1,194 +1,158 @@
 import type { Copy } from '../../i18n/locale.tsx';
-import { LOCALES, type Locale } from '../../site/config.ts';
+import { LOCALES } from '../../site/config.ts';
 import { COUNTS, EARLIER, TODAY, type DeviceKey } from './runs.ts';
+import type { UiKey } from './screens.ts';
 
 /*
- * The eight Tour chapters. One source for media names, posters, lengths, subtitle mapping, machines and the measured
- * readout; every visible sentence lives in copy.ts.
+ * The five Tour chapters: one source for media names, posters, lengths, subtitle anchors, badges and supporting screens; every
+ * visible sentence lives in copy.ts.
  *
- * Dropping in a recording needs no code change: put `tour/<media>.<locale>.mp4` under the media base (public/media during
- * review, VITE_MEDIA_BASE in production). If the matching WebVTT export (`tour/<media>.<locale>.vtt`, or `.en.vtt`) sits next to
- * it, the "What you'll see" timestamps appear by themselves; `cueStarts` pins them without a VTT.
+ * Dropping in a recording needs no code change: the 30 fps master `tour/<media>.mp4` goes under the media base (public/media
+ * during review, VITE_MEDIA_BASE in production) and its subtitles ship with the site as `/captions/tour/<media>.<locale>.vtt`.
+ * The "What you'll see" timestamps come from the English subtitles (every locale shares one timing), matched by each step's
+ * anchor line.
  */
 
-export const CHAPTER_IDS = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8'] as const;
+export const CHAPTER_IDS = ['c1', 'c2', 'c3', 'c4', 'c5'] as const;
 export type ChapterId = (typeof CHAPTER_IDS)[number];
 
-export type MachineRole =
-  | 'text'
-  | 'imageGen'
-  | 'prepCompose'
-  | 'encode'
-  | 'denoise'
-  | 'videoDecode'
-  | 'audio'
-  | 'mux'
-  | 'concat'
-  | 'vision'
-  | 'promptTools'
-  | 'regenerate';
-
-export interface ChapterMachine {
-  device: DeviceKey;
-  /** Component instance ids on that machine (never translated). */
-  ids: readonly string[];
-  roles: readonly MachineRole[];
+/** A measured value or range, counted up when it scrolls into view. */
+export interface Measure {
+  values: readonly { value: number; decimals: number }[];
+  approx?: boolean;
+  unit?: string;
 }
 
-export interface ReadoutValue {
-  value: number;
-  decimals: number;
+export interface StepBadge {
+  devices?: readonly DeviceKey[];
+  measure?: Measure;
 }
 
-export interface ChapterOutput {
-  /** The input: a still or the character sheet (site-relative WebP). */
-  input: { src: string; width: number; height: number };
-  /** The generated clip (review media under the media base) and its poster. */
-  clip: string;
-  clipPoster: string;
+export interface ChapterStep {
+  /**
+   * English subtitle line (docs/film/captions.json) where this step starts in the video; matched against the English VTT for
+   * the timestamp. Case and line breaks are ignored.
+   */
+  anchor: string;
+  badge?: StepBadge;
 }
 
 export interface ChapterSpec {
   id: ChapterId;
   number: number;
-  /** Fixed media name (shared with the recording worker): `tour/<media>.<locale>.mp4`. */
+  /** Fixed media name (shared with the recording worker): `tour/<media>.mp4` + `/captions/tour/<media>.<locale>.vtt`. */
   media: string;
   poster: string;
   /** Planned length of the final cut in seconds (work/product/recording-plan.md §0). Replace with the real cut's length. */
   length: number;
-  /** For each "What you'll see" step, the subtitle cues it covers (0-based, docs/film/captions.json). */
-  steps: readonly (readonly number[])[];
-  /** Cue start times in seconds (index = cue), when known without the VTT export. */
-  cueStarts?: readonly number[];
-  machines: readonly ChapterMachine[];
-  /** The measured number in the facts panel: one value or a range (counted up when it scrolls into view). */
-  readout: { values: readonly ReadoutValue[]; approx?: boolean; unit?: string };
-  /** Real output made with Phasyn Studio today, shown beside the recording. */
-  output?: ChapterOutput;
+  steps: readonly ChapterStep[];
+  /** Real captures shown beside the chapter (public/images/tour/ui). List only captures that exist. */
+  screens: readonly UiKey[];
 }
 
-const one = (cues: number) => [cues] as const;
+const range = (min: number, max: number, decimals: [number, number] = [1, 1]): Measure => ({
+  values: [
+    { value: min, decimals: decimals[0] },
+    { value: max, decimals: decimals[1] },
+  ],
+  unit: 's',
+});
+const single = (value: number, decimals: number, approx = false): Measure => ({ values: [{ value, decimals }], unit: 's', approx });
 
 export const CHAPTERS: readonly ChapterSpec[] = [
   {
-    id: 'v1',
+    id: 'c1',
     number: 1,
-    media: 'v1-text-to-image',
+    media: '01-text-image-video',
     poster: '/images/tour/v1.webp',
-    length: 45,
-    steps: [one(0), one(1), one(2), one(3), one(4), one(5)],
-    machines: [
-      { device: 'rtx5080', ids: ['qimg-dit-bf16-5080-stream'], roles: ['imageGen'] },
-      { device: 'cpu', ids: ['qimg-prepare', 'image-compose'], roles: ['prepCompose'] },
+    length: 115,
+    steps: [
+      { anchor: 'Describe it once. Pick a size and seed.' },
+      { anchor: 'Wake only the models this image needs.', badge: { devices: ['rtx5080'], measure: single(TODAY.start.imageDit, 1) } },
+      { anchor: 'Watch it take shape while it renders.', badge: { devices: ['rtx5080'], measure: range(TODAY.still.min, TODAY.still.max) } },
+      { anchor: 'Turn the image into an opening frame.' },
+      { anchor: 'One render,', badge: { devices: ['gb10', 'rtx5080', 'rtx3060'] } },
+      { anchor: 'Every stage reports its measured time.', badge: { measure: range(TODAY.fl2va.min, TODAY.fl2va.max, [1, 0]) } },
     ],
-    readout: { values: [{ value: TODAY.still.min, decimals: 1 }, { value: TODAY.still.max, decimals: 1 }], unit: 's' },
+    screens: ['image-studio-generating', 'render-engine-image', 'image-studio-takes'],
   },
   {
-    id: 'v2',
+    id: 'c2',
     number: 2,
-    media: 'v2-image-to-video',
+    media: '02-references-advisor',
     poster: '/images/tour/v2.webp',
-    length: 70,
-    steps: [[0, 1], one(2), [3, 4], one(5), one(6), one(7)],
-    machines: [
-      { device: 'gb10', ids: ['te-gb10'], roles: ['text'] },
-      { device: 'rtx5080', ids: ['venc-5080', 'dit-5080', 'vae-5080'], roles: ['encode', 'denoise', 'videoDecode'] },
-      { device: 'rtx3060', ids: ['audio-3060'], roles: ['audio'] },
-      { device: 'cpu', ids: ['mux'], roles: ['mux'] },
-    ],
-    readout: { values: [{ value: TODAY.fl2va.min, decimals: 1 }, { value: TODAY.fl2va.max, decimals: 0 }], unit: 's' },
-    output: {
-      input: { src: '/images/tour/still-rain.webp', width: 1152, height: 672 },
-      clip: 'tour/clips/fl2va-rain.mp4',
-      clipPoster: '/images/tour/clip-fl2va-rain.webp',
-    },
-  },
-  {
-    id: 'v3',
-    number: 3,
-    media: 'v3-references-advisor',
-    poster: '/images/tour/v3.webp',
     length: 85,
-    steps: [[0, 1], one(2), one(3), [4, 5], one(6), one(7)],
-    machines: [
-      { device: 'gb10', ids: ['te-gb10'], roles: ['text'] },
-      { device: 'rtx5080', ids: ['venc-5080', 'dit5080-ref2va-fp8-pai8', 'vae-5080'], roles: ['encode', 'denoise', 'videoDecode'] },
-      { device: 'rtx3060', ids: ['aenc-3060', 'audio-3060'], roles: ['audio'] },
-      { device: 'cpu', ids: ['mux'], roles: ['mux'] },
+    steps: [
+      { anchor: 'Bring your own references.' },
+      { anchor: 'Every @mention maps to an H3 tag.' },
+      { anchor: 'Start from the official 6-section format.' },
+      { anchor: '74 rules check the prompt as you type.' },
+      { anchor: 'Preview the fix, then apply it.' },
+      { anchor: 'Image and music references,', badge: { devices: ['gb10', 'rtx5080', 'rtx3060'], measure: range(TODAY.ref2va.min, TODAY.ref2va.max, [0, 0]) } },
     ],
-    readout: { values: [{ value: TODAY.ref2va.min, decimals: 0 }, { value: TODAY.ref2va.max, decimals: 0 }], unit: 's' },
-    output: {
-      input: { src: '/images/tour/courier-sheet.webp', width: 576, height: 768 },
-      clip: 'tour/clips/ref2va-rooftop.mp4',
-      clipPoster: '/images/tour/clip-ref2va-rooftop.webp',
-    },
+    screens: [],
   },
   {
-    id: 'v4',
-    number: 4,
-    media: 'v4-timeline-export',
-    poster: '/images/tour/v4.webp',
+    id: 'c3',
+    number: 3,
+    media: '03-timeline-export',
+    poster: '/images/tour/v3.webp',
     length: 70,
-    steps: [one(0), one(1), one(2), one(3), one(4), one(5)],
-    machines: [{ device: 'cpu', ids: ['concat'], roles: ['concat'] }],
-    readout: { values: [{ value: EARLIER.exportPlain, decimals: 0 }], approx: true, unit: 's' },
-  },
-  {
-    id: 'v5',
-    number: 5,
-    media: 'v5-image-to-prompt',
-    poster: '/images/tour/v5.webp',
-    length: 65,
-    steps: [one(0), one(1), one(2), one(3), one(4), one(5)],
-    machines: [
-      { device: 'gb10', ids: ['qimg-vision-gb10'], roles: ['vision'] },
-      { device: 'cpu', ids: ['prompt-compile', 'prompt-score'], roles: ['promptTools'] },
-      { device: 'rtx5080', ids: [], roles: ['regenerate'] },
+    steps: [
+      { anchor: 'Arrange shots on a real timeline.' },
+      { anchor: 'Split, trim and snap, frame-accurate.' },
+      { anchor: 'Add a dissolve between shots.' },
+      { anchor: 'Speed up a clip.' },
+      { anchor: 'Export one MP4, rendered by FFmpeg.', badge: { devices: ['cpu'], measure: single(EARLIER.exportPlain, 0, true) } },
     ],
-    readout: { values: [{ value: EARLIER.visionAnalyze, decimals: 1 }], unit: 's' },
+    screens: [],
   },
   {
-    id: 'v6',
-    number: 6,
-    media: 'v6-components-pipelines',
-    poster: '/images/tour/v6.webp',
-    length: 55,
-    steps: [one(0), one(1), one(2), one(3), one(4), one(5)],
-    machines: [],
-    readout: { values: [{ value: TODAY.start.ref2vaDit, decimals: 1 }, { value: TODAY.start.fl2vaDit, decimals: 1 }], unit: 's' },
-  },
-  {
-    id: 'v7',
-    number: 7,
-    media: 'v7-records-compare',
-    poster: '/images/tour/v7.webp',
+    id: 'c4',
+    number: 4,
+    media: '04-image-to-prompt',
+    poster: '/images/tour/v4.webp',
     length: 65,
-    steps: [[0, 1], one(2), one(3), one(4), one(5), one(6)],
-    machines: [],
-    readout: { values: [{ value: COUNTS.recorderMetrics, decimals: 0 }] },
+    steps: [
+      { anchor: 'Have an image? Get its prompt back.' },
+      { anchor: 'The analysis runs on DGX Spark.', badge: { devices: ['gb10'], measure: single(EARLIER.visionAnalyze, 1) } },
+      { anchor: 'Eight sections, from subject' },
+      { anchor: 'Core and detailed prompts, ready to edit.' },
+      { anchor: 'Regenerate each candidate and score it.', badge: { devices: ['rtx5080'] } },
+    ],
+    screens: [],
   },
   {
-    id: 'v8',
-    number: 8,
-    media: 'v8-agent-skill',
-    poster: '/images/tour/v8.webp',
-    length: 75,
-    steps: [one(0), one(1), one(2), one(3), one(4), one(5)],
-    machines: [],
-    readout: { values: [{ value: COUNTS.mcpTools, decimals: 0 }] },
+    id: 'c5',
+    number: 5,
+    media: '05-components-records',
+    poster: '/images/tour/v5.webp',
+    length: 120,
+    steps: [
+      { anchor: 'Every render is a pipeline you can see.' },
+      { anchor: 'Swap the DiT for another variant.', badge: { devices: ['rtx5080'], measure: range(TODAY.start.ref2vaDit, TODAY.start.fl2vaDit) } },
+      { anchor: 'Set precision per component,' },
+      { anchor: 'See each step, and where it ran.' },
+      { anchor: 'Unknown stays unknown, never zero.', badge: { measure: { values: [{ value: COUNTS.recorderMetrics, decimals: 0 }] } } },
+      { anchor: 'Compare up to eight recordings.' },
+    ],
+    screens: ['components-pipeline-graph', 'component-inspector-precision', 'records-run-steps'],
   },
 ];
 
-/** `tour/<media>.<locale>.mp4` for each locale (burned-in subtitles), as FilmPlayer expects. */
-export function chapterSources(spec: ChapterSpec): Copy<string> {
-  return Object.fromEntries(LOCALES.map((locale) => [locale, `tour/${spec.media}.${locale}.mp4`])) as Copy<string>;
+/** The 30 fps master, shared by every locale (subtitles come from the VTT files). */
+export function chapterSource(spec: ChapterSpec): string {
+  return `tour/${spec.media}.mp4`;
 }
 
-/** Subtitle exports to try for cue times: the page locale first, then English (all locales share the timing). */
-export function chapterCaptionPaths(spec: ChapterSpec, locale: Locale): string[] {
-  const paths = [`tour/${spec.media}.${locale}.vtt`];
-  if (locale !== 'en') paths.push(`tour/${spec.media}.en.vtt`);
-  return paths;
+/** Site-hosted subtitles per locale, for FilmPlayer's `captions` prop. */
+export function chapterCaptions(spec: ChapterSpec): Copy<string> {
+  return Object.fromEntries(LOCALES.map((locale) => [locale, `/captions/tour/${spec.media}.${locale}.vtt`])) as Copy<string>;
+}
+
+/** The English subtitles, used to find where each step starts (all locales share one timing). */
+export function chapterTimingPath(spec: ChapterSpec): string {
+  return `/captions/tour/${spec.media}.en.vtt`;
 }
 
 export const TOTAL_LENGTH = CHAPTERS.reduce((sum, chapter) => sum + chapter.length, 0);
