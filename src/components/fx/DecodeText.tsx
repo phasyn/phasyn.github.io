@@ -4,11 +4,17 @@ import { useReducedMotion } from '../../lib/hooks.ts';
 
 const GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789#%&*+=<>/\\[]{}';
 
-/** Current `--fx-intro-delay` (first-visit splash) in ms; 0 when skipped. */
-function introDelay(): number {
+/**
+ * Time left on the first-visit splash hold, ms: `--fx-intro-delay` (0 when skipped) counted from first paint, where the
+ * CSS entrances start, so script-driven decodes line up with them.
+ */
+function introRemaining(): number {
   const raw = getComputedStyle(document.documentElement).getPropertyValue('--fx-intro-delay').trim();
   const value = Number.parseFloat(raw);
-  return Number.isFinite(value) ? (raw.endsWith('ms') ? value : value * 1000) : 0;
+  const delay = Number.isFinite(value) ? (raw.endsWith('ms') ? value : value * 1000) : 0;
+  if (delay <= 0) return 0;
+  const paint = performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0;
+  return Math.max(0, delay + paint - performance.now());
 }
 
 interface DecodeTextProps {
@@ -34,7 +40,10 @@ export function DecodeText({ text, duration = 900, delay = 0, afterIntro = false
     if (!element || reducedMotion) return;
     let frame = 0;
     let timer = 0;
+    let started = false;
     const run = () => {
+      if (started) return;
+      started = true;
       const start = performance.now();
       const tick = (now: number) => {
         const progress = Math.min(1, (now - start) / duration);
@@ -50,16 +59,24 @@ export function DecodeText({ text, duration = 900, delay = 0, afterIntro = false
       };
       frame = requestAnimationFrame(tick);
     };
+    // The visitor skipped the splash: stop waiting for the rest of its hold.
+    const onSkip = () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(run, delay);
+    };
     const observer = new IntersectionObserver(([entry]) => {
       if (!entry?.isIntersecting) return;
       observer.disconnect();
-      const wait = delay + (afterIntro ? introDelay() : 0);
+      const intro = afterIntro ? introRemaining() : 0;
+      if (intro > 0) window.addEventListener('fx-intro-skip', onSkip, { once: true });
+      const wait = delay + intro;
       if (wait > 0) timer = window.setTimeout(run, wait);
       else run();
     });
     observer.observe(element);
     return () => {
       observer.disconnect();
+      window.removeEventListener('fx-intro-skip', onSkip);
       cancelAnimationFrame(frame);
       window.clearTimeout(timer);
       element.textContent = text;

@@ -30,8 +30,11 @@
   --site-header-h: 3.5rem;
   --site-gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
   --site-max: 76rem;
-  /* Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. */
-  --fx-intro-delay: 1450ms;
+  /*
+   * Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. Equals HOLD_MS
+   * in IntroSplash.tsx (FE-04: the hero and its CTA are usable within ~1.2 s).
+   */
+  --fx-intro-delay: 700ms;
 }
 
 /*
@@ -297,6 +300,14 @@
   }
 }
 
+/* The visitor dismissed the splash during its hold (pointer, key, wheel or touch): a short fade instead of a cut. */
+@keyframes fx-intro-leave {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* Per-character reveal: `fx-chars` holds spans with --d (delay). `data-fx-play` starts it. */
 @utility fx-chars {
   & .fx-char {
@@ -382,7 +393,10 @@
   }
 }
 
-/* First-visit splash (see components/fx/IntroSplash.tsx). Skipped by an inline script when already seen this session. */
+/*
+ * First-visit splash (see components/fx/IntroSplash.tsx): 1 s in all, holding 700 ms (= --fx-intro-delay) before the
+ * fade. Hidden before paint when seen in the last 7 days; `fx-intro-leaving` is the visitor's skip during the hold.
+ */
 @utility fx-intro {
   position: fixed;
   inset: 0;
@@ -390,10 +404,14 @@
   display: grid;
   place-items: center;
   background: radial-gradient(60% 50% at 50% 50%, rgb(23 33 57 / 0.95), var(--color-stage) 70%);
-  animation: fx-intro-out 1700ms var(--ease-exit) forwards;
+  animation: fx-intro-out 1000ms var(--ease-exit) forwards;
   pointer-events: none;
   :root.fx-intro-skip & {
     display: none;
+  }
+  :root.fx-intro-skip.fx-intro-leaving & {
+    display: grid;
+    animation: fx-intro-leave 160ms var(--ease-exit) forwards;
   }
   @media (prefers-reduced-motion: reduce) {
     display: none;
