@@ -5,8 +5,10 @@ import { supportsWebGL, useHydrated, useReducedMotion } from '../../lib/hooks.ts
 /*
  * Living background: a domain-warped aurora/nebula shader in the brand light (cyan → blue → iris → violet) plus a crisp
  * 2D particle layer drifting through it. Pointer adds parallax and a soft light; scroll shifts the band and hue.
- * Rendered at a reduced internal resolution and ~30 fps, paused when offscreen or the tab is hidden; reduced motion
- * draws a single still frame. Purely decorative (aria-hidden).
+ * Rendered at a reduced internal resolution and ~30 fps; the frame loop stops completely while the field is offscreen or
+ * the tab is hidden. Reduced motion draws a still frame: nothing drifts or follows the pointer, but the fixed backdrop is
+ * redrawn (once per frame at most) when its scroll calm changes, so reading areas get the calm light instead of the
+ * hero's brightest frame (FE-03). Purely decorative (aria-hidden).
  */
 
 const VERTEX = `#version 300 es
@@ -182,33 +184,35 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
       }));
     };
 
-    const onPointer = (event: PointerEvent) => {
-      pointer.tx = event.clientX / window.innerWidth;
-      pointer.ty = event.clientY / window.innerHeight;
-    };
-    const onScroll = () => {
-      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      scroll = window.scrollY / max;
+    // A fixed backdrop is brightest behind the first screen and calms down under reading content.
+    const calmFactor = () => {
+      if (position !== 'fixed') return 1;
+      const depth = window.scrollY / Math.max(1, window.innerHeight);
+      return 1 - 0.45 * Math.min(1, Math.max(0, (depth - 0.7) / 1.1));
     };
 
     let frame = 0;
+    let stillFrame = 0;
+    let drawnCalm = -1;
     let last = 0;
     let visible = true;
     const start = performance.now();
 
-    const draw = (now: number) => {
+    /** One frame. `still` (reduced motion): no drift, no pointer easing, the band stays where it first was. */
+    const draw = (now: number, still = false) => {
       const time = (now - start) / 1000;
-      pointer.x += (pointer.tx - pointer.x) * 0.06;
-      pointer.y += (pointer.ty - pointer.y) * 0.06;
-      // A fixed backdrop is brightest behind the first screen and calms down under reading content.
-      const depth = position === 'fixed' ? window.scrollY / Math.max(1, window.innerHeight) : 0;
-      const calm = 1 - 0.45 * Math.min(1, Math.max(0, (depth - 0.7) / 1.1));
+      if (!still) {
+        pointer.x += (pointer.tx - pointer.x) * 0.06;
+        pointer.y += (pointer.ty - pointer.y) * 0.06;
+      }
+      const calm = calmFactor();
+      drawnCalm = calm;
       if (gl && program) {
         gl.viewport(0, 0, glCanvas.width, glCanvas.height);
         gl.uniform2f(uniforms.uRes ?? null, glCanvas.width, glCanvas.height);
         gl.uniform1f(uniforms.uTime ?? null, time);
         gl.uniform2f(uniforms.uPointer ?? null, pointer.x, pointer.y);
-        gl.uniform1f(uniforms.uScroll ?? null, scroll);
+        gl.uniform1f(uniforms.uScroll ?? null, still ? stillScroll : scroll);
         gl.uniform1f(uniforms.uIntensity ?? null, intensity * calm);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
@@ -217,10 +221,12 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
         const px = (pointer.x - 0.5) * 24;
         const py = (pointer.y - 0.5) * 16;
         for (const d of dots) {
-          d.y -= 0.12 * d.z;
-          if (d.y < -4) {
-            d.y = height + 4;
-            d.x = Math.random() * width;
+          if (!still) {
+            d.y -= 0.12 * d.z;
+            if (d.y < -4) {
+              d.y = height + 4;
+              d.x = Math.random() * width;
+            }
           }
           const twinkle = 0.45 + 0.55 * Math.sin(time * (0.8 + d.z) + d.phase);
           const x = d.x - px * d.z;
@@ -233,27 +239,65 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
       }
     };
 
+    // Reduced motion: redraw the still frame at most once per animation frame, only when something changed.
+    const drawStill = () => {
+      stillFrame = 0;
+      draw(start + 12_000, true);
+    };
+    const requestStill = () => {
+      if (!stillFrame) stillFrame = requestAnimationFrame(drawStill);
+    };
+
+    // Animated: ~30 fps while visible; the loop ends offscreen or in a hidden tab and is restarted by startLoop.
     const loop = (now: number) => {
+      if (!visible || document.hidden) {
+        frame = 0;
+        return;
+      }
       frame = requestAnimationFrame(loop);
-      if (!visible || document.hidden) return;
       if (now - last < 33) return;
       last = now;
       draw(now);
     };
+    const startLoop = () => {
+      if (!reducedMotion && !frame && visible && !document.hidden) frame = requestAnimationFrame(loop);
+    };
+
+    const onPointer = (event: PointerEvent) => {
+      pointer.tx = event.clientX / window.innerWidth;
+      pointer.ty = event.clientY / window.innerHeight;
+    };
+    const onScroll = () => {
+      const max = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      scroll = window.scrollY / max;
+      if (reducedMotion && Math.abs(calmFactor() - drawnCalm) > 0.004) requestStill();
+    };
 
     resize();
     onScroll();
-    const observer = new IntersectionObserver(([entry]) => (visible = entry?.isIntersecting ?? true));
+    const stillScroll = scroll;
+    const observer = new IntersectionObserver(([entry]) => {
+      visible = entry?.isIntersecting ?? true;
+      startLoop();
+    });
     observer.observe(wrap);
-    const resizeObserver = new ResizeObserver(resize);
+    // Resizing clears both canvases: the animated loop repaints within a frame, the still frame needs a redraw. The
+    // observer's first callback reports the size resize() already used, so it changes nothing.
+    const resizeObserver = new ResizeObserver(() => {
+      const rect = wrap.getBoundingClientRect();
+      if (Math.max(1, rect.width) === width && Math.max(1, rect.height) === height) return;
+      resize();
+      if (reducedMotion) requestStill();
+    });
     resizeObserver.observe(wrap);
     window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('visibilitychange', startLoop);
 
     if (reducedMotion) {
-      draw(start + 12_000);
+      requestStill();
     } else {
       window.addEventListener('pointermove', onPointer, { passive: true });
-      frame = requestAnimationFrame(loop);
+      startLoop();
     }
 
     const onLost = (event: Event) => event.preventDefault();
@@ -261,10 +305,12 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
 
     return () => {
       cancelAnimationFrame(frame);
+      cancelAnimationFrame(stillFrame);
       observer.disconnect();
       resizeObserver.disconnect();
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onPointer);
+      document.removeEventListener('visibilitychange', startLoop);
       glCanvas.removeEventListener('webglcontextlost', onLost);
       if (gl) {
         if (buffer) gl.deleteBuffer(buffer);

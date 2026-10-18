@@ -45,6 +45,33 @@ export function useInView<T extends Element>(options: IntersectionObserverInit =
   return [ref, inView];
 }
 
+/**
+ * Pauses CSS animations in page blocks far from the viewport (FE-05): the top-level children of the element `rootId` and
+ * every <section> inside it carry `data-offscreen` while more than half a viewport away, and site.css pauses animations
+ * under that attribute. Pass the pathname as `key` so each page is observed after navigation.
+ */
+export function useOffscreenPause(rootId: string, key: unknown): void {
+  useEffect(() => {
+    const root = document.getElementById(rootId);
+    if (!root) return;
+    const targets = Array.from(root.querySelectorAll<HTMLElement>(':scope > *, section'));
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) entry.target.removeAttribute('data-offscreen');
+          else entry.target.setAttribute('data-offscreen', '');
+        }
+      },
+      { rootMargin: '50% 0px' },
+    );
+    for (const target of targets) observer.observe(target);
+    return () => {
+      observer.disconnect();
+      for (const target of targets) target.removeAttribute('data-offscreen');
+    };
+  }, [rootId, key]);
+}
+
 /** Can this browser create a WebGL2 context? Checked once, client-side. */
 let webglSupport: boolean | undefined;
 export function supportsWebGL(): boolean {

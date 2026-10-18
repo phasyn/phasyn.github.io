@@ -1,4 +1,5 @@
 import type { MetaDescriptor } from 'react-router';
+import { COMMON } from '../i18n/common.ts';
 import { HTML_LANG, LOCALES, OG_LOCALE, SITE_URL, pageUrl, type Locale, type Page } from '../site/config.ts';
 
 interface PageMeta {
@@ -10,7 +11,25 @@ interface PageMeta {
   image?: string;
 }
 
-/** Title, description, canonical, hreflang alternates and social cards for one prerendered page. */
+/**
+ * Structured data for the site itself (FE-22): a WebSite by its author. Deliberately no offers, prices or ratings —
+ * Phasyn Studio is a personal, non-commercial project.
+ */
+function websiteJsonLd(locale: Locale): MetaDescriptor {
+  return {
+    'script:ld+json': {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: 'Phasyn Studio',
+      url: `${SITE_URL}/`,
+      inLanguage: LOCALES.map((alt) => HTML_LANG[alt]),
+      description: COMMON[locale].footerMadeBy,
+      creator: { '@type': 'Person', name: 'DennySORA' },
+    },
+  };
+}
+
+/** Title, description, canonical, hreflang alternates, social cards and site JSON-LD for one prerendered page. */
 export function pageMeta({ locale, page, title, description, image = '/brand/og-1200x630.jpg' }: PageMeta): MetaDescriptor[] {
   const url = pageUrl(locale, page);
   const imageUrl = `${SITE_URL}${image}`;
@@ -31,5 +50,6 @@ export function pageMeta({ locale, page, title, description, image = '/brand/og-
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: imageUrl },
+    websiteJsonLd(locale),
   ];
 }

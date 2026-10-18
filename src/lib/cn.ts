@@ -10,6 +10,7 @@ type PhasynClassGroup =
   | 'pressable'
   | 'stagger'
   | 'text-balance-cjk'
+  | 'text-on-fx'
   | 'site-layout'
   | 'eyebrow'
   | 'reveal'
@@ -65,11 +66,12 @@ const twMerge = extendTailwindMerge<PhasynClassGroup>({
       pressable: ['pressable'],
       stagger: ['stagger'],
       'text-balance-cjk': ['text-balance-cjk'],
+      'text-on-fx': ['text-on-fx'],
       'site-layout': ['site-container', 'site-section'],
       eyebrow: ['eyebrow'],
       reveal: ['reveal'],
       'site-effect': ['grain', 'glow-backdrop'],
-      fx: ['fx-chars', 'fx-sweep-text', 'fx-orbit-border', 'fx-ticker-track', 'fx-scanline', 'fx-intro'],
+      fx: ['fx-chars', 'fx-sweep-text', 'fx-orbit', 'fx-orbit-border', 'fx-ticker-track', 'fx-scanline', 'fx-intro'],
     },
   },
 });
