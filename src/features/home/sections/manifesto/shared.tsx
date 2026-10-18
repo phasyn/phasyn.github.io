@@ -50,6 +50,8 @@ const CLOSING = /^[、。，．！？：；）」』】〉》’”…ー・,.!?
 /** Longest CJK phrase kept together; longer runs may break between words. */
 const MAX_PHRASE = 10;
 const hasSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl;
+/** A part that starts with kana continues the word before it (particles such as も・は・が): no break at that seam. */
+const KANA_START = /^[\u3040-\u309f]/;
 
 /**
  * CJK lines break only between phrases (Intl word segments joined up to MAX_PHRASE characters, closing punctuation kept with the
@@ -90,7 +92,7 @@ function Phrased({ text, lang, first }: { text: string; lang: string; first: boo
     <>
       {phrases(text, lang).map((group, index) => (
         <Fragment key={index}>
-          {(index > 0 || !first) && !CLOSING.test(group.charAt(0)) ? <wbr /> : null}
+          {(index > 0 || (!first && !KANA_START.test(group))) && !CLOSING.test(group.charAt(0)) ? <wbr /> : null}
           {group}
         </Fragment>
       ))}

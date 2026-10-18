@@ -78,7 +78,7 @@ export function ArchitectureSection() {
               screen="components-pipeline-graph"
               crop="graph"
               hotspots={['graph.te', 'graph.dit', 'graph.audio']}
-              hud="REAL UI · COMPONENTS · PIPELINE fl2va-pc"
+              hud="REAL UI · PIPELINE GRAPH"
               displayWidth="min(76rem, 94vw)"
               pan="15rem"
             />
@@ -89,7 +89,7 @@ export function ArchitectureSection() {
               screen="records-run-steps"
               crop="timeline"
               hotspots={['run.te', 'run.audio', 'run.mux']}
-              hud="REAL UI · RECORDS · STEP TIMELINE"
+              hud="REAL UI · STEP TIMELINE"
               orbit
               displayWidth="min(76rem, 94vw)"
               pan="15rem"
