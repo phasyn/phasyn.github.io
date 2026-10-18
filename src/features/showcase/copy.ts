@@ -320,7 +320,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
 
   ja: {
     hero: {
-      title: ['このページの映像は、', 'すべて自宅で生成しました。'],
+      title: ['この映像はすべて、', '自宅で生成しました。'],
       lead: 'ここにある画像と映像は、すべて Phasyn Studio がコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて、作者の 2 台のマシン・3 基の GPU で生成したものです。1 回の生成で得た結果には Prompt、パイプライン、各ステップを処理したマシン、実測時間を、ショートフィルムには使ったショットの一覧を載せています。',
       stats: { results: '件の生成結果', video: '秒の音付き映像', render: 'エンドツーエンドの生成時間（合計）', gpus: (hosts) => `基の GPU（${hosts} 台のマシン）`, films: (minutes) => `本のショートフィルム（計 ${minutes} 分）` },
       minutes: '分',

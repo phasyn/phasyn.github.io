@@ -8,7 +8,7 @@ import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
 import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHORT, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
 import { useViewTrigger } from './hooks.ts';
-import { AiBadge, MachineDot, MachineName, PromptDisclosure, SectionHeading, useSecondsText, useStepName } from './parts.tsx';
+import { AiBadge, MachineDot, MachineName, PromptDisclosure, SectionHeading, useSecondsText, useStepName, useStepShort } from './parts.tsx';
 
 /** Seconds of animation for the whole run (the playhead moves linearly; DESIGN_GUIDE §11.5). */
 const PLAY_SECONDS = 5.2;
@@ -112,6 +112,7 @@ function MachineTimeline({ item, title }: { item: ShowcaseItem; title: string })
   const locale = useLocale();
   const copy = SHOWCASE[locale];
   const stepName = useStepName();
+  const stepShort = useStepShort();
   const secondsText = useSecondsText();
   const reducedMotion = useReducedMotion();
   const [ref, state] = useViewTrigger<HTMLDivElement>(reducedMotion);
@@ -200,10 +201,11 @@ function MachineTimeline({ item, title }: { item: ShowcaseItem; title: string })
                               <span
                                 className={cn(
                                   'sc-bar-label absolute top-1/2 -translate-y-1/2 text-[11px] font-semibold whitespace-nowrap',
-                                  inside ? 'left-2 text-[#fff]' : left > 70 ? 'right-full mr-2 text-fg-secondary' : 'left-full ml-2 text-fg-secondary',
+                                  // Inside: short name, clipped to the bar. Beside: on the open side of the lane.
+                                  inside ? 'left-2 max-w-[calc(100%-0.75rem)] truncate text-[#fff]' : left > 50 ? 'right-full mr-2 text-fg-secondary' : 'left-full ml-2 text-fg-secondary',
                                 )}
                               >
-                                {stepName(step)} <span className="machine tabular-nums">{formatSeconds(seconds)}s</span>
+                                {stepShort(step)} <span className="machine tabular-nums">{formatSeconds(seconds)}s</span>
                               </span>
                             ) : null}
                           </span>

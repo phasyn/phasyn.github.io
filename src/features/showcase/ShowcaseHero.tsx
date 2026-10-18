@@ -42,7 +42,11 @@ export function ShowcaseHero() {
             <span className="sc-eyebrow-line w-10" />
             <DecodeText text={sum.films ? `SHOWCASE · ${sum.films} FILMS · ${sum.results} RESULTS` : `SHOWCASE · ${sum.results} RESULTS · ${sum.gpus} GPUS`} afterIntro />
           </p>
-          <h1 aria-label={copy.hero.title.join(locale === 'en' ? ' ' : '')} className="text-display tracking-display text-balance-cjk text-fg lg:text-[clamp(2.5rem,0.9rem+2.9vw,3.875rem)]">
+          <h1
+            aria-label={copy.hero.title.join(locale === 'en' ? ' ' : '')}
+            // CJK glyphs are a full em wide: a smaller size keeps each ten-character line inside the hero column.
+            className={cn('text-display tracking-display text-balance-cjk text-fg', locale === 'en' ? 'lg:text-[clamp(2.5rem,0.9rem+2.9vw,3.875rem)]' : 'lg:text-[clamp(2.25rem,0.6rem+2.6vw,3.25rem)]')}
+          >
             {copy.hero.title.map((line, i) => (
               <RevealText key={line} text={line} on="load" delay={180 + i * 260} className="block" />
             ))}
