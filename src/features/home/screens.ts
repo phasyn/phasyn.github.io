@@ -83,7 +83,7 @@ export interface ScreenSpec {
   hotspots?: readonly Hotspot[];
 }
 
-export type CropName = 'panel' | 'timeline' | 'graph' | 'inspector';
+export type CropName = 'panel' | 'window' | 'main' | 'timeline' | 'graph' | 'inspector';
 
 /** The recorder pins the viewport to 1920×1080 CSS px at DPR 2, so every full capture is 16:9. */
 const FULL: CaptureSize = { width: 1920, height: 1080 };
@@ -93,7 +93,8 @@ export const SCREENS: Record<ScreenKey, ScreenSpec> = {
     area: 'Image Studio · Generation',
     hud: 'IMAGE STUDIO · GENERATING',
     capture: FULL,
-    crops: { panel: [0.262, 0.08, 0.54, 0.905] },
+    // `window`: the app without its settings panel (the right panel and the top-right route pill carry masked host names).
+    crops: { panel: [0.262, 0.08, 0.54, 0.905], window: [0, 0, 0.8, 1] },
     focus: [0.36, 0.2],
     hotspots: [
       { id: 'generating.flow', at: [0.372, 0.062] },
@@ -105,7 +106,7 @@ export const SCREENS: Record<ScreenKey, ScreenSpec> = {
     area: 'Image Studio · Takes',
     hud: 'IMAGE STUDIO · TAKES',
     capture: FULL,
-    crops: { panel: [0.262, 0.08, 0.54, 0.905] },
+    crops: { panel: [0.262, 0.08, 0.54, 0.905], window: [0, 0, 0.8, 1] },
     focus: [0.52, 0.42],
     hotspots: [
       { id: 'takes.inUse', at: [0.445, 0.101] },
@@ -146,21 +147,22 @@ export const SCREENS: Record<ScreenKey, ScreenSpec> = {
     area: 'Components · Component inspector',
     hud: 'COMPONENT INSPECTOR',
     capture: FULL,
-    // The inspector's head: Start / Stop / Restart, the one-DiT rule and the tabs (precision settings sit further down).
-    crops: { panel: [0.262, 0.04, 0.736, 0.8], inspector: [0.7974, 0.0444, 0.1979, 0.3956] },
+    // The inspector below its (masked) instance name: kind and node, Start / Stop / Restart, the one-DiT rule and the tabs.
+    crops: { panel: [0.262, 0.04, 0.736, 0.8], inspector: [0.7974, 0.135, 0.1979, 0.305] },
     focus: [0.88, 0.2],
   },
   'records-run-steps': {
     area: 'Records · Run Details',
     hud: 'RECORDS · RUN DETAILS',
     capture: FULL,
-    crops: { panel: [0.122, 0.04, 0.674, 0.8], timeline: [0.2635, 0.5537, 0.5333, 0.2148] },
+    // `main`: the run page without the Records tree (its masked run names); `timeline`: the Step Timeline, one track per machine.
+    crops: { panel: [0.122, 0.04, 0.674, 0.8], main: [0.262, 0.04, 0.738, 0.96], timeline: [0.2635, 0.5537, 0.5333, 0.2148] },
     focus: [0.45, 0.62],
     hotspots: [
       { id: 'run.elapsed', at: [0.668, 0.134], side: 'right' },
       { id: 'run.compare', at: [0.553, 0.171] },
       { id: 'run.timeline', at: [0.4, 0.722], side: 'right' },
-      { id: 'run.slowest', at: [0.133, 0.737], side: 'left' },
+      { id: 'run.slowest', at: [0.49, 0.6856], side: 'right' },
       { id: 'run.te', at: [0.3609, 0.6509] },
       { id: 'run.audio', at: [0.6068, 0.7213] },
       { id: 'run.mux', at: [0.7669, 0.756] },

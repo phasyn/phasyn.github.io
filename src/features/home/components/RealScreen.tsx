@@ -26,12 +26,13 @@ interface RealScreenProps {
   /** Parent gate, e.g. false for a sticky pane that is not the one being shown. */
   active?: boolean;
   eager?: boolean;
-  /** Corner of the "Real screen" badge (pick the corner where the capture has the least to read). */
-  badge?: 'bottom-left' | 'top-right' | 'bottom-right';
+  /**
+   * Phones: below a 34rem frame, keep the screen at least this tall (e.g. '15rem') and let it pan sideways instead of shrinking
+   * a desktop UI into an unreadable strip.
+   */
+  pan?: string;
   className?: string;
 }
-
-const BADGE_POSITION = { 'bottom-left': 'bottom-2 left-2', 'top-right': 'top-2 right-2', 'bottom-right': 'right-2 bottom-2' } as const;
 
 const FULL_RECT: Rect = [0, 0, 1, 1];
 const pct = (value: number) => `${(value * 100).toFixed(3)}%`;
@@ -53,7 +54,7 @@ export function RealScreen({
   drift = true,
   active = true,
   eager = false,
-  badge = 'bottom-left',
+  pan,
   className,
 }: RealScreenProps) {
   const t = useCopy(HOME).screens;
@@ -95,7 +96,8 @@ export function RealScreen({
   const { src, src2x } = captureSources(screen);
   const sizes = w < 1 ? `calc(${displayWidth} / ${w.toFixed(4)})` : displayWidth;
 
-  const frame = (
+  const aspect = (size.width * w) / (size.height * h);
+  const screenFrame = (
     <div
       ref={frameRef}
       className="home-screen relative isolate overflow-hidden rounded-xl bg-stage"
@@ -146,10 +148,6 @@ export function RealScreen({
               ) : null}
             </div>
           </div>
-          <span lang={lang} className={cn('material-hud absolute z-10 inline-flex', BADGE_POSITION[badge], 'h-6 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium text-fg')}>
-            <span aria-hidden className="size-1.5 rounded-full bg-success" />
-            {t.real}
-          </span>
         </>
       ) : (
         <PendingFrame area={spec.area} title={t.pendingTitle} body={t.pendingBody} />
@@ -157,12 +155,29 @@ export function RealScreen({
     </div>
   );
 
+  const frame = pan ? (
+    <div className="home-screen-pan" data-pan="" style={{ ['--pan-h' as string]: pan, ['--aspect' as string]: aspect.toFixed(4) } as CSSProperties}>
+      {screenFrame}
+    </div>
+  ) : (
+    screenFrame
+  );
+
   return (
     <div className={cn('@container/screen min-w-0', className)}>
       {framed ? (
-        <HudFrame label={hud ?? `REAL UI · ${spec.hud}`} orbit={orbit}>
-          {frame}
-        </HudFrame>
+        <div className="relative">
+          <HudFrame label={hud ?? `REAL UI · ${spec.hud}`} orbit={orbit}>
+            {frame}
+          </HudFrame>
+          {/* On the frame's border, outside the capture, so it never covers what the screen says. */}
+          {available ? (
+            <span lang={lang} className="home-real-badge absolute -top-3 right-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-stage px-2.5 py-0.5 text-[11px] font-medium text-fg">
+              <span aria-hidden className="size-1.5 rounded-full bg-success" />
+              {t.real}
+            </span>
+          ) : null}
+        </div>
       ) : (
         frame
       )}

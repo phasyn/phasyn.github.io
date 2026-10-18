@@ -80,6 +80,7 @@ export function ArchitectureSection() {
               hotspots={['graph.te', 'graph.dit', 'graph.audio']}
               hud="REAL UI · COMPONENTS · PIPELINE fl2va-pc"
               displayWidth="min(76rem, 94vw)"
+              pan="15rem"
             />
             <figcaption className="max-w-[90ch] text-caption leading-relaxed text-fg-tertiary">{t.real.graph}</figcaption>
           </figure>
@@ -89,9 +90,9 @@ export function ArchitectureSection() {
               crop="timeline"
               hotspots={['run.te', 'run.audio', 'run.mux']}
               hud="REAL UI · RECORDS · STEP TIMELINE"
-              badge="top-right"
               orbit
               displayWidth="min(76rem, 94vw)"
+              pan="15rem"
             />
             <figcaption className="max-w-[90ch] text-caption leading-relaxed text-fg-tertiary">{t.real.timeline}</figcaption>
           </figure>
@@ -105,7 +106,7 @@ export function ArchitectureSection() {
               <p className="text-reading text-fg-secondary">{t.process.body}</p>
             </div>
             <figure className="grid content-start gap-3">
-              <RealScreen screen="component-inspector-precision" crop="inspector" hud="REAL UI · INSPECTOR" badge="top-right" displayWidth="16rem" />
+              <RealScreen screen="component-inspector-precision" crop="inspector" hud="REAL UI · INSPECTOR" displayWidth="16rem" />
               <figcaption className="text-caption leading-relaxed text-fg-tertiary">{t.real.inspector}</figcaption>
             </figure>
           </article>

@@ -64,7 +64,7 @@ function Pane({ index, active, armed, notes, clip, inline = false }: PaneProps) 
   return inline ? (
     <ScreenPane screen={step.screen} crop="panel" hotspots={step.hotspots} note={note} active={active} framed hud={`0${index + 1} · ${STEP_TAGS[index]}`} displayWidth="min(92vw, 40rem)" />
   ) : (
-    <ScreenPane screen={step.screen} hotspots={step.hotspots} note={note} active={active} displayWidth="min(41rem, 52vw)" />
+    <ScreenPane screen={step.screen} crop="window" hotspots={step.hotspots} note={note} active={active} displayWidth="min(41rem, 52vw)" />
   );
 }
 

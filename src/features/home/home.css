@@ -1517,3 +1517,24 @@
     transform: none;
   }
 }
+
+/* Phones: wide captures keep a readable height and pan sideways inside their frame (RealScreen `pan`). */
+@container screen (max-width: 34rem) {
+  .home-screen-pan[data-pan] {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  .home-screen-pan[data-pan] > .home-screen {
+    width: max(100%, calc(var(--pan-h) * var(--aspect)));
+  }
+}
+
+/* The "Real screen" badge shares the frame's top border with the HUD tag; narrow frames keep only the tag ("REAL UI · …"). */
+@container screen (max-width: 30rem) {
+  .home-real-badge {
+    display: none;
+  }
+}
