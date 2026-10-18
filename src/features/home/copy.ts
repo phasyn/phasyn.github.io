@@ -287,7 +287,7 @@ export const HOME: Copy<HomeCopy> = {
         imageToPrompt: { title: '圖片反推提示詞', body: '丟一張圖進去，DGX Spark 上的視覺模型會寫回場景描述與候選提示詞。' },
       },
       tags: ['文字生成圖片', '圖生圖', '遮罩編輯'],
-      spec: '目前實測的輸出：768×448、24 fps、124 幀（5.17 秒），聲音 AAC 32 kHz 立體聲。匯出：MP4（H.264＋AAC，完整重新編碼；畫質預設 CRF 18／23／28）。',
+      spec: '2026-10-18 實測的輸出：768×448、24 fps、124 幀（5.17 秒），聲音 AAC 32 kHz 立體聲。匯出：MP4（H.264＋AAC，完整重新編碼；畫質預設 CRF 18／23／28）。',
     },
     hood: {
       eyebrow: 'UNDER THE HOOD',
@@ -536,7 +536,7 @@ export const HOME: Copy<HomeCopy> = {
         imageToPrompt: { title: '画像からプロンプトへ', body: '画像を渡すと、DGX Spark の視覚モデルがシーンの記述とプロンプト候補を書き起こします。' },
       },
       tags: ['テキストから画像', '画像から画像', 'マスク編集'],
-      spec: '現在実測している出力：768×448、24 fps、124 フレーム（5.17 秒）、音声は AAC 32 kHz ステレオ。書き出し：MP4（H.264＋AAC、完全に再エンコード。画質プリセットは CRF 18／23／28）。',
+      spec: '2026-10-18 に実測した出力：768×448、24 fps、124 フレーム（5.17 秒）、音声は AAC 32 kHz ステレオ。書き出し：MP4（H.264＋AAC、完全に再エンコード。画質プリセットは CRF 18／23／28）。',
     },
     hood: {
       eyebrow: 'UNDER THE HOOD',
@@ -785,7 +785,7 @@ export const HOME: Copy<HomeCopy> = {
         imageToPrompt: { title: 'Image to Prompt', body: 'Hand it an image, and a vision model on the DGX Spark writes back the scene and candidate prompts.' },
       },
       tags: ['Text to image', 'Image to image', 'Masked edit'],
-      spec: 'Measured output today: 768×448, 24 fps, 124 frames (5.17 s), AAC 32 kHz stereo. Export: MP4 (H.264 + AAC, fully re-encoded; CRF 18 / 23 / 28 presets).',
+      spec: 'Measured output (2026-10-18): 768×448, 24 fps, 124 frames (5.17 s), AAC 32 kHz stereo. Export: MP4 (H.264 + AAC, fully re-encoded; CRF 18 / 23 / 28 presets).',
     },
     hood: {
       eyebrow: 'UNDER THE HOOD',

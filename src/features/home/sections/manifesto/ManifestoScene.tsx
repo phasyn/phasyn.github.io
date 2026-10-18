@@ -135,7 +135,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
   const current = BEATS[Math.min(beat, PAIN - 1)]!;
 
   return (
-    <section ref={sectionRef} aria-labelledby="manifesto-title" className="home-mf relative" style={{ ['--mf-units' as string]: TOTAL } as CSSProperties}>
+    <section ref={sectionRef} aria-labelledby="manifesto-title" className="home-mf relative overflow-x-clip" style={{ ['--mf-units' as string]: TOTAL } as CSSProperties}>
       <div
         ref={stageRef}
         className="home-mf-stage sticky top-0 isolate h-svh overflow-hidden"

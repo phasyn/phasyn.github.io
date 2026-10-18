@@ -11,7 +11,7 @@ import { ClipPane, ScreenPane, type ClipLabels } from './pipeline/PipelinePanes.
 
 const STEP_ICONS = [Type, ImageIcon, Video] as const;
 /** Decorative HUD tags (Latin, aria-hidden by the frame). */
-const STEP_TAGS = ['TEXT · REAL UI', 'IMAGE · REAL UI', 'VIDEO · REAL OUTPUT'] as const;
+const STEP_TAGS = ['TEXT · IMAGE STUDIO', 'IMAGE · IMAGE STUDIO', 'VIDEO · H3 FL2VA'] as const;
 
 /** The real screens of steps 1 and 2 (step 3 is the real clip). */
 const STEP_SCREENS: readonly { screen: ScreenKey; hotspots: readonly HotspotId[] }[] = [
