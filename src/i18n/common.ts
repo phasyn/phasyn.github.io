@@ -43,7 +43,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: '從分鏡，到成片。',
     footerMadeBy: '由 DennySORA 開發的個人、非商業專案。',
     footerCredits:
-      '示範圖片與影片以 Phasyn Studio（MiniMax H3、Qwen-Image 2.1）生成，操作畫面皆為實際錄製；網站插圖以 OpenAI Codex 生成（AI 生成）；影片配樂以 Suno 生成。',
+      '示範圖片與影片以 Phasyn Studio（MiniMax H3、Qwen-Image 2.1）生成；網站插圖以 OpenAI Codex 生成（AI 生成）；影片配樂以 Suno 生成。',
     footerLicense: 'Phasyn Studio 原始碼將以 Apache-2.0 授權公開；名稱、標誌與字標為 DennySORA 所有，不在授權範圍內。',
     footerModels: '模型權重不隨專案提供，使用時須遵守各自的授權：MiniMax H3 Community License（含地域限制與使用規範）、Qwen-Image 2.1（研究、非商業用途）。',
     footerLinks: '連結',
@@ -71,7 +71,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: '絵コンテから、完成映像まで。',
     footerMadeBy: 'DennySORA が開発する個人・非商用プロジェクトです。',
     footerCredits:
-      'デモの画像と映像は Phasyn Studio（MiniMax H3、Qwen-Image 2.1）で生成し、操作画面はすべて実際の録画です。サイトのイラストは OpenAI Codex で生成した AI 生成画像、映像の音楽は Suno で生成しています。',
+      'デモの画像と映像は Phasyn Studio（MiniMax H3、Qwen-Image 2.1）で生成しています。サイトのイラストは OpenAI Codex による AI 生成画像、映像の音楽は Suno で生成しています。',
     footerLicense: 'Phasyn Studio のソースコードは Apache-2.0 ライセンスで公開予定です。名称・ロゴ・ワードマークは DennySORA に帰属し、ライセンスの対象外です。',
     footerModels: 'モデルの重みは同梱しません。各ライセンスに従ってご利用ください：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen-Image 2.1（研究・非商用）。',
     footerLinks: 'リンク',
@@ -99,7 +99,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: 'From storyboard to synthesis.',
     footerMadeBy: 'A personal, non-commercial project by DennySORA.',
     footerCredits:
-      'Demo images and videos are generated with Phasyn Studio (MiniMax H3, Qwen-Image 2.1), and every screen is a real recording. Site illustrations are AI-generated with OpenAI Codex; film music is generated with Suno.',
+      'Demo images and videos are generated with Phasyn Studio (MiniMax H3, Qwen-Image 2.1). Site illustrations are AI-generated with OpenAI Codex; film music is generated with Suno.',
     footerLicense: 'Phasyn Studio source code will be released under the Apache-2.0 license. The name, logo and wordmark belong to DennySORA and are not covered by that license.',
     footerModels: 'Model weights are not included; each model follows its own license: MiniMax H3 Community License (territorial restrictions and acceptable-use policy) and Qwen-Image 2.1 (research, non-commercial).',
     footerLinks: 'Links',

@@ -159,7 +159,7 @@ export const ABOUT: Copy<AboutCopy> = {
       capabilities: {
         images: { title: '圖片', text: '生成、轉換、編輯圖片。', coming: '去背' },
         references: { title: '參考轉影片', text: '用文字、圖片、影片、聲音當參考，轉成影片。' },
-        reverse: { title: '反推', text: '一張圖片、一段影片，轉換回 Prompt。' },
+        reverse: { title: '反推', text: '把一張圖片轉換回 Prompt；影片反推已實作，尚未驗證。' },
         swap: { title: '一鍵替換', text: '約 1 分鐘的影片，自動分批轉換，替換裡面的人物。' },
       },
       extraIntro: '同時，我也把反推，跟一鍵替換整支影片的功能加了進來。',
@@ -167,7 +167,7 @@ export const ABOUT: Copy<AboutCopy> = {
     scale: {
       body: [
         '它同時有很好的擴充性與可用性：如果你有多台電腦可以用，這個專案能設定讓它們協調。',
-        '我把元件拆分得很細，能夠在任意的系統上運行。',
+        '我把元件拆分得很細，每個都能放在適合它的機器上執行。',
       ],
       rentalText: [
         '因為有分散式的能力，你其實能自己租機器，少少地花錢，可能就用這一兩個小時：部署、啟動、處理、匯出，結束關閉。',
@@ -267,7 +267,7 @@ export const ABOUT: Copy<AboutCopy> = {
       capabilities: {
         images: { title: '画像', text: '画像の生成、変換、編集。', coming: '背景の除去' },
         references: { title: '参照から動画', text: 'テキスト、画像、動画、音声を参照にして、動画を作ります。' },
-        reverse: { title: '逆引き', text: '1 枚の画像や 1 本の動画から、プロンプトを書き起こします。' },
+        reverse: { title: '逆引き', text: '1 枚の画像からプロンプトを書き起こします。動画の逆引きは実装済みで、検証はまだです。' },
         swap: { title: 'ワンクリック差し替え', text: '約 1 分の動画を自動で分割して順に変換し、人物を差し替えます。' },
       },
       extraIntro: 'さらに、逆引きと、動画まるごとのワンクリック差し替えも加えました。',
@@ -275,7 +275,7 @@ export const ABOUT: Copy<AboutCopy> = {
     scale: {
       body: [
         '拡張性と使いやすさも重視しています。複数のコンピューターがあれば、このプロジェクトで連携させられます。',
-        'コンポーネントはとても細かく分けてあり、どんなシステムでも動かせます。',
+        'コンポーネントはとても細かく分けてあり、それぞれに合ったマシンで動かせます。',
       ],
       rentalText: [
         '分散処理ができるので、自分でマシンを借りて、わずかな費用で 1〜2 時間だけ使うこともできます。デプロイ、起動、処理、書き出し、そして終了です。',
@@ -394,7 +394,7 @@ export const ABOUT: Copy<AboutCopy> = {
       capabilities: {
         images: { title: 'Images', text: 'Generate, convert, and edit images.', coming: 'Background removal' },
         references: { title: 'Video from References', text: 'Turn text, image, video, and audio references into video.' },
-        reverse: { title: 'Reverse Prompting', text: 'Turn an image or a video clip back into a prompt.' },
+        reverse: { title: 'Reverse Prompting', text: 'Turn an image back into a prompt. Video reverse prompting is implemented but not yet verified.' },
         swap: {
           title: 'One-Click Character Swap',
           text: 'Replace the character in a roughly one‑minute video, converted automatically in batches.',
@@ -405,7 +405,7 @@ export const ABOUT: Copy<AboutCopy> = {
     scale: {
       body: [
         'It also scales well and stays practical: if you have several computers, the project can coordinate them.',
-        'I split the components very finely, so they run on any system.',
+        'I split the components very finely, so each one can run on whichever machine suits it.',
       ],
       rentalText: [
         'Because it’s distributed, you can rent machines yourself and spend very little, maybe for just an hour or two: deploy, start, process, export, shut down.',

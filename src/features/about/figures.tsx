@@ -16,7 +16,7 @@ import { StatusChip, type Status } from './status.tsx';
 export function SetupFigure({ setup }: { setup: AboutCopy['built']['setup'] }) {
   const display = useDisplayBreak();
   return (
-    <HudFrame label="LIVE · 3 MACHINES" className="my-12 md:my-14">
+    <HudFrame label="LIVE · 2 MACHINES · 3 GPUS" className="my-12 md:my-14">
       <figure className="overflow-hidden rounded-xl border border-line bg-surface shadow-edge">
         <figcaption className="flex items-center gap-2 border-b border-line-subtle px-5 pt-4 pb-3 text-caption font-semibold text-fg-tertiary">
           <Cpu aria-hidden className="size-3.5" />
