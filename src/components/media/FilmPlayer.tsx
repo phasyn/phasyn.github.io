@@ -5,6 +5,7 @@ import { useInView, useReducedMotion } from '../../lib/hooks.ts';
 import { mediaUrl } from '../../lib/media.ts';
 import { useLocale, type Copy } from '../../i18n/locale.tsx';
 import { HTML_LANG } from '../../site/config.ts';
+import { AiBadge, type AiBadgeVariant } from '../ui/AiBadge.tsx';
 import { activeCue, parseVtt, type Cue } from './captions.ts';
 
 interface PlayerCopy {
@@ -84,6 +85,11 @@ export interface FilmPlayerProps {
   captions?: Copy<string>;
   className?: string;
   aspect?: string;
+  /**
+   * Machine-generated content disclosure pinned top-left over the video, always visible (poster, playback, full screen):
+   * `h3` (Powered by MiniMax H3), `qwen` (Qwen-Image 2.1), `mixed` (recordings and films containing both).
+   */
+  badge?: AiBadgeVariant;
   /** Imperative handle (`seek`, `playFrom`); React 19 passes `ref` as a prop. */
   ref?: Ref<FilmPlayerHandle>;
   /** Playback position, on every media `timeupdate`. */
@@ -109,7 +115,7 @@ const CONTROL = 'pressable grid size-8 shrink-0 place-items-center rounded-md ho
  * Branded video player: poster first, media attached only near the viewport, linear progress (no springs on playheads,
  * DESIGN_GUIDE §11.5), HUD controls with shortcut tooltips, keyboard shortcuts (Space/K, ←/→, M, F), full-screen toggle.
  */
-export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9', ref, onTimeUpdate, onCues }: FilmPlayerProps) {
+export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9', badge, ref, onTimeUpdate, onCues }: FilmPlayerProps) {
   const locale = useLocale();
   const ui = UI[locale];
   const reducedMotion = useReducedMotion();
@@ -342,6 +348,13 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         src={near ? url : undefined}
         onError={() => setFailed(true)}
       />
+
+      {badge ? (
+        // Above the play overlay and status (z-10), outside the controls' hover fade; clicks pass through to the player.
+        <div className="pointer-events-none absolute top-3 left-3 z-10 max-w-[calc(100%-1.5rem)] md:top-4 md:left-4 md:max-w-[calc(100%-2rem)]">
+          <AiBadge variant={badge} />
+        </div>
+      ) : null}
 
       {cue ? (
         <div className="pointer-events-none absolute inset-x-4 bottom-16 flex justify-center md:bottom-20" aria-live="off">
