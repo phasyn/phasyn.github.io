@@ -12,7 +12,6 @@ import { pagePath } from '../../../site/config.ts';
 import { MotionToggle } from '../components/MotionToggle.tsx';
 import { HOME } from '../copy.ts';
 import { HeroStage, prefersPoster } from '../hero/HeroStage.tsx';
-import { showcasePath } from '../links.ts';
 
 /**
  * 100dvh launch moment: the frame-stack scene (or its poster) behind the copy — what it is (H1), what it does (two-line
@@ -73,7 +72,7 @@ export function HeroSection() {
                 <Play className="fill-current" aria-hidden />
                 {t.watch}
               </a>
-              <ButtonLink to={showcasePath(locale)} variant="secondary" size="lg" icon={null}>
+              <ButtonLink to={pagePath(locale, 'showcase')} variant="secondary" size="lg" icon={null}>
                 {t.showcase}
                 <ArrowRight aria-hidden />
               </ButtonLink>
