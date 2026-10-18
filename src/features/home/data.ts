@@ -87,7 +87,7 @@ export interface ClipReceipt {
  */
 export const CLIPS: readonly ClipReceipt[] = [
   { key: 'rain', run: 'cfa759df', seed: 202, seconds: 57.2, still: { seed: 23, seconds: 26.9 } },
-  { key: 'ocean', run: '72341805', seed: 303, seconds: 57.4, still: { seed: 31, seconds: 27.9 } },
-  { key: 'portrait', run: '7d52714a', seed: 404, seconds: 58.6, still: { seed: 47, seconds: 26.5 } },
-  { key: 'cliff', run: '82d036a7', seed: 101, seconds: 76, still: { seed: 11, seconds: 27.1 } },
+  { key: 'ocean', run: '72341805', seed: 303, seconds: 57.4, still: { seed: 31, seconds: 25.9 } },
+  { key: 'portrait', run: '7d52714a', seed: 404, seconds: 58.6, still: { seed: 47, seconds: 25.8 } },
+  { key: 'cliff', run: '82d036a7', seed: 101, seconds: 76, still: { seed: 11, seconds: 26.0 } },
 ];

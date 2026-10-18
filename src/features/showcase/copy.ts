@@ -141,9 +141,9 @@ export interface ShowcaseCopy {
   closing: { title: string; lead: string; tour: string; benchmarks: string; film: string };
 }
 
-const STEP_NAME_ZH = { te: '文字編碼', venc: '影片 VAE 編碼', aenc: '音訊 VAE 編碼', dit: 'DiT 去噪', video: '影片 VAE 解碼', audio: '音訊 VAE 解碼', mux: '封裝（Mux）', vae: 'VAE 解碼', compose: '合成', 'vae-compose': 'VAE 解碼＋合成' };
-const STEP_NAME_JA = { te: 'テキストエンコード', venc: '映像 VAE エンコード', aenc: '音声 VAE エンコード', dit: 'DiT デノイズ', video: '映像 VAE デコード', audio: '音声 VAE デコード', mux: '多重化（Mux）', vae: 'VAE デコード', compose: '合成', 'vae-compose': 'VAE デコード＋合成' };
-const STEP_NAME_EN = { te: 'Text encoder', venc: 'Video VAE encode', aenc: 'Audio VAE encode', dit: 'DiT denoise', video: 'Video VAE decode', audio: 'Audio VAE decode', mux: 'Mux', vae: 'VAE decode', compose: 'Compose', 'vae-compose': 'VAE decode + compose' };
+const STEP_NAME_ZH = { te: '文字編碼', venc: '影片 VAE 編碼', aenc: '音訊 VAE 編碼', dit: 'DiT 階段', video: '影片 VAE 解碼', audio: '音訊 VAE 解碼', mux: '封裝（Mux）', vae: 'VAE 解碼', compose: '合成', 'vae-compose': 'VAE 解碼＋合成' };
+const STEP_NAME_JA = { te: 'テキストエンコード', venc: '映像 VAE エンコード', aenc: '音声 VAE エンコード', dit: 'DiT ステージ', video: '映像 VAE デコード', audio: '音声 VAE デコード', mux: '多重化（Mux）', vae: 'VAE デコード', compose: '合成', 'vae-compose': 'VAE デコード＋合成' };
+const STEP_NAME_EN = { te: 'Text encoder', venc: 'Video VAE encode', aenc: 'Audio VAE encode', dit: 'DiT stage', video: 'Video VAE decode', audio: 'Audio VAE decode', mux: 'Mux', vae: 'VAE decode', compose: 'Compose', 'vae-compose': 'VAE decode + compose' };
 
 /** Lane-sized step names (cards); the full names above stay for the breakdown and tooltips. */
 const STEP_SHORT_ZH = { te: '文字編碼', venc: '影片編碼', aenc: '音訊編碼', dit: 'DiT', video: '影片解碼', audio: '音訊解碼', mux: '封裝', vae: 'VAE 解碼', compose: '合成', 'vae-compose': 'VAE＋合成' };
@@ -210,7 +210,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       makingOfLead: '三種風格，同一個流程：每一段都是原生靜圖慢慢推近，再溶接到由它長出來的 FL2VA 影片，聲音隨之淡入。',
       moreFilms: (n) => `顯示更多短片（還有 ${n} 支）`,
       social: '直式短片',
-      socialLead: '為手機裁成 9:16 的版本。',
+      socialLead: '為手機直式生成（448×768）的 9:16 版本。',
       singles: '單次生成的結果',
       filterLabel: '依類型篩選',
       all: '全部',
@@ -239,7 +239,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: '同一個角色，換一個場景。',
       lead: '先用 t2i‑pc 生成白底的角色設定圖，再把它當成 ref2va‑pc 唯一的參考圖。Prompt 用 <Subject 1> 指名她，並要求 H3 保留 <Picture 1> 裡的樣子。請自己比較每一段。',
       sheet: '參考圖',
-      candidates: '三個候選種子，各約 30 秒',
+      candidates: '三個候選種子，各 26–37 秒',
       picked: '選用',
       subject: 'Prompt 裡的角色定義',
       scenes: (n) => `同一張參考圖，${n} 個場景`,
@@ -261,7 +261,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
             '在時間軸上排列、切割、對齊，加上溶接、變速、調色與字幕。',
             '用 FFmpeg 匯出一個 MP4（H.264 + AAC）。',
           ],
-          note: '本頁的影片是透過控制器 API 這樣做的；App 裡「圖庫圖片當第一幀」目前仍標示「尚未在 GPU 上驗證」。',
+          note: '本頁的鏡頭是用控制器 API 跑同樣的管線（t2i‑pc → fl2va‑pc）生成的；短片是在 App 外用 FFmpeg 剪接，沒有用到 Video Studio 的時間軸。App 裡「圖庫圖片當第一幀」目前仍標示「尚未在 GPU 上驗證」。',
         },
         character: {
           title: '同一個角色，走過每一場戲',
@@ -300,7 +300,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: '哪一步在哪張卡跑，由你決定。',
           steps: [
             '每台機器跑一個 NodeGateway，啟動後會自動向控制器註冊。',
-            '文字編碼、DiT、VAE、音訊、Mux 都是獨立行程，可以放在任何一台機器上。',
+            '文字編碼、DiT、VAE、音訊、Mux 都是獨立行程，可以放在任何一台已加入、而且有對應執行環境的機器上。',
             '在管線編輯器裡替每一步挑選元件實例，就能把它換到另一張卡。',
             '大檔案（latent、影片）以 FileRef 在節點之間直接傳遞，不經過控制器。',
             'Records 會寫明每一步在哪台機器、花了多久。',
@@ -314,18 +314,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `網頁版已做響度正規化；原始輸出約 ${loudest}～${quietest} LUFS、AAC ${rates}。`,
       glyphs: '部分畫面裡的招牌文字，是模型生成的偽文字，不是真實的店名或品牌。',
       cuts: (scale, mix) => `預告、幕後與直式短片，把原生影片（768×448，直式生成為 448×768）放大到最多 ${scale} 倍，疊在同一鏡頭模糊、壓暗的背景上；只做重新取樣（lanczos 或 bicubic），沒有超解析，也沒有補幀。它們在 H3 自己的聲音下墊了 Suno 生成的配樂（Music generated with Suno），母帶約 ${mix} LUFS。`,
-      films: (mix) => `短片由多個生成鏡頭剪接而成；標示「配樂：Suno」的短片，在 H3 自己的聲音之上墊了 Suno 生成的配樂（Music generated with Suno）。短片的混音已完成母帶處理（約 ${mix} LUFS），網頁版照原樣使用。`,
+      films: (mix) => `短片由多個生成鏡頭在 App 外用 FFmpeg 剪接而成（切點、溶接，部分鏡頭水平翻轉）；標示「配樂：Suno」的短片，在 H3 自己的聲音之上墊了 Suno 生成的配樂（Music generated with Suno）。短片的混音已完成母帶處理（約 ${mix} LUFS），網頁版照原樣使用。`,
       items: [
         '全部是 AI 生成：圖片來自 Qwen‑Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的機器上生成。「The Courier」是原創角色。',
         '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen‑Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
-        '單次生成的結果與短片以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版只做了壓縮（WebP、H.264）。',
-        '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）。四張圖片的步驟時間是約略值。',
+        '單次生成的結果與短片以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版的圖片轉成 WebP；單次生成的影片沿用原始 H.264 畫面串流，只把聲音做了響度正規化。',
+        '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）。',
         '不同 GPU 上的步驟可以同時進行（例如影片解碼與音訊解碼），所以步驟加總可能超過端到端時間。',
       ],
     },
     closing: {
       title: '想看它怎麼操作，還是想看數字？',
-      lead: '操作導覽一步步走過真實的 App 畫面；效能實測寫明每一步跑在哪張卡。',
+      lead: '操作導覽一步步走過真實的 App 畫面；效能實測寫明每一步跑在哪張卡（舊實驗封存沒記錄的標為「未記錄裝置」）。',
       tour: '看操作導覽',
       benchmarks: '看效能實測',
       film: '看介紹影片',
@@ -391,7 +391,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       makingOfLead: '3 つのスタイルを同じ流れで。どれもネイティブの静止画をゆっくり寄りながら、そこから生まれた FL2VA の映像にディゾルブし、音がフェードインします。',
       moreFilms: (n) => `さらに表示（残り ${n} 本）`,
       social: '縦型ショート',
-      socialLead: 'スマートフォン向けに 9:16 で切り出した版です。',
+      socialLead: 'スマートフォン向けに縦型（448×768）で生成した 9:16 版です。',
       singles: '1 回の生成で得た結果',
       filterLabel: '種類で絞り込む',
       all: 'すべて',
@@ -420,7 +420,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: '同じキャラクターを、別のシーンへ。',
       lead: 't2i‑pc で白背景のキャラクターシートを生成し、ref2va‑pc の唯一の参照画像にしました。Prompt では彼女を <Subject 1> と定義し、<Picture 1> の見た目を保つよう H3 に指示しています。どのシーンも、ご自身で見比べてください。',
       sheet: '参照画像',
-      candidates: '3 つの候補シード（各約 30 秒）',
+      candidates: '3 つの候補シード（各 26〜37 秒）',
       picked: '採用',
       subject: 'Prompt でのキャラクター定義',
       scenes: (n) => `同じ参照画像から ${n} つのシーン`,
@@ -442,7 +442,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
             'タイムラインで並べ替え・分割・スナップし、ディゾルブ、速度、色、タイトルを加えます。',
             'FFmpeg で 1 本の MP4（H.264 + AAC）に書き出します。',
           ],
-          note: 'このページの映像はコントローラー API でこの手順を実行しました。アプリの「ライブラリ画像を先頭フレームに使う」は、現在も「GPU で未検証」と表示されます。',
+          note: 'このページのショットは、同じパイプライン（t2i‑pc → fl2va‑pc）をコントローラー API で実行して生成しました。ショートフィルムはアプリの外で FFmpeg を使って編集しており、Video Studio のタイムラインは使っていません。アプリの「ライブラリ画像を先頭フレームに使う」は、現在も「GPU で未検証」と表示されます。',
         },
         character: {
           title: '同じキャラクターで、すべてのシーンを',
@@ -481,7 +481,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: 'どのステップをどの GPU で動かすか、自分で決める。',
           steps: [
             '各マシンで NodeGateway を動かすと、起動時にコントローラーへ自動で登録されます。',
-            'テキストエンコーダー、DiT、VAE、音声、Mux はそれぞれ独立したプロセスで、どのマシンにも置けます。',
+            'テキストエンコーダー、DiT、VAE、音声、Mux はそれぞれ独立したプロセスで、対応する実行環境のある参加済みのマシンなら、どれにでも置けます。',
             'パイプラインエディターで各ステップのコンポーネントインスタンスを選べば、別の GPU に移せます。',
             '大きなファイル（latent、映像）は FileRef としてノード間で直接やり取りし、コントローラーを経由しません。',
             'Records には、各ステップをどのマシンで何秒かけて処理したかが残ります。',
@@ -495,18 +495,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `Web 版はラウドネスを正規化しています（元の出力は約 ${loudest}〜${quietest} LUFS、AAC ${rates}）。`,
       glyphs: '一部の映像に映る看板の文字は、モデルが生成した疑似的な文字で、実在の店名やブランドではありません。',
       cuts: (scale, mix) => `トレーラー、メイキング、縦型ショートでは、ネイティブの映像（768×448、縦型の生成は 448×768）を最大 ${scale} 倍に拡大し、同じショットをぼかして暗くした背景に重ねています。リサンプリング（lanczos または bicubic）のみで、超解像やフレーム補間は使っていません。H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷き、マスタリングは約 ${mix} LUFS です。`,
-      films: (mix) => `ショートフィルムは生成した複数のショットを編集したものです。「音楽：Suno」と表示した作品では、H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷いています。ミックスはマスタリング済み（約 ${mix} LUFS）で、Web 版もそのまま使っています。`,
+      films: (mix) => `ショートフィルムは、生成した複数のショットをアプリの外で FFmpeg を使って編集したものです（カット、ディゾルブ、一部のショットは左右反転）。「音楽：Suno」と表示した作品では、H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷いています。ミックスはマスタリング済み（約 ${mix} LUFS）で、Web 版もそのまま使っています。`,
       items: [
         'すべて AI による生成物です。画像は Qwen‑Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
         'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen‑Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
-        '1 回の生成で得た結果とショートフィルムは、ネイティブ解像度のまま拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 向けに行ったのは圧縮（WebP、H.264）だけです。',
-        '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。4 枚の画像のステップ時間は概算です。',
+        '1 回の生成で得た結果とショートフィルムは、ネイティブ解像度のまま拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 版では画像を WebP に変換し、1 回の生成で得た映像は元の H.264 ストリームのまま、音声だけラウドネスを正規化しています。',
+        '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。',
         '別々の GPU のステップ（映像と音声のデコードなど）は同時に進むことがあるため、ステップの合計がエンドツーエンドの時間を超える場合があります。',
       ],
     },
     closing: {
       title: '操作を見るか、数字を見るか。',
-      lead: '操作ガイドでは実際のアプリ画面を順にたどり、ベンチマークでは各ステップをどの GPU で処理したかを明記しています。',
+      lead: '操作ガイドでは実際のアプリ画面を順にたどり、ベンチマークでは各ステップをどの GPU で処理したかを明記しています（記録が残っていないものは「実行デバイス未記録」と表示）。',
       tour: '操作ガイドを見る',
       benchmarks: 'ベンチマークを見る',
       film: '紹介映像を見る',
@@ -601,7 +601,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'Same Character, New Scene.',
       lead: 't2i‑pc made a character sheet on white; it became the only reference image for ref2va‑pc. The prompt defines her as <Subject 1> and asks H3 to keep her exact appearance from <Picture 1>. Compare the scenes yourself.',
       sheet: 'Reference image',
-      candidates: 'Three candidate seeds, ~30 s each',
+      candidates: 'Three candidate seeds, 26–37 s each',
       picked: 'Picked',
       subject: 'How the prompt defines her',
       scenes: (n) => `One reference image, ${n} scenes`,
@@ -623,7 +623,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
             'Arrange, split and snap clips on the timeline; add dissolves, speed, color and titles.',
             'Export one MP4 (H.264 + AAC), rendered by FFmpeg.',
           ],
-          note: 'This page’s clips were made this way through the controller API. In the app, a library image as the first frame is still marked “Not yet verified on GPU”.',
+          note: 'This page’s shots ran the same pipelines (t2i‑pc → fl2va‑pc) through the controller API; the films were cut outside the app with FFmpeg, not on the Video Studio timeline. In the app, a library image as the first frame is still marked “Not yet verified on GPU”.',
         },
         character: {
           title: 'One Character Across Every Scene',
@@ -662,7 +662,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: 'You decide which card runs which step.',
           steps: [
             'Each machine runs a NodeGateway that registers itself with the controller when it starts.',
-            'Text encoder, DiT, VAEs, audio and mux are separate processes, and each can live on any machine.',
+            'Text encoder, DiT, VAEs, audio and mux are separate processes, and each can live on any machine you’ve added that has a matching runtime.',
             'In the pipeline editor, pick the component instance for a step to move it to another card.',
             'Large files (latents, video) move node to node as FileRefs, never through the controller.',
             'Records shows which machine ran each step and how long it took.',
@@ -676,18 +676,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `Web copy is loudness-normalized; the raw output is about ${loudest} to ${quietest} LUFS, AAC ${rates}.`,
       glyphs: 'Signs in some shots carry pseudo-text made up by the model, not real shop names or brands.',
       cuts: (scale, mix) => `The trailer, the making-of and the vertical cuts frame the native clips (768×448, or 448×768 for vertical renders) at up to ${scale}× on a blurred, darkened copy of the same shot — resampling only (lanczos or bicubic), no super-resolution, no frame interpolation. They lay a Suno music bed (Music generated with Suno) under H3’s own sound, mastered to about ${mix} LUFS.`,
-      films: (mix) => `Films are cut from several generated shots. Those marked “Music: Suno” lay a Suno music bed (Music generated with Suno) under H3’s own sound. Film mixes arrive mastered (about ${mix} LUFS) and are used on the web as delivered.`,
+      films: (mix) => `Films are cut from several generated shots outside the app with FFmpeg (cuts, dissolves; some shots are mirrored). Those marked “Music: Suno” lay a Suno music bed (Music generated with Suno) under H3’s own sound. Film mixes arrive mastered (about ${mix} LUFS) and are used on the web as delivered.`,
       items: [
         'All AI-generated: images by Qwen‑Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i‑pc, fl2va‑pc, ref2va‑pc). “The Courier” is an original character.',
         'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen‑Image 2.1 is for research and non-commercial use. Model weights are not included.',
-        'Single results and films are shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. The web copies are otherwise only compressed (WebP, H.264).',
-        'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit‑5080 45.9 s, Ref2VA DiT 40.6 s). Step times for the four stills are rounded readings.',
+        'Single results and films are shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. For the web, stills are converted to WebP; single-generation clips keep their original H.264 video stream, and only their audio is loudness-normalized.',
+        'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit‑5080 45.9 s, Ref2VA DiT 40.6 s).',
         'Steps on different GPUs can run at the same time (video and audio decode, for example), so step times can add up to more than the end-to-end time.',
       ],
     },
     closing: {
       title: 'See How It Works, or See the Numbers.',
-      lead: 'The Tour walks through the real app, screen by screen. Benchmarks names the card behind every step.',
+      lead: 'The Tour walks through the real app, screen by screen. Benchmarks names the card behind every step, or says “Placement not recorded” where the archive lacks it.',
       tour: 'Take the Tour',
       benchmarks: 'See Benchmarks',
       film: 'Watch the Film',

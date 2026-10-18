@@ -148,7 +148,7 @@ export const ABOUT: Copy<AboutCopy> = {
       setup: {
         caption: '目前的分工',
         roles: { rtx5080: 'DiT、影片 VAE', rtx3060: '音訊 VAE', gb10: '文字編碼、反推' },
-        note: '元件可以在已加入的機器之間任意調配；這只是我現在的擺法。',
+        note: '只要那台機器有對應的執行環境與模型檔，元件就能在已加入的機器之間重新分配；這只是我現在的擺法。',
       },
       after: ['所以這套系統更多是我自己個人使用；之後實驗完成，再慢慢釋出。'],
     },
@@ -209,7 +209,7 @@ export const ABOUT: Copy<AboutCopy> = {
     },
     benchmarks: {
       body: ['我會發佈自己實際測試的結果：相關模型跑在我系統上的速度。大家可以根據表格，選擇用什麼方式來跑。'],
-      note: '每一個數字，都會標明每個步驟是在哪一台機器上跑的。',
+      note: '每一個數字，都會標明每個步驟是在哪一台機器上跑的；舊實驗封存沒記錄的，直接標「未記錄裝置」。',
       cta: '看實測速度',
     },
     contact: { lead: '有任何想法或問題，歡迎寫信給我。' },
@@ -256,7 +256,7 @@ export const ABOUT: Copy<AboutCopy> = {
       setup: {
         caption: '現在の役割分担',
         roles: { rtx5080: 'DiT、映像 VAE', rtx3060: '音声 VAE', gb10: 'テキストエンコード、逆引き' },
-        note: 'コンポーネントは、参加しているマシンの間で自由に配置を変えられます。これはあくまで今の私の配置です。',
+        note: '対応する実行環境とモデルファイルがあれば、コンポーネントは参加しているマシンの間で配置を変えられます。これはあくまで今の私の配置です。',
       },
       after: ['なので、基本的には自分で使うためのものです。実験が終わったものから、少しずつ公開していきます。'],
     },
@@ -336,7 +336,7 @@ export const ABOUT: Copy<AboutCopy> = {
       body: [
         '各モデルが私のシステムで実際にどのくらいの速度で動くのか、実測した結果を公開します。表を見て、どの方法で動かすか選んでください。',
       ],
-      note: 'どの数値にも、各ステップをどのマシンで動かしたかを明記します。',
+      note: 'どの数値にも、各ステップをどのマシンで動かしたかを明記します。古い実験の記録に残っていないものは「実行デバイス未記録」と表示します。',
       cta: '実測の速度を見る',
     },
     contact: { lead: 'ご意見やご質問があれば、気軽にメールをください。' },
@@ -383,7 +383,7 @@ export const ABOUT: Copy<AboutCopy> = {
       setup: {
         caption: 'Who Runs What Today',
         roles: { rtx5080: 'DiT, video VAE', rtx3060: 'Audio VAE', gb10: 'Text encoding, reverse prompting' },
-        note: 'Components can move freely between the machines you’ve added. This is just how I’ve placed mine for now.',
+        note: 'A component can move to any machine you’ve added that has its runtime and model files. This is just how I’ve placed mine for now.',
       },
       after: ['So it’s mostly for my own use. Once experiments wrap up, I’ll release things gradually.'],
     },
@@ -460,7 +460,7 @@ export const ABOUT: Copy<AboutCopy> = {
     },
     benchmarks: {
       body: ['I publish the real speeds I measure for these models on my own system, so you can use the tables to choose how to run them.'],
-      note: 'Every number states which machine ran each step.',
+      note: 'Every number states which machine ran each step; where an older experiment’s archive lacks it, the step says “Placement not recorded.”',
       cta: 'See the Benchmarks',
     },
     contact: { lead: 'Questions or ideas? Write to me.' },

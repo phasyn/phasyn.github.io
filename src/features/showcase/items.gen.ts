@@ -456,7 +456,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "shots": [
       {
         "runId": "ff9ca9f1-5c04-43c3-9839-ff3fd9a793f7",
-        "seed": null,
+        "seed": 606,
         "seconds": 5
       },
       {
@@ -1412,7 +1412,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "category": "character",
     "pipeline": "ref2va-pc",
     "runId": "f083d166",
-    "outputId": "cf8166e3",
+    "outputId": "07d37d0a",
     "seed": 505,
     "model": "MiniMax H3",
     "ditEngine": "dit5080-ref2va-fp8-pai8",
@@ -1457,7 +1457,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 70,
+        "seconds": 70.7,
         "approx": false
       },
       {
@@ -1619,7 +1619,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "category": "character",
     "pipeline": "ref2va-pc",
     "runId": "5adf4237",
-    "outputId": "5e9c47e0",
+    "outputId": "9651459d",
     "seed": 606,
     "model": "MiniMax H3",
     "ditEngine": "dit5080-ref2va-fp8-pai8",
@@ -1664,7 +1664,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 68,
+        "seconds": 68.5,
         "approx": false
       },
       {
@@ -1934,7 +1934,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "frames": null,
     "fps": null,
     "seconds": null,
-    "endToEndSeconds": 27.1,
+    "endToEndSeconds": 26,
     "endToEndApprox": false,
     "steps": [
       {
@@ -1943,8 +1943,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1,
+        "approx": false
       },
       {
         "id": "dit",
@@ -1952,8 +1952,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 23,
-        "approx": true
+        "seconds": 23.5,
+        "approx": false
       },
       {
         "id": "vae-compose",
@@ -1962,8 +1962,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
           "rtx5080",
           "cpu"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1.3,
+        "approx": false
       }
     ],
     "shots": [],
@@ -2011,8 +2011,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1,
+        "approx": false
       },
       {
         "id": "dit",
@@ -2020,8 +2020,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 23,
-        "approx": true
+        "seconds": 23.5,
+        "approx": false
       },
       {
         "id": "vae-compose",
@@ -2030,8 +2030,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
           "rtx5080",
           "cpu"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1.9,
+        "approx": false
       }
     ],
     "shots": [],
@@ -2070,7 +2070,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "frames": null,
     "fps": null,
     "seconds": null,
-    "endToEndSeconds": 27.9,
+    "endToEndSeconds": 25.9,
     "endToEndApprox": false,
     "steps": [
       {
@@ -2079,8 +2079,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1,
+        "approx": false
       },
       {
         "id": "dit",
@@ -2088,8 +2088,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 23,
-        "approx": true
+        "seconds": 23.5,
+        "approx": false
       },
       {
         "id": "vae-compose",
@@ -2098,8 +2098,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
           "rtx5080",
           "cpu"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1.3,
+        "approx": false
       }
     ],
     "shots": [],
@@ -2138,7 +2138,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "frames": null,
     "fps": null,
     "seconds": null,
-    "endToEndSeconds": 26.5,
+    "endToEndSeconds": 25.8,
     "endToEndApprox": false,
     "steps": [
       {
@@ -2147,8 +2147,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1,
+        "approx": false
       },
       {
         "id": "dit",
@@ -2156,8 +2156,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": 23,
-        "approx": true
+        "seconds": 23.5,
+        "approx": false
       },
       {
         "id": "vae-compose",
@@ -2166,8 +2166,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
           "rtx5080",
           "cpu"
         ],
-        "seconds": 2,
-        "approx": true
+        "seconds": 1.2,
+        "approx": false
       }
     ],
     "shots": [],
@@ -2206,8 +2206,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
     "frames": null,
     "fps": null,
     "seconds": null,
-    "endToEndSeconds": 30,
-    "endToEndApprox": true,
+    "endToEndSeconds": 26,
+    "endToEndApprox": false,
     "steps": [
       {
         "id": "te",
@@ -2215,7 +2215,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": null,
+        "seconds": 1,
         "approx": false
       },
       {
@@ -2224,7 +2224,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": null,
+        "seconds": 23.6,
         "approx": false
       },
       {
@@ -2233,7 +2233,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "rtx5080"
         ],
-        "seconds": null,
+        "seconds": 0.7,
         "approx": false
       },
       {
@@ -2242,7 +2242,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "machines": [
           "cpu"
         ],
-        "seconds": null,
+        "seconds": 0.6,
         "approx": false
       }
     ],
