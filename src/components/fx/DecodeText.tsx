@@ -29,7 +29,8 @@ interface DecodeTextProps {
 
 /**
  * "Decoding" text for short Latin labels, IDs and readouts (`.machine`, eyebrows): random glyphs resolve left to right
- * when the text scrolls into view. The real text is in the HTML and in `aria-label`; reduced motion skips the effect.
+ * when the text scrolls into view. Assistive tech reads the real text from a visually hidden copy (the glyphs are
+ * aria-hidden; no aria-label on a generic span, FE-20); reduced motion skips the effect.
  */
 export function DecodeText({ text, duration = 900, delay = 0, afterIntro = false, className }: DecodeTextProps) {
   const ref = useRef<HTMLSpanElement>(null);
@@ -84,7 +85,9 @@ export function DecodeText({ text, duration = 900, delay = 0, afterIntro = false
   }, [text, duration, delay, afterIntro, reducedMotion]);
 
   return (
-    <span className={cn('inline-block tabular-nums', className)} aria-label={text}>
+    <span className={cn('inline-block tabular-nums', className)}>
+      {/* select-none: copying the label yields the visible text once, not twice. */}
+      <span className="sr-only select-none">{text}</span>
       <span ref={ref} aria-hidden>
         {text}
       </span>

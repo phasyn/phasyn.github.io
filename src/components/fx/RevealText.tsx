@@ -76,7 +76,8 @@ export interface RevealTextProps {
 
 /**
  * Headline reveal: characters rise out of a blur with a cyan→iris glow that settles, staggered. The final text is in the
- * prerendered HTML; the heading keeps its accessible name; reduced motion shows it statically.
+ * prerendered HTML; assistive tech reads it from a visually hidden copy (the characters are aria-hidden, and a generic
+ * span cannot carry aria-label, FE-20); reduced motion shows it statically.
  */
 export function RevealText({ text, as = 'span', id, on = 'view', delay = 0, step, className }: RevealTextProps) {
   const ref = useRef<HTMLElement>(null);
@@ -130,9 +131,10 @@ export function RevealText({ text, as = 'span', id, on = 'view', delay = 0, step
       ref,
       id,
       className: cn('fx-chars', className),
-      'aria-label': text,
       ...(on === 'load' ? { 'data-fx-state': 'play' } : {}),
     },
+    // select-none: copying the heading yields the visible text once, not twice.
+    <span className="sr-only select-none">{text}</span>,
     <span aria-hidden>
       {parts.words.map((word, w) =>
         word.space ? (
