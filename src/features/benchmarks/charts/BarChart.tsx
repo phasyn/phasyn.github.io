@@ -41,8 +41,10 @@ export function BarChart({ items, max, label, format, unit }: { items: BarItem[]
   const show = (index: number, target: HTMLElement) => {
     roving.setActive(index);
     const wrap = wrapRef.current?.getBoundingClientRect();
-    const bar = target.querySelector('[data-bar]')?.getBoundingClientRect() ?? target.getBoundingClientRect();
-    if (wrap) setAnchor({ x: bar.right - wrap.left, y: bar.top - wrap.top });
+    // The readout sits right of the row's value label and grows upward (rows above are shorter: their right side is empty).
+    const end = (target.querySelector('[data-value]') ?? target.querySelector('[data-bar]') ?? target).getBoundingClientRect();
+    const row = target.getBoundingClientRect();
+    if (wrap) setAnchor({ x: end.right - wrap.left, y: row.bottom - wrap.top });
   };
 
   const activeItem = roving.active != null ? items[roving.active] : undefined;
@@ -120,6 +122,7 @@ export function BarChart({ items, max, label, format, unit }: { items: BarItem[]
                         }}
                       />
                       <span
+                        data-value
                         aria-hidden
                         className={cn('machine absolute top-1/2 -translate-y-1/2 pl-1.5 text-caption whitespace-nowrap', item.emphasis ? 'font-semibold text-fg' : 'text-fg-secondary')}
                         style={{ left: pos(item.extent ?? item.value), ...revealStyle(state, 'fade', index) }}
@@ -138,7 +141,7 @@ export function BarChart({ items, max, label, format, unit }: { items: BarItem[]
             );
           })}
         </ul>
-        <ChartTooltip anchor={anchor} containerWidth={wrapRef.current?.clientWidth ?? 0}>
+        <ChartTooltip anchor={anchor} containerWidth={wrapRef.current?.clientWidth ?? 0} placement="right-up">
           {activeItem?.tip}
         </ChartTooltip>
       </div>

@@ -193,6 +193,8 @@ const zhHant: BenchCopy = {
       empty: '沒有符合這些條件的資料列。',
     },
     downloads: { label: '下載資料', runs: '每次 run（CSV）', steps: '每個步驟（CSV）', json: '完整資料（JSON）', note: '與表格相同的資料，不含主機名稱與檔案路徑。秒數除非欄位寫明是運算時間，都是實際經過時間；VRAM 單位為 GiB。' },
+    scrollCue: '左右捲動',
+    stepCols: { te: '文字編碼', encode: '參考／首幀編碼', aenc: '音訊編碼', video: '影片解碼', audio: '音訊解碼', mux: 'Mux', vae: 'VAE 解碼', compose: '合成' },
     cols: { run: 'Run', pipeline: '管線與輸入', variant: 'DiT 變體', steps: '步驟與裝置', dit: 'DiT', compute: '去噪運算', total: '總時間', vram: 'VRAM', status: '狀態' },
     colHints: {
       dit: 'DiT 階段的實際經過時間（wall time，含 AdaLN 準備、輸入組裝與釋放），秒',

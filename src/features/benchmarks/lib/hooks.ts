@@ -105,6 +105,26 @@ export function drawStyle(state: RevealState, delayMs = 0, durationMs = 1200): C
   };
 }
 
+/** Whether a horizontal scroller has more content to its right (drives an edge cue). False until mounted. */
+export function useScrollEdge<T extends HTMLElement>(): [RefObject<T | null>, boolean] {
+  const ref = useRef<T>(null);
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const update = () => setMore(element.scrollLeft + element.clientWidth < element.scrollWidth - 2);
+    update();
+    element.addEventListener('scroll', update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => {
+      element.removeEventListener('scroll', update);
+      observer.disconnect();
+    };
+  }, []);
+  return [ref, more];
+}
+
 /*
  * Every speed-table row (with per-step detail and notes) lives in public/data/benchmarks/rows.json and loads after
  * hydration. One request per page; aborted on unmount; failures can be retried.

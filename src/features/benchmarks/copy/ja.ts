@@ -193,6 +193,8 @@ const ja: BenchCopy = {
       empty: '条件に合う行はありません。',
     },
     downloads: { label: 'データをダウンロード', runs: 'run ごと（CSV）', steps: 'ステップごと（CSV）', json: 'すべて（JSON）', note: '表と同じデータで、ホスト名やファイルパスは含みません。秒数は計算時間と書かれた列以外は実時間、VRAM は GiB です。' },
+    scrollCue: '横にスクロール',
+    stepCols: { te: 'テキストエンコード', encode: '参照・先頭フレームのエンコード', aenc: '音声エンコード', video: '映像デコード', audio: '音声デコード', mux: '多重化', vae: 'VAE デコード', compose: '合成' },
     cols: { run: 'Run', pipeline: 'パイプラインと入力', variant: 'DiT バリアント', steps: 'ステップとデバイス', dit: 'DiT', compute: 'ノイズ除去', total: '合計', vram: 'VRAM', status: '状態' },
     colHints: {
       dit: 'DiT ステージの実時間（AdaLN の準備、入力の組み立て、解放を含む）、秒',

@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, Ban, ChevronDown, CircleCheck, CircleX, Download, LoaderCircle, RotateCcw } from 'lucide-react';
+import { ArrowDown, ArrowRight, ArrowUp, ArrowUpDown, Ban, ChevronDown, CircleCheck, CircleX, Download, LoaderCircle, RotateCcw } from 'lucide-react';
 import { Fragment, useId, useMemo, useState, type ReactNode } from 'react';
 import { cn } from '../../../lib/cn.ts';
 import type { Copy } from '../../../i18n/locale.tsx';
@@ -6,11 +6,11 @@ import { useLocale } from '../../../i18n/locale.tsx';
 import { useBenchCopy } from '../copy.ts';
 import { FAILED_ROWS, FEATURED_ROWS, ROW_COUNTS } from '../data/rows.gen.ts';
 import { configTags, devicesUsed, ditCompleted, failedStep, outputText, runLabel, statusLabel, variantName } from '../data/rowText.ts';
-import type { Pipeline, Precision, Schedule, SpeedRow, Step } from '../data/types.ts';
+import type { Pipeline, Precision, Schedule, SpeedRow, Step, StepKind } from '../data/types.ts';
 import { MiniTimeline } from '../charts/Timeline.tsx';
-import { DEVICE_SHORT } from '../lib/devices.ts';
+import { DEVICE_SHORT, isDevice } from '../lib/devices.ts';
 import { fmtGiB, fmtSeconds, fmtSec } from '../lib/format.ts';
-import { useAllRows, useMediaQuery, type RowsState } from '../lib/hooks.ts';
+import { useAllRows, useMediaQuery, useScrollEdge, type RowsState } from '../lib/hooks.ts';
 import { DeviceChip, DeviceDot, MissingValue } from '../ui/DeviceChip.tsx';
 import { Hint } from '../ui/Hint.tsx';
 import { Section, SubHead } from '../ui/Section.tsx';
@@ -263,6 +263,68 @@ function StepDetail({ row, note, notesState }: { row: SpeedRow; note: Copy<strin
   );
 }
 
+/* Very wide screens (≥ 2000 px) spell out every step's seconds in its own column. */
+type StepCol = keyof BenchCopyStepCols;
+type BenchCopyStepCols = { te: string; encode: string; aenc: string; video: string; audio: string; mux: string; vae: string; compose: string };
+const STEP_COLS: Record<TableKind, { pre: { col: StepCol; kinds: StepKind[] }[]; post: { col: StepCol; kinds: StepKind[] }[] }> = {
+  h3: {
+    pre: [
+      { col: 'te', kinds: ['te'] },
+      { col: 'encode', kinds: ['venc', 'venc-ff'] },
+      { col: 'aenc', kinds: ['aenc'] },
+    ],
+    post: [
+      { col: 'video', kinds: ['video'] },
+      { col: 'audio', kinds: ['audio'] },
+      { col: 'mux', kinds: ['mux'] },
+    ],
+  },
+  image: {
+    pre: [{ col: 'te', kinds: ['te'] }],
+    post: [
+      { col: 'vae', kinds: ['vae', 'vae-compose'] },
+      { col: 'compose', kinds: ['compose'] },
+    ],
+  },
+};
+
+function StepSecondsCell({ row, kinds }: { row: SpeedRow; kinds: StepKind[] }) {
+  const copy = useBenchCopy();
+  const locale = useLocale();
+  const step = row.steps.find((s) => kinds.includes(s.kind));
+  if (!step) return <span className="text-fg-tertiary">—</span>;
+  if (step.sharedFrom) return <span className="text-[12px] leading-tight text-fg-tertiary">{copy.common.reusedFrom(step.sharedFrom)}</span>;
+  if (step.seconds == null) return <MissingValue kind={step.status === 'not-run' || step.status === 'cancelled' ? 'notRun' : 'notMeasured'} reason={step.reason} />;
+  const device = step.placements?.[0] ?? (isDevice(step.placement) ? step.placement : null);
+  return (
+    <span className="inline-flex items-center justify-end gap-1.5">
+      {device ? <DeviceDot device={device} /> : null}
+      <span className="machine whitespace-nowrap text-fg">{`${step.approx ? '≈' : ''}${fmtSec(locale, step.seconds)}`}</span>
+    </span>
+  );
+}
+
+/** The table's own horizontal scroller, with an edge cue while more columns sit off to the right. */
+function TableScroller({ label, wide, children }: { label: string; wide: boolean; children: ReactNode }) {
+  const copy = useBenchCopy();
+  const [ref, more] = useScrollEdge<HTMLDivElement>();
+  return (
+    <div className={cn('relative', wide && 'left-1/2 w-[min(calc(100vw-8rem),150rem)] -translate-x-1/2')}>
+      <div ref={ref} role="region" aria-label={label} tabIndex={0} className="max-w-full overflow-x-auto rounded-xl border border-line bg-surface shadow-edge">
+        {children}
+      </div>
+      {more ? (
+        <div aria-hidden className="pointer-events-none absolute inset-y-px right-px flex w-28 items-start justify-end rounded-r-xl bg-[linear-gradient(90deg,transparent,var(--color-surface)_65%)] pt-2.5 pr-2.5">
+          <span className="material-hud inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption text-fg [&_svg]:size-3.5">
+            {copy.speed.scrollCue}
+            <ArrowRight />
+          </span>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 /** Sortable numeric header: the label and sort arrow on one line, the unit and its explanation below (fits CJK labels). */
 function SortHeader({ label, unit, hint, active, dir, onClick, children }: { label: string; unit: string; hint: string; active: boolean; dir: 'asc' | 'desc'; onClick: () => void; children?: ReactNode }) {
   const Icon = !active ? ArrowUpDown : dir === 'asc' ? ArrowUp : ArrowDown;
@@ -363,7 +425,23 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
   const filtersActive = pipeline !== 'all' || precision !== 'all' || schedule !== 'all' || status !== 'all';
   // Narrow screens get one card per row after hydration; the prerendered table (own scroller) serves until then.
   const cards = useMediaQuery('(max-width: 52.49rem)');
-  const colCount = 8;
+  const wide = useMediaQuery('(min-width: 125rem)') && !cards;
+  const stepCols = wide ? STEP_COLS[kind] : { pre: [], post: [] };
+  const colCount = 8 + stepCols.pre.length + stepCols.post.length;
+  const stepHead = (col: StepCol) => (
+    <th key={col} scope="col" className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
+      <span className="grid justify-items-end gap-1">
+        <span className="text-caption font-medium text-fg-tertiary">{copy.speed.stepCols[col]}</span>
+        <span className="font-mono text-[11px] font-normal text-fg-tertiary">s</span>
+      </span>
+    </th>
+  );
+  const stepCells = (row: SpeedRow, list: { col: StepCol; kinds: StepKind[] }[]) =>
+    list.map(({ col, kinds }) => (
+      <td key={col} className="border-b border-line-subtle px-3 py-3 text-right">
+        <StepSecondsCell row={row} kinds={kinds} />
+      </td>
+    ));
   const ariaSort = (key: SortKey) => (sort?.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none');
 
   return (
@@ -394,7 +472,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
         ) : null}
         <p className="ml-auto text-caption text-fg-tertiary" aria-live="polite">
           {featuredOnly ? f.featuredShowing(rows.length, total) : f.showing(rows.length, total)}
-          {featuredOnly ? (
+          {featuredOnly && !cards ? (
             <>
               {' · '}
               <button type="button" onClick={() => setFeaturedOnly(false)} className="font-medium text-action-fg underline-offset-2 hover:underline">
@@ -435,15 +513,21 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
 
       {/* Desktop and tablet-landscape: a real table in its own horizontal scroller. */}
       {!cards && rows.length > 0 ? (
-        <div role="region" aria-label={kind === 'h3' ? copy.speed.title : copy.speed.imageTitle} tabIndex={0} className="max-w-full overflow-x-auto rounded-xl border border-line bg-surface shadow-edge">
-          <table className={cn('w-full min-w-[75rem] table-fixed border-collapse text-left text-data')}>
+        <TableScroller label={kind === 'h3' ? copy.speed.title : copy.speed.imageTitle} wide={wide}>
+          <table className="w-full table-fixed border-collapse text-left text-data" style={{ minWidth: `${75 + 6.5 * (stepCols.pre.length + stepCols.post.length)}rem` }}>
             <caption className="sr-only">{kind === 'h3' ? copy.speed.title : copy.speed.imageTitle}</caption>
             <colgroup>
               <col className="w-[8rem]" />
               <col className={kind === 'h3' ? 'w-[10.5rem]' : 'w-[11rem]'} />
               <col className="w-[11rem]" />
               <col className="w-[10rem]" />
+              {[...stepCols.pre].map(({ col }) => (
+                <col key={col} className="w-[6.5rem]" />
+              ))}
               <col className="w-[7.5rem]" />
+              {[...stepCols.post].map(({ col }) => (
+                <col key={col} className="w-[6.5rem]" />
+              ))}
               <col className="w-[8.5rem]" />
               <col className="w-[9rem]" />
               <col className="w-[10.5rem]" />
@@ -462,6 +546,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                 <th scope="col" className="border-b border-line px-3 py-2.5 align-top font-medium whitespace-nowrap">
                   {copy.speed.cols.steps}
                 </th>
+                {stepCols.pre.map(({ col }) => stepHead(col))}
                 <th scope="col" aria-sort={ariaSort('dit')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.dit} unit="s" hint={`${copy.speed.colHints.dit}. ${copy.speed.cols.compute}: ${copy.speed.colHints.compute}`} active={sort?.key === 'dit'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('dit')}>
                     <span className="text-[12px] leading-snug font-normal text-fg-tertiary">
@@ -469,6 +554,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                     </span>
                   </SortHeader>
                 </th>
+                {stepCols.post.map(({ col }) => stepHead(col))}
                 <th scope="col" aria-sort={ariaSort('total')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.total} unit="s" hint={copy.speed.colHints.total} active={sort?.key === 'total'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('total')} />
                 </th>
@@ -521,9 +607,11 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                       <td className="border-b border-line-subtle px-3 py-3">
                         <StepsCell row={row} />
                       </td>
+                      {stepCells(row, stepCols.pre)}
                       <td className="border-b border-line-subtle px-3 py-3 text-right">
                         <DitCell row={row} />
                       </td>
+                      {stepCells(row, stepCols.post)}
                       <td className="border-b border-line-subtle px-3 py-3 text-right">
                         <TotalCell row={row} />
                       </td>
@@ -546,7 +634,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
               })}
             </tbody>
           </table>
-        </div>
+        </TableScroller>
       ) : null}
 
       {/* Phones and portrait tablets: one card per row. */}
@@ -613,6 +701,16 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
             );
           })}
         </ul>
+      ) : null}
+      {cards && featuredOnly && rows.length > 0 ? (
+        <button
+          type="button"
+          onClick={() => setFeaturedOnly(false)}
+          className="pressable inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-line-strong bg-raised px-4 text-data font-medium text-fg [&_svg]:size-4"
+        >
+          {f.allRows(total)}
+          <ArrowRight aria-hidden />
+        </button>
       ) : null}
     </div>
   );

@@ -193,6 +193,8 @@ const en: BenchCopy = {
       empty: 'No rows match these filters.',
     },
     downloads: { label: 'Download the data', runs: 'Runs (CSV)', steps: 'Steps (CSV)', json: 'Everything (JSON)', note: 'The same rows as the tables, without hostnames or file paths. Seconds are wall time unless a column says compute; VRAM is in GiB.' },
+    scrollCue: 'Scroll sideways',
+    stepCols: { te: 'Text encode', encode: 'Ref / first-frame encode', aenc: 'Audio encode', video: 'Video decode', audio: 'Audio decode', mux: 'Mux', vae: 'VAE decode', compose: 'Compose' },
     cols: { run: 'Run', pipeline: 'Pipeline and Inputs', variant: 'DiT Variant', steps: 'Steps and Devices', dit: 'DiT', compute: 'Compute', total: 'Total', vram: 'VRAM', status: 'Status' },
     colHints: {
       dit: 'DiT stage wall time (includes AdaLN prep, input assembly and release), seconds',

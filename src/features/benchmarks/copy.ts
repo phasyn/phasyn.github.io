@@ -107,6 +107,10 @@ export interface BenchCopy {
       empty: string;
     };
     downloads: { label: string; runs: string; steps: string; json: string; note: string };
+    /** Edge cue on a table that scrolls sideways. */
+    scrollCue: string;
+    /** Per-step column headers on very wide screens. */
+    stepCols: Record<'te' | 'encode' | 'aenc' | 'video' | 'audio' | 'mux' | 'vae' | 'compose', string>;
     cols: { run: string; pipeline: string; variant: string; steps: string; dit: string; compute: string; total: string; vram: string; status: string };
     colHints: { dit: string; compute: string; total: string; vram: string };
     /** Header sub-label for the DiT column's main number (its secondary line is labelled with cols.compute). */
