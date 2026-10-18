@@ -106,20 +106,6 @@ export function drawStyle(state: RevealState, delayMs = 0, durationMs = 1200): C
 }
 
 /*
- * Time left on the layout's first-visit splash, ms. The kit's `--fx-intro-delay` counts from first paint and is 0 on
- * repeat visits and under reduced motion, so load reveals that run in script line up with the CSS ones.
- */
-export function splashRemaining(): number {
-  if (typeof document === 'undefined') return 0;
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--fx-intro-delay').trim();
-  const value = Number.parseFloat(raw);
-  const delay = Number.isFinite(value) ? (raw.endsWith('ms') ? value : value * 1000) : 0;
-  if (delay <= 0) return 0;
-  const paint = performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0;
-  return Math.max(0, Math.round(delay + paint - performance.now()));
-}
-
-/*
  * Every speed-table row (with per-step detail and notes) lives in public/data/benchmarks/rows.json and loads after
  * hydration. One request per page; aborted on unmount; failures can be retried.
  */

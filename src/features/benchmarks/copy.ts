@@ -36,7 +36,7 @@ export interface BenchCopy {
     eyebrow: string;
     title: string;
     lead: string;
-    tiles: { label: string; detail: string; runs: string }[];
+    tiles: { label: string; detail: string; runs: string; note?: string }[];
     stripTitle: string;
     stripNote: string;
     stages: { te: string; encode: string; dit: string; decode: string; mux: string };
@@ -74,6 +74,8 @@ export interface BenchCopy {
     mute: string;
     unmute: string;
     soundPrefix: string;
+    /** Shown wherever a clip carries sound: the web copies are loudness-normalized. */
+    loudness: string;
     runId: string;
     seed: string;
     date: string;
@@ -117,7 +119,7 @@ export interface BenchCopy {
   };
   today: SectionHead & { refTitle: string; refBody: string; stillsTitle: string; stillsBody: string; clipAria: (scene: string) => string; total: string; stepsBreak: string };
   dit: SectionHead & {
-    bars: ChartText & { wall: string; compute: string; note: string; tags: Record<'sdpa' | 'adalnOff' | 'adalnOnline' | 'drop' | 'subblock' | 'exact', string> };
+    bars: ChartText & { wall: string; compute: string; note: string; cold: string; tags: Record<'sdpa' | 'adalnOff' | 'adalnOnline' | 'drop' | 'subblock' | 'exact', string> };
     media: ChartText & { tabs: Record<'t2vaFp8' | 't2vaPai8' | 'ref2vaFp8', string>; officialPrecision: string; audioNote: string };
     wipe: ChartText & { left: string; right: string; handle: string; reduced: string };
     findings: string;

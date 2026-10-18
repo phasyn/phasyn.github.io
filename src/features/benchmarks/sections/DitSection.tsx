@@ -83,7 +83,12 @@ function VariantBars() {
           <Segmented label={b.title} value={scenario} onChange={setScenario} options={[{ value: 't2va', label: 't2va' }, { value: 'ref2va', label: 'ref2va' }]} />
         </div>
       }
-      note={b.note}
+      note={
+        <>
+          {b.note}
+          <span className="mt-1.5 block text-fg-secondary">{b.cold}</span>
+        </>
+      }
       table={
         <SimpleTable
           label={b.title}
