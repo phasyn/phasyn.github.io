@@ -33,7 +33,7 @@ export function BenchmarksSection() {
           ))}
         </dl>
         <div className="reveal mt-8 flex flex-wrap items-center justify-between gap-4">
-          <p className="max-w-[70ch] text-caption text-fg-tertiary">{t.footnote}</p>
+          <p className="text-on-fx max-w-[70ch] text-caption text-fg-secondary">{t.footnote}</p>
           <ButtonLink to={pagePath(locale, 'benchmarks')} variant="secondary" size="lg">
             {t.cta}
             <ArrowRight aria-hidden />

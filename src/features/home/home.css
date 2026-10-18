@@ -146,7 +146,7 @@
 
 @media (prefers-reduced-motion: no-preference) {
   .home-hero-in {
-    animation: home-in 900ms var(--ease-enter) both;
+    animation: home-in 600ms var(--ease-enter) both;
     animation-delay: calc(var(--fx-intro-delay, 0ms) + var(--home-in, 0ms));
   }
 }
@@ -258,12 +258,13 @@
 /* Staggered entrances for tiles in one row (the scroll-driven `reveal` range shifts a little per column). */
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) {
+    /* Same short px range as the shared `reveal`, a few pixels later per column. */
     .home-stagger-1 {
-      animation-range: entry 6% cover 32%;
+      animation-range: entry 0% entry 260px;
     }
 
     .home-stagger-2 {
-      animation-range: entry 12% cover 36%;
+      animation-range: entry 0% entry 280px;
     }
   }
 }

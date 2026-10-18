@@ -2,6 +2,7 @@ import { ArrowRight, AudioLines, Pause, Play, RotateCcw, Volume2, VolumeX } from
 import { useEffect, useRef, useState } from 'react';
 import { useLocale } from '../../../../i18n/locale.tsx';
 import { cn } from '../../../../lib/cn.ts';
+import { AiBadge } from '../../../../components/ui/AiBadge.tsx';
 import { mediaUrl } from '../../../../lib/media.ts';
 import { HTML_LANG } from '../../../../site/config.ts';
 import { REAL } from '../../art.ts';
@@ -27,7 +28,7 @@ export function ScreenPane({ screen, crop, hotspots, note, active, framed = fals
   return (
     <figure className={cn('grid gap-3', className)}>
       <RealScreen screen={screen} crop={crop} hotspots={hotspots} framed={framed} hud={hud} active={active} displayWidth={displayWidth} />
-      <figcaption className="text-caption leading-relaxed text-fg-tertiary">{note}</figcaption>
+      <figcaption className="text-on-fx text-caption leading-relaxed text-fg-secondary">{note}</figcaption>
     </figure>
   );
 }
@@ -164,13 +165,16 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
         <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 bg-[rgb(255_255_255_/_0.08)]">
           <span ref={lineRef} className="block h-full origin-left scale-x-0 bg-brand-gradient shadow-[0_0_10px_rgb(73_207_255_/_0.7)]" style={ended ? { transform: 'scaleX(1)' } : undefined} />
         </span>
+        <span className="pointer-events-none absolute top-2 left-2 max-w-[calc(100%-1rem)]">
+          <AiBadge variant="h3" />
+        </span>
         <span className="absolute right-2 bottom-2.5">
           <RealBadge>{labels.realBadge}</RealBadge>
         </span>
       </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-3">
-        <span className="flex min-w-0 items-center gap-3">
+        <span className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
           <img
             src={still.small}
             alt=""
@@ -181,21 +185,20 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
             className="h-12 w-auto shrink-0 rounded-md border border-brand-blue/50 object-cover shadow-[0_0_14px_-4px_rgb(62_137_255_/_0.7)]"
             style={{ aspectRatio: '12 / 7' }}
           />
-          <span className="grid min-w-0 gap-0.5">
-            <span className="text-caption font-medium text-fg-secondary">{labels.firstFrame}</span>
-            <span lang="en" className="machine text-[11px] text-fg-tertiary">
-              Qwen-Image 2.1 · 1152×672
-            </span>
-          </span>
+          <span className="text-caption font-medium text-fg-secondary">{labels.firstFrame}</span>
           <ArrowRight className="size-4 shrink-0 text-brand-cyan" aria-hidden />
           <span className="grid min-w-0 gap-0.5">
             <span lang="en" className="text-caption font-medium text-fg-secondary">
               H3 fl2va
             </span>
-            <span lang="en" className="machine flex flex-wrap items-center gap-x-1 text-[11px] text-fg-tertiary">
+            <span lang="en" className="machine flex flex-wrap items-center gap-x-1 whitespace-nowrap text-[11px] text-fg-tertiary">
               768×448 · 5.17&nbsp;s · {REAL.clip.run}
               <AudioLines className="size-3 text-brand-cyan" aria-hidden />
             </span>
+          </span>
+          {/* The first frame is a Qwen-Image still (the clip itself carries the H3 badge). */}
+          <span className="basis-full">
+            <AiBadge variant="qwen" />
           </span>
         </span>
         <span className="ml-auto flex flex-wrap items-center gap-2">
@@ -218,7 +221,7 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
           </button>
         </span>
       </div>
-      <figcaption className="grid gap-1 text-caption leading-relaxed text-fg-tertiary">
+      <figcaption className="text-on-fx grid gap-1 text-caption leading-relaxed text-fg-secondary">
         <span>{labels.note}</span>
         <span className="text-fg-disabled">{labels.loudness}</span>
       </figcaption>

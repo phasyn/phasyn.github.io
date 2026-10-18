@@ -182,7 +182,7 @@ export function PipelineSection() {
           </div>
         </div>
 
-        <p className="reveal mt-12 max-w-[86ch] text-caption leading-relaxed text-fg-tertiary md:mt-6">{t.caption}</p>
+        <p className="reveal text-on-fx mt-12 max-w-[86ch] text-caption leading-relaxed text-fg-secondary md:mt-6">{t.caption}</p>
       </div>
     </section>
   );
