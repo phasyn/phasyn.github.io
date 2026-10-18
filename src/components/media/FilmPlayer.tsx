@@ -368,7 +368,11 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
       ) : null}
 
       {failed ? (
-        <div role="status" className="absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0.15),rgb(2_4_9_/_0.6))] p-6">
+        <div
+          role="status"
+          // With a badge, the card stays clear of it even in small players.
+          className={cn('absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0.15),rgb(2_4_9_/_0.6))] p-6', badge && 'pt-12')}
+        >
           <div className="material-hud grid max-w-sm justify-items-center gap-2 rounded-2xl px-6 py-5 text-center">
             <Clock className="size-6 text-warning" aria-hidden />
             <p className="text-section font-semibold text-fg">{ui.unavailable}</p>
