@@ -18,10 +18,10 @@ export function SiteFooter() {
       <div className="site-container grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="grid content-start gap-5">
           <div className="flex items-center gap-3">
-            <BrandMark size={40} glow />
+            <BrandMark size={40} glow loading="lazy" />
             <Wordmark width={128} tagline decorative />
           </div>
-          <p className="max-w-[40ch] text-body text-fg-secondary">{copy.footerMadeBy}</p>
+          <p className="max-w-[40ch] text-body text-balance-cjk text-fg-secondary">{copy.footerMadeBy}</p>
           <SourceSoon className="justify-self-start" />
         </div>
 
@@ -65,7 +65,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="site-container flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle py-6 text-caption text-fg-tertiary">
-        <p>{copy.footerCredits}</p>
+        <p className="text-balance-cjk">{copy.footerCredits}</p>
         <p>© 2026 DennySORA · {copy.personalProject}</p>
       </div>
     </footer>

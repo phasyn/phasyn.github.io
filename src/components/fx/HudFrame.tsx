@@ -16,8 +16,9 @@ interface HudFrameProps {
 const CORNER = 'pointer-events-none absolute size-4 border-brand-cyan/80';
 
 /**
- * Holographic HUD frame for media and illustrative UI: corner brackets, optional scan line and orbiting light.
- * Use around imagery, video and mock-ups — not around body text or data tables.
+ * Holographic HUD frame for media, illustrative UI and compact data panels (a stat block, a small spec table):
+ * corner brackets, optional scan line and orbiting light. Not for long body text or large data tables — keep `scan`
+ * off when the frame holds text that people read.
  */
 export function HudFrame({ children, label, scan = false, orbit = false, className, innerClassName }: HudFrameProps) {
   return (

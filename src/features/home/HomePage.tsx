@@ -10,9 +10,9 @@ export function HomePage() {
     <>
       <section className="site-container grid min-h-[86dvh] content-center gap-6 pt-(--site-header-h)">
         <p className="eyebrow text-brand-cyan" lang="en">
-          <DecodeText text="PHASE · FRAME · SYNTHESIS" />
+          <DecodeText text="PHASE · FRAME · SYNTHESIS" afterIntro />
         </p>
-        <RevealText as="h1" on="load" delay={1500} text={copy.footerTagline} className="text-hero tracking-display text-balance-cjk text-fg" />
+        <RevealText as="h1" on="load" text={copy.footerTagline} className="text-hero tracking-display text-balance-cjk text-fg" />
         <SourceSoon className="justify-self-start" />
       </section>
       <DataTicker
