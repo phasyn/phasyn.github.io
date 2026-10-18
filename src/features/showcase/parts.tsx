@@ -60,7 +60,8 @@ export function useSecondsText(): (seconds: number | null, approx?: boolean) => 
   const copy = SHOWCASE[useLocale()].card;
   return (seconds, approx = false) => {
     if (seconds === null) return copy.notRecorded;
-    const value = `${formatSeconds(seconds)} ${copy.seconds}`;
+    // A rounded reading keeps its whole number ("~23 s"); a decimal would claim precision it never had.
+    const value = `${approx && Number.isInteger(seconds) ? seconds : formatSeconds(seconds)} ${copy.seconds}`;
     return approx ? `${copy.approx}${copy.approx === '~' ? '' : ' '}${value}` : value;
   };
 }
