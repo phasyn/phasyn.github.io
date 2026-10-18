@@ -43,8 +43,10 @@ export interface ChapterSpec {
   /** Fixed media name (shared with the recording worker): `tour/<media>.mp4` + `/captions/tour/<media>.<locale>.vtt`. */
   media: string;
   poster: string;
-  /** Planned length of the final cut in seconds (work/product/recording-plan.md §0). Replace with the real cut's length. */
+  /** Length in seconds: the real cut's when `recorded`, else the planned length (work/product/recording-plan.md §0). */
   length: number;
+  /** The final master exists (its real length is known). */
+  recorded?: boolean;
   steps: readonly ChapterStep[];
   /** Real captures shown beside the chapter (public/images/tour/ui). List only captures that exist. */
   screens: readonly UiKey[];
@@ -72,7 +74,7 @@ export const CHAPTERS: readonly ChapterSpec[] = [
       { anchor: 'Watch it take shape while it renders.', badge: { devices: ['rtx5080'], measure: range(TODAY.still.min, TODAY.still.max) } },
       { anchor: 'Turn the image into an opening frame.' },
       { anchor: 'One render,', badge: { devices: ['gb10', 'rtx5080', 'rtx3060'] } },
-      { anchor: 'Every stage reports its measured time.', badge: { measure: range(TODAY.fl2va.min, TODAY.fl2va.max, [1, 0]) } },
+      { anchor: 'Every stage reports its measured time.', badge: { measure: range(TODAY.fl2va.min, TODAY.fl2va.max, [0, 0]) } },
     ],
     screens: ['image-studio-generating', 'render-engine-image', 'image-studio-takes'],
   },
@@ -112,13 +114,16 @@ export const CHAPTERS: readonly ChapterSpec[] = [
     number: 4,
     media: '04-image-to-prompt',
     poster: '/images/tour/v4.webp',
-    length: 65,
+    // Final master studio/out/final/tour/04-image-to-prompt.mp4: 52.9 s, 1920×1080, 30 fps (ffprobe).
+    length: 52.9,
+    recorded: true,
     steps: [
       { anchor: 'Have an image? Get its prompt back.' },
       { anchor: 'The analysis runs on DGX Spark.', badge: { devices: ['gb10'], measure: single(EARLIER.visionAnalyze, 1) } },
       { anchor: 'Eight sections, from subject' },
       { anchor: 'Core and detailed prompts, ready to edit.' },
-      { anchor: 'Regenerate each candidate and score it.', badge: { devices: ['rtx5080'] } },
+      { anchor: 'Regenerate each candidate and score it.' },
+      { anchor: 'Send the best one to Image Studio.' },
     ],
     screens: [],
   },
@@ -156,6 +161,11 @@ export function chapterTimingPath(spec: ChapterSpec): string {
 }
 
 export const TOTAL_LENGTH = CHAPTERS.reduce((sum, chapter) => sum + chapter.length, 0);
+
+/** The chapter's length as shown: the real one once recorded, otherwise marked as planned. */
+export function lengthText(spec: ChapterSpec, planned: (time: string) => string): string {
+  return spec.recorded ? clock(spec.length) : planned(clock(spec.length));
+}
 
 /** m:ss for video lengths and timestamps. */
 export function clock(seconds: number): string {

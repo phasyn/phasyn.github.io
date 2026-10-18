@@ -38,6 +38,9 @@ export function AgentSection({ t }: { t: TourCopy }) {
           <p className="reveal max-w-[44ch] text-lead text-balance-cjk text-fg-secondary">
             <RichText text={t.agent.body} />
           </p>
+          <p className="reveal max-w-[48ch] text-body text-fg-secondary [text-wrap:pretty]">
+            <RichText text={t.agent.batch} />
+          </p>
           <ul aria-hidden lang="en" className="reveal flex flex-wrap gap-2">
             <li className="inline-flex h-8 items-center gap-2 rounded-full border border-line-strong bg-raised/80 px-3 font-mono text-[12px] text-fg">
               <Terminal className="size-3.5 text-brand-cyan" aria-hidden />
@@ -57,7 +60,7 @@ export function AgentSection({ t }: { t: TourCopy }) {
               pending={{ title: t.screens.pendingTitle, body: t.screens.pendingBody }}
             />
           </HudFrame>
-          <figcaption className="text-caption text-fg-tertiary">{t.screens.captures['terminal-phasynctl']}</figcaption>
+          <figcaption className="justify-self-start rounded-full bg-[rgb(7_11_20_/_0.82)] px-3 py-1 text-data text-fg-secondary">{t.screens.captures['terminal-phasynctl']}</figcaption>
         </figure>
       </div>
     </section>
@@ -124,7 +127,9 @@ export function ClosingSection({ t }: { t: TourCopy }) {
             </li>
           ))}
         </ul>
-        <SourceSoon className="reveal" />
+        <span className="reveal inline-flex rounded-full bg-canvas">
+          <SourceSoon />
+        </span>
       </div>
     </section>
   );

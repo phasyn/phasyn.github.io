@@ -63,11 +63,17 @@
     border-color var(--duration-fast) var(--ease-standard);
 }
 
-/* Section seam: a hairline that opens from the centre and a light that sweeps along it (mirrors Home's seam). */
+/*
+ * Section seam: a hairline that opens from the centre and a light that sweeps along it (mirrors Home's seam).
+ * The light travels past both ends, so the seam clips horizontally: without it the transformed light widened the layout
+ * viewport on Android (412 → 474 px). `clip` (not `hidden`) creates no scroll container, so the view() timeline still works;
+ * the light keeps its vertical glow.
+ */
 .tour-seam {
   position: relative;
   height: 1px;
-  overflow: visible;
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .tour-seam-line {
