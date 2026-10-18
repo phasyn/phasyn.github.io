@@ -13,8 +13,16 @@ export function SiteFooter() {
   const locale = useLocale();
   const copy = commonCopy(locale);
   return (
-    <footer className="relative border-t border-line-subtle bg-rail">
-      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-brand-gradient opacity-40" />
+    <footer className="relative bg-rail">
+      {/*
+       * Soft fade from the page into the footer instead of a hard seam (FE-18): z −1 in the root stacking context, so it
+       * darkens the nebula behind the last section without covering that section's content.
+       */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 bottom-full -z-1 h-[clamp(6rem,4rem+8vw,10rem)] bg-[linear-gradient(180deg,rgb(5_8_16_/_0),rgb(5_8_16_/_0.3)_40%,rgb(5_8_16_/_0.75)_75%,var(--color-rail))]"
+      />
+      <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-brand-gradient opacity-40 [mask-image:linear-gradient(90deg,transparent,#000_20%,#000_80%,transparent)]" />
       <div className="site-container grid gap-12 py-16 md:grid-cols-[1.4fr_1fr_1fr]">
         <div className="grid content-start gap-5">
           <div className="flex items-center gap-3">
