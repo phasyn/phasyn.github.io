@@ -48,7 +48,8 @@ export const COMMON: Copy<CommonCopy> = {
     footerCredits:
       '示範圖片與影片以 Phasyn Studio（MiniMax H3、Qwen-Image 2.1）生成；網站插圖由 OpenAI Codex 以 AI 生成；影片配樂以 Suno 生成。',
     footerLicense: 'Phasyn Studio 原始碼將以 Apache-2.0 授權公開；名稱、標誌與字標為 DennySORA 所有，不在授權範圍內。',
-    footerModels: '模型權重不隨專案提供，使用時須遵守各自的授權：MiniMax H3 Community License（含地域限制與使用規範）、Qwen-Image 2.1（研究、非商業用途）。',
+    footerModels:
+      '影片生成 Powered by MiniMax H3（MiniMax H3 Community License：授權地區不含歐盟、英國、韓國、美國，並附使用規範）；圖片由 Qwen-Image 2.1 生成（Qwen Research License，僅限非商業用途）。Phasyn Studio 是框架，不附帶也不散布任何模型權重；網站上的影片與圖片皆為 AI 生成。',
     footerLinks: '連結',
     emailLabel: '聯絡信箱',
     notFoundTitle: '找不到這個頁面',
@@ -77,7 +78,8 @@ export const COMMON: Copy<CommonCopy> = {
     footerCredits:
       'デモの画像と動画は Phasyn Studio（MiniMax H3、Qwen-Image 2.1）で生成しています。サイトのイラストは OpenAI Codex で生成した AI 画像、映像の音楽は Suno で生成したものです。',
     footerLicense: 'Phasyn Studio のソースコードは Apache-2.0 ライセンスで公開予定です。名称・ロゴ・ワードマークは DennySORA に帰属し、ライセンスの対象外です。',
-    footerModels: 'モデルの重みは同梱していません。ご利用の際は各ライセンスに従ってください。MiniMax H3 Community License（地域制限と利用ポリシーあり）、Qwen-Image 2.1（研究・非商用に限る）。',
+    footerModels:
+      '映像生成は Powered by MiniMax H3（MiniMax H3 Community License：対象地域は EU・英国・韓国・米国を除き、利用規約があります）。画像は Qwen-Image 2.1 で生成しています（Qwen Research License、非商用のみ）。Phasyn Studio はフレームワークで、モデルの重みは同梱も配布もしていません。サイト上の映像と画像はすべて AI 生成です。',
     footerLinks: 'リンク',
     emailLabel: '連絡先',
     notFoundTitle: 'ページが見つかりません',
@@ -106,7 +108,8 @@ export const COMMON: Copy<CommonCopy> = {
     footerCredits:
       'Demo images and videos are generated with Phasyn Studio (MiniMax H3, Qwen-Image 2.1). Site illustrations are AI-generated with OpenAI Codex; film music is generated with Suno.',
     footerLicense: 'Phasyn Studio source code will be released under the Apache-2.0 license. The name, logo and wordmark belong to DennySORA and are not covered by that license.',
-    footerModels: 'Model weights are not included, and each model has its own license: the MiniMax H3 Community License (with territorial restrictions and an acceptable-use policy) and Qwen-Image 2.1 (research and non-commercial use only).',
+    footerModels:
+      'Video generation Powered by MiniMax H3 (MiniMax H3 Community License: excludes the EU, the UK, the Republic of Korea and the USA, with an acceptable-use policy). Images generated with Qwen-Image 2.1 (Qwen Research License, non-commercial use only). Phasyn Studio is a framework; it does not bundle or distribute any model weights. All videos and images on this site are AI-generated.',
     footerLinks: 'Links',
     emailLabel: 'Contact',
     notFoundTitle: 'Page Not Found',
