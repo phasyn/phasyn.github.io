@@ -6,7 +6,8 @@ import { SourceSoon } from '../../components/ui/SourceSoon.tsx';
 import { useLocale } from '../../i18n/locale.tsx';
 import { pagePath } from '../../site/config.ts';
 import { SHOWCASE } from './copy.ts';
-import { FILMS, RESULTS, filmMix, rawAudio } from './data.ts';
+import { CUTS, FILMS, RESULTS, filmMix, rawAudio } from './data.ts';
+import { scaleText } from './Films.tsx';
 
 /** −28 style minus for loudness values (as the lead's note writes them). */
 function lufs(value: number): string {
@@ -19,11 +20,13 @@ export function Notes() {
   const copy = SHOWCASE[locale].notes;
   const audio = rawAudio(RESULTS);
   const rates = audio?.rates.map((rate) => `${rate / 1000} kHz`).join(' / ');
-  const mix = filmMix(FILMS);
+  const mix = filmMix();
+  const cutMix = filmMix(CUTS);
   const items = [
     ...copy.items,
     ...(audio ? [copy.loudness(lufs(audio.loudest), lufs(audio.quietest), rates ?? '')] : []),
     ...(FILMS.length && mix !== undefined ? [copy.films(lufs(mix))] : []),
+    ...(CUTS.length && cutMix !== undefined ? [copy.cuts(scaleText(Math.max(...CUTS.map((item) => item.media.displayScale ?? 1))), lufs(cutMix))] : []),
     copy.glyphs,
   ];
   return (

@@ -3,6 +3,110 @@
 import type { ShowcaseItem } from './types.ts';
 
 export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
+  // cuts/trailer-30s
+  {
+    "slug": "trailer-30s",
+    "title": {
+      "zh-hant": "上線預告・信使",
+      "ja": "ローンチトレーラー・配達人",
+      "en": "Launch Trailer · The Courier"
+    },
+    "kind": "trailer",
+    "category": "film",
+    "pipeline": "fl2va-pc / ref2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1920,
+    "height": 1080,
+    "frames": null,
+    "fps": 24,
+    "seconds": 30,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "7d52714a-77af-485d-b167-112735b0fbd2",
+        "seed": 404,
+        "seconds": 3.708
+      },
+      {
+        "runId": "82d036a7-d2df-45f9-87a4-a69bb1b064a3",
+        "seed": 101,
+        "seconds": 2.458
+      },
+      {
+        "runId": "c11f2c4b-c38f-402f-aeeb-e8329bc117fd",
+        "seed": 9011,
+        "seconds": 2.458
+      },
+      {
+        "runId": "3788034b-ee52-43ff-806c-9a7fc2094561",
+        "seed": 5517,
+        "seconds": 2.5
+      },
+      {
+        "runId": "a5fcea35-c02a-42e3-932d-a42c0b50a300",
+        "seed": 9031,
+        "seconds": 2.458
+      },
+      {
+        "runId": "c11f2c4b-c38f-402f-aeeb-e8329bc117fd",
+        "seed": 9011,
+        "seconds": 2.5
+      },
+      {
+        "runId": "fd5913b2-6228-4987-9764-e2fcfe101b2f",
+        "seed": 9041,
+        "seconds": 3.667
+      },
+      {
+        "runId": "d48fae8a-75ff-485d-8e36-c470c17e295b",
+        "seed": 9052,
+        "seconds": 1.25
+      },
+      {
+        "runId": "a286077b-a202-411f-ad95-ccb0818663d7",
+        "seed": 9061,
+        "seconds": 2.458
+      },
+      {
+        "runId": "43d0cf8f-f049-461a-9cc6-deed9b69e740",
+        "seed": 9071,
+        "seconds": 2.458
+      },
+      {
+        "runId": "e3ab0b6a-2ac4-4d72-aba6-1a18e50a3dcd",
+        "seed": 9081,
+        "seconds": 4.083
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:35:39.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/trailer-30s-poster-1920.webp",
+        "srcSet": "/images/showcase/items/trailer-30s-poster-1920.webp 1920w, /images/showcase/items/trailer-30s-poster-1280.webp 1280w, /images/showcase/items/trailer-30s-poster-768.webp 768w, /images/showcase/items/trailer-30s-poster-384.webp 384w",
+        "width": 1920,
+        "height": 1080
+      },
+      "clip": "showcase/trailer-30s.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/trailer-30s-contact-1152.webp",
+        "srcSet": "/images/showcase/items/trailer-30s-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 546
+      },
+      "displayScale": 1.75
+    }
+  },
   // films/showreel
   {
     "slug": "showreel",
@@ -845,6 +949,356 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "width": 1152,
         "height": 170
       }
+    }
+  },
+  // cuts/making-of
+  {
+    "slug": "making-of",
+    "title": {
+      "zh-hant": "幕後・文字 → 圖片 → 影片",
+      "ja": "メイキング・テキスト → 画像 → 映像",
+      "en": "Making Of · Text → Image → Video"
+    },
+    "kind": "making-of",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1920,
+    "height": 1080,
+    "frames": null,
+    "fps": 24,
+    "seconds": 24.792,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "577fc7a4-1a71-4c81-ab5b-8d4d87abca12",
+        "seed": 47,
+        "seconds": 4.958
+      },
+      {
+        "runId": "7d52714a-77af-485d-b167-112735b0fbd2",
+        "seed": 404,
+        "seconds": 4.958
+      },
+      {
+        "runId": "56bca2e8-3f38-4356-9e16-1bdff336b9b7",
+        "seed": 5111,
+        "seconds": 2.5
+      },
+      {
+        "runId": "3553e6f0-fd28-4252-8df2-0930d48c8ed7",
+        "seed": 5111,
+        "seconds": 4.958
+      },
+      {
+        "runId": "a291923f-5a57-488c-b770-d09c10ff7ebb",
+        "seed": 5212,
+        "seconds": 2.458
+      },
+      {
+        "runId": "964fa971-8c04-4efe-9a7f-39ffa730b08c",
+        "seed": 5212,
+        "seconds": 4.958
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T15:12:50.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/making-of-poster-1920.webp",
+        "srcSet": "/images/showcase/items/making-of-poster-1920.webp 1920w, /images/showcase/items/making-of-poster-1280.webp 1280w, /images/showcase/items/making-of-poster-768.webp 768w, /images/showcase/items/making-of-poster-384.webp 384w",
+        "width": 1920,
+        "height": 1080
+      },
+      "clip": "showcase/making-of.mp4",
+      "mixLufs": -14,
+      "contact": {
+        "src": "/images/showcase/items/making-of-contact-1152.webp",
+        "srcSet": "/images/showcase/items/making-of-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 546
+      },
+      "captions": {
+        "zh-hant": "/captions/showcase/making-of.zh-hant.vtt",
+        "ja": "/captions/showcase/making-of.ja.vtt",
+        "en": "/captions/showcase/making-of.en.vtt"
+      },
+      "displayScale": 1.75
+    }
+  },
+  // cuts/social-dragon-night-market-9x16
+  {
+    "slug": "social-dragon-night-market-9x16",
+    "title": {
+      "zh-hant": "夜市小龍（直式原生）",
+      "ja": "夜市の小さなドラゴン（縦型ネイティブ）",
+      "en": "Dragon Night Market (Native 9:16)"
+    },
+    "kind": "social",
+    "category": "social",
+    "pipeline": "fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1080,
+    "height": 1920,
+    "frames": null,
+    "fps": 24,
+    "seconds": 14.542,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "f1b07661-85d2-445b-b8e0-d3fb8fb6a975",
+        "seed": 6911,
+        "seconds": 3.708
+      },
+      {
+        "runId": "095b57ae-71b9-4300-ad91-9af3390a4a14",
+        "seed": 6931,
+        "seconds": 4.833
+      },
+      {
+        "runId": "f13becde-f39c-4924-8561-ab00e8047af7",
+        "seed": 6122,
+        "seconds": 4.792
+      },
+      {
+        "runId": "f1b07661-85d2-445b-b8e0-d3fb8fb6a975",
+        "seed": 6911,
+        "seconds": 1.208
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "usable",
+    "createdAt": "2026-10-18T16:27:02.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/social-dragon-night-market-9x16-poster-720.webp",
+        "srcSet": "/images/showcase/items/social-dragon-night-market-9x16-poster-720.webp 720w, /images/showcase/items/social-dragon-night-market-9x16-poster-540.webp 540w, /images/showcase/items/social-dragon-night-market-9x16-poster-360.webp 360w",
+        "width": 720,
+        "height": 1280
+      },
+      "clip": "showcase/social-dragon-night-market-9x16.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/social-dragon-night-market-9x16-contact-1152.webp",
+        "srcSet": "/images/showcase/items/social-dragon-night-market-9x16-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 762
+      },
+      "displayScale": 1.75
+    }
+  },
+  // cuts/social-courier-night-to-dawn
+  {
+    "slug": "social-courier-night-to-dawn",
+    "title": {
+      "zh-hant": "屋頂信使・從夜到黎明",
+      "ja": "屋上の配達人・夜から夜明けへ",
+      "en": "Rooftop Courier · Night to Dawn"
+    },
+    "kind": "social",
+    "category": "social",
+    "pipeline": "ref2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1080,
+    "height": 1920,
+    "frames": null,
+    "fps": 24,
+    "seconds": 12.375,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "3187b0ba-c763-4c9d-b09f-a9c0a0d18bad",
+        "seed": 9712,
+        "seconds": 4.333
+      },
+      {
+        "runId": "d171bd9a-e6ba-449d-a367-11298eae6ee0",
+        "seed": 9721,
+        "seconds": 3.708
+      },
+      {
+        "runId": "3ffca412-5720-4aed-aea3-234eb220ead5",
+        "seed": 9731,
+        "seconds": 3.708
+      },
+      {
+        "runId": "3187b0ba-c763-4c9d-b09f-a9c0a0d18bad",
+        "seed": 9712,
+        "seconds": 0.625
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "usable",
+    "createdAt": "2026-10-18T16:10:20.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/social-courier-night-to-dawn-poster-720.webp",
+        "srcSet": "/images/showcase/items/social-courier-night-to-dawn-poster-720.webp 720w, /images/showcase/items/social-courier-night-to-dawn-poster-540.webp 540w, /images/showcase/items/social-courier-night-to-dawn-poster-360.webp 360w",
+        "width": 720,
+        "height": 1280
+      },
+      "clip": "showcase/social-courier-night-to-dawn.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/social-courier-night-to-dawn-contact-1152.webp",
+        "srcSet": "/images/showcase/items/social-courier-night-to-dawn-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 762
+      },
+      "displayScale": 1.75
+    }
+  },
+  // cuts/social-glass-ocean-9x16
+  {
+    "slug": "social-glass-ocean-9x16",
+    "title": {
+      "zh-hant": "玻璃球裡的海（直式原生）",
+      "ja": "ガラスの中の海（縦型ネイティブ）",
+      "en": "Glass Ocean (Native 9:16)"
+    },
+    "kind": "social",
+    "category": "social",
+    "pipeline": "fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1080,
+    "height": 1920,
+    "frames": null,
+    "fps": 24,
+    "seconds": 12.333,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "fe4c8266-2482-4729-8fdc-584d86cd90e5",
+        "seed": 6921,
+        "seconds": 4.958
+      },
+      {
+        "runId": "71690988-6a45-4f24-ac55-73d41fd98da8",
+        "seed": 6922,
+        "seconds": 7.375
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "usable",
+    "createdAt": "2026-10-18T16:27:30.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/social-glass-ocean-9x16-poster-720.webp",
+        "srcSet": "/images/showcase/items/social-glass-ocean-9x16-poster-720.webp 720w, /images/showcase/items/social-glass-ocean-9x16-poster-540.webp 540w, /images/showcase/items/social-glass-ocean-9x16-poster-360.webp 360w",
+        "width": 720,
+        "height": 1280
+      },
+      "clip": "showcase/social-glass-ocean-9x16.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/social-glass-ocean-9x16-contact-1152.webp",
+        "srcSet": "/images/showcase/items/social-glass-ocean-9x16-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 508
+      },
+      "displayScale": 1.75
+    }
+  },
+  // cuts/social-night-wonders
+  {
+    "slug": "social-night-wonders",
+    "title": {
+      "zh-hant": "夜之奇景",
+      "ja": "夜の不思議",
+      "en": "Night Wonders"
+    },
+    "kind": "social",
+    "category": "social",
+    "pipeline": "fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 1080,
+    "height": 1920,
+    "frames": null,
+    "fps": 24,
+    "seconds": 11.958,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "f0f66f17-9dcc-4eda-bc5e-b172da44865f",
+        "seed": 6131,
+        "seconds": 3
+      },
+      {
+        "runId": "f13becde-f39c-4924-8561-ab00e8047af7",
+        "seed": 6122,
+        "seconds": 4.833
+      },
+      {
+        "runId": "0ea4636e-0366-4bb0-a51e-0478b7684e3f",
+        "seed": 6111,
+        "seconds": 2.417
+      },
+      {
+        "runId": "f0f66f17-9dcc-4eda-bc5e-b172da44865f",
+        "seed": 6131,
+        "seconds": 1.708
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "usable",
+    "createdAt": "2026-10-18T15:59:11.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/social-night-wonders-poster-720.webp",
+        "srcSet": "/images/showcase/items/social-night-wonders-poster-720.webp 720w, /images/showcase/items/social-night-wonders-poster-540.webp 540w, /images/showcase/items/social-night-wonders-poster-360.webp 360w",
+        "width": 720,
+        "height": 1280
+      },
+      "clip": "showcase/social-night-wonders.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/social-night-wonders-contact-1152.webp",
+        "srcSet": "/images/showcase/items/social-night-wonders-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 508
+      },
+      "displayScale": 1.75
     }
   },
   // seed:fl2va-ocean

@@ -6,7 +6,8 @@ import { useReducedMotion } from '../../lib/hooks.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHORT, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
+import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHORT, MAKING_OF, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
+import { MakingOf } from './Films.tsx';
 import { useViewTrigger } from './hooks.ts';
 import { AiBadge, MachineDot, MachineName, PromptDisclosure, SectionHeading, useSecondsText, useStepName, useStepShort } from './parts.tsx';
 
@@ -29,6 +30,10 @@ export function Breakdown() {
     <section id="breakdown" aria-labelledby="breakdown-title" className="relative isolate overflow-hidden border-y border-line-subtle bg-[rgb(4_6_12_/_0.82)] py-[clamp(4rem,2.5rem+6vw,8rem)]">
       <div className="site-container">
         <SectionHeading id="breakdown-title" eyebrow={copy.breakdown.eyebrow} title={copy.breakdown.title} lead={copy.breakdown.lead} />
+
+        {MAKING_OF.map((item) => (
+          <MakingOf key={item.slug} item={item} className="mt-12" />
+        ))}
 
         <ol className="mt-12 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] lg:gap-5">
           <li className="grid gap-4">

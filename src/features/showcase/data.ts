@@ -38,8 +38,14 @@ export function isEdit(item: ShowcaseItem): boolean {
   return EDIT_KINDS.includes(item.kind);
 }
 
-/** Edited landscape pieces (films, trailers, making-of; the owner's #1 asset): their own row at the top of the gallery. */
-export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => isEdit(item) && item.kind !== 'social');
+/** The films row (the owner's #1 asset): trailers first, then films, in importer order. */
+export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'trailer' || item.kind === 'film');
+
+/** Making-of cuts: shown with the prompt → still → clip breakdown they illustrate. */
+export const MAKING_OF: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'making-of');
+
+/** Launch cuts (trailer, making-of, vertical): native clips framed larger on a blurred backdrop. */
+export const CUTS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.media.displayScale !== undefined);
 
 /** Vertical 9:16 cuts: a narrow row of their own. */
 export const SOCIAL: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'social');
@@ -142,7 +148,7 @@ export function totals(all: readonly ShowcaseItem[] = ITEMS): Totals {
 }
 
 /** Typical (median) loudness of the delivered film mixes, for the films note. */
-export function filmMix(items: readonly ShowcaseItem[] = FILMS): number | undefined {
+export function filmMix(items: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'film')): number | undefined {
   const values = items.map((item) => item.media.mixLufs).filter((value): value is number => typeof value === 'number').sort((a, b) => a - b);
   return values.length ? values[Math.floor(values.length / 2)] : undefined;
 }
