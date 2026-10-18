@@ -1,4 +1,4 @@
-import { ArrowRight, Coins, Gauge, ImageOff, RefreshCcw, TriangleAlert, type LucideIcon } from 'lucide-react';
+import { ArrowRight, Coins, Gauge, type LucideIcon } from 'lucide-react';
 import { Fragment, type ComponentType } from 'react';
 import { Link } from 'react-router';
 import { BrandMark } from '../../../../components/brand/BrandMark.tsx';
@@ -6,7 +6,7 @@ import { useLocale } from '../../../../i18n/locale.tsx';
 import { cn } from '../../../../lib/cn.ts';
 import { HTML_LANG, pagePath } from '../../../../site/config.ts';
 import type { HomeCopy } from '../../copy.ts';
-import { AccelGauge, CreditMeter, GlitchThumbs, QualityPrice, RerollQueue, type VisualProps } from './PainVisuals.tsx';
+import { AccelGauge, CreditMeter, type VisualProps } from './PainVisuals.tsx';
 
 export type ManifestoCopy = HomeCopy['manifesto'];
 export type Tone = 'danger' | 'warning';
@@ -19,12 +19,9 @@ export interface BeatMeta {
   Visual: ComponentType<VisualProps>;
 }
 
-/** One HUD visual per pain point, in the order of copy.manifesto.beats. */
+/** One HUD visual per pain point, in the order of copy.manifesto.beats (condensed to two: credits, then local tools). */
 export const BEATS: readonly BeatMeta[] = [
-  { tag: 'MARKET · QUALITY / PRICE', tone: 'danger', Icon: TriangleAlert, Visual: QualityPrice },
   { tag: 'CREDITS · DRAIN', tone: 'danger', Icon: Coins, Visual: CreditMeter },
-  { tag: 'RE-ROLL · QUEUE', tone: 'warning', Icon: RefreshCcw, Visual: RerollQueue },
-  { tag: 'OUTPUT · ARTIFACTS', tone: 'danger', Icon: ImageOff, Visual: GlitchThumbs },
   { tag: 'LOCAL TOOLS · ACCELERATION', tone: 'warning', Icon: Gauge, Visual: AccelGauge },
 ];
 
@@ -138,6 +135,7 @@ export function FinalStatement({ t, className, markSize = 84 }: { t: ManifestoCo
           ),
         )}
       </p>
+      <p className="max-w-[44ch] text-body text-fg-secondary text-balance-cjk">{t.proof}</p>
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
         <span className="text-body text-fg-secondary">— {t.signature}</span>
         <Link

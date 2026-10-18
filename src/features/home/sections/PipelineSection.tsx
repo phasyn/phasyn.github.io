@@ -11,7 +11,7 @@ import { ClipPane, ScreenPane, type ClipLabels } from './pipeline/PipelinePanes.
 
 const STEP_ICONS = [Type, ImageIcon, Video] as const;
 /** Decorative HUD tags (Latin, aria-hidden by the frame). */
-const STEP_TAGS = ['TEXT · REAL UI', 'IMAGE · REAL UI', 'VIDEO · REAL OUTPUT'] as const;
+const STEP_TAGS = ['TEXT · IMAGE STUDIO', 'IMAGE · IMAGE STUDIO', 'VIDEO · H3 FL2VA'] as const;
 
 /** The real screens of steps 1 and 2 (step 3 is the real clip). */
 const STEP_SCREENS: readonly { screen: ScreenKey; hotspots: readonly HotspotId[] }[] = [
@@ -107,7 +107,7 @@ export function PipelineSection() {
   }, []);
 
   return (
-    <section aria-labelledby="pipeline-title" className="site-section relative">
+    <section aria-labelledby="pipeline-title" className="home-section relative">
       <div className="site-container">
         <SectionHeading id="pipeline-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
@@ -126,7 +126,7 @@ export function PipelineSection() {
                   }}
                   data-step={index}
                   {...(index === activeStep ? {} : { 'data-dim': '' })}
-                  className="home-step md:flex md:min-h-[82vh] md:flex-col md:justify-center"
+                  className="home-step md:flex md:min-h-[40vh] md:flex-col md:justify-center"
                 >
                   <div className="reveal grid justify-items-start gap-4">
                     <span className="inline-flex items-center gap-2 text-data font-semibold text-brand-cyan">

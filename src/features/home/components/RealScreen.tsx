@@ -1,5 +1,5 @@
-import { ScanLine } from 'lucide-react';
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { Maximize2, ScanLine, X } from 'lucide-react';
+import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { HudFrame } from '../../../components/fx/index.ts';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
@@ -40,8 +40,10 @@ const pct = (value: number) => `${(value * 100).toFixed(3)}%`;
 /**
  * A real Phasyn Studio screen (screens.ts): the capture in a stage well, optionally cropped with CSS, with numbered callouts
  * and a slow drift towards its focus point. Callout labels sit on the screen in wide frames and turn into a numbered legend
- * under it in narrow ones (the legend is always what assistive technology reads). A screen without a reviewed capture
- * renders a neutral "real capture pending" frame — never a stand-in UI.
+ * under it in narrow ones (the legend is always what assistive technology reads). Clicking or tapping a captured screen opens
+ * the whole capture at 1:1 in a native modal dialog (Esc and the backdrop close it, focus returns); without JavaScript the link
+ * opens the @2x file itself. A screen without a reviewed capture renders a neutral "real capture pending" frame — never a
+ * stand-in UI.
  */
 export function RealScreen({
   screen,
@@ -63,7 +65,10 @@ export function RealScreen({
   const hydrated = useHydrated();
   const reducedMotion = useReducedMotion();
   const imgRef = useRef<HTMLImageElement>(null);
+  const triggerRef = useRef<HTMLAnchorElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const [failed, setFailed] = useState(false);
+  const [open, setOpen] = useState(false);
   const [frameRef, inView] = useInView<HTMLDivElement>({ threshold: 0.15 });
 
   const capture = spec.capture;
@@ -77,6 +82,12 @@ export function RealScreen({
     const img = imgRef.current;
     if (img && img.complete && img.naturalWidth === 0) setFailed(true);
   }, []);
+
+  // Open after the dialog has rendered, so the browser moves focus into it.
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (open && dialog && !dialog.open) dialog.showModal();
+  }, [open]);
 
   const spots = available
     ? hotspots
@@ -95,8 +106,9 @@ export function RealScreen({
   const focusY = Math.min(1, Math.max(0, (fy - y) / h));
   const { src, src2x } = captureSources(screen);
   const sizes = w < 1 ? `calc(${displayWidth} / ${w.toFixed(4)})` : displayWidth;
-
   const aspect = (size.width * w) / (size.height * h);
+  const alt = t.alt[screen];
+
   const screenFrame = (
     <div
       ref={frameRef}
@@ -107,55 +119,53 @@ export function RealScreen({
       {...(shown && drift ? { 'data-live': '' } : {})}
     >
       {available ? (
-        <>
-          <div className="home-screen-cam absolute inset-0" style={{ ['--home-focus' as string]: `${pct(focusX)} ${pct(focusY)}` } as CSSProperties}>
-            <div className="absolute" style={{ left: pct(-x / w), top: pct(-y / h), width: pct(1 / w), height: pct(1 / h) }}>
-              <img
-                ref={imgRef}
-                src={src}
-                srcSet={`${src} ${size.width}w, ${src2x} ${size.width * 2}w`}
-                sizes={sizes}
-                width={size.width}
-                height={size.height}
-                alt={t.alt[screen]}
-                loading={eager ? 'eager' : 'lazy'}
-                decoding="async"
-                draggable={false}
-                onError={() => setFailed(true)}
-                className="absolute inset-0 size-full select-none"
-              />
-              {spots.length > 0 ? (
-                <ul aria-hidden className="pointer-events-none absolute inset-0">
-                  {spots.map((spot, index) => {
-                    const rx = (spot.at[0] - x) / w;
-                    const ry = (spot.at[1] - y) / h;
-                    return (
-                      <li
-                        key={spot.id}
-                        className="home-spot"
-                        style={{ left: pct(spot.at[0]), top: pct(spot.at[1]), ['--i' as string]: index } as CSSProperties}
-                        {...((spot.side ?? (rx > 0.62 ? 'left' : 'right')) === 'left' ? { 'data-left': '' } : {})}
-                        {...((spot.up ?? ry > 0.8) ? { 'data-up': '' } : {})}
-                      >
-                        <span className="home-spot-dot machine">{index + 1}</span>
-                        <span lang={lang} className="home-spot-label material-hud">
-                          {t.hotspots[spot.id]}
-                        </span>
-                      </li>
-                    );
-                  })}
-                </ul>
-              ) : null}
-            </div>
+        <div className="home-screen-cam absolute inset-0" style={{ ['--home-focus' as string]: `${pct(focusX)} ${pct(focusY)}` } as CSSProperties}>
+          <div className="absolute" style={{ left: pct(-x / w), top: pct(-y / h), width: pct(1 / w), height: pct(1 / h) }}>
+            <img
+              ref={imgRef}
+              src={src}
+              srcSet={`${src} ${size.width}w, ${src2x} ${size.width * 2}w`}
+              sizes={sizes}
+              width={size.width}
+              height={size.height}
+              alt={alt}
+              loading={eager ? 'eager' : 'lazy'}
+              decoding="async"
+              draggable={false}
+              onError={() => setFailed(true)}
+              className="absolute inset-0 size-full select-none"
+            />
+            {spots.length > 0 ? (
+              <ul aria-hidden className="pointer-events-none absolute inset-0">
+                {spots.map((spot, index) => {
+                  const rx = (spot.at[0] - x) / w;
+                  const ry = (spot.at[1] - y) / h;
+                  return (
+                    <li
+                      key={spot.id}
+                      className="home-spot"
+                      style={{ left: pct(spot.at[0]), top: pct(spot.at[1]), ['--i' as string]: index } as CSSProperties}
+                      {...((spot.side ?? (rx > 0.62 ? 'left' : 'right')) === 'left' ? { 'data-left': '' } : {})}
+                      {...((spot.up ?? ry > 0.8) ? { 'data-up': '' } : {})}
+                    >
+                      <span className="home-spot-dot machine">{index + 1}</span>
+                      <span lang={lang} className="home-spot-label material-hud">
+                        {t.hotspots[spot.id]}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
           </div>
-        </>
+        </div>
       ) : (
         <PendingFrame area={spec.area} title={t.pendingTitle} body={t.pendingBody} />
       )}
     </div>
   );
 
-  const frame = pan ? (
+  const panned = pan ? (
     <div className="home-screen-pan" data-pan="" style={{ ['--pan-h' as string]: pan, ['--aspect' as string]: aspect.toFixed(4) } as CSSProperties}>
       {screenFrame}
     </div>
@@ -163,16 +173,41 @@ export function RealScreen({
     screenFrame
   );
 
+  const frame = available ? (
+    <a
+      ref={triggerRef}
+      href={src2x}
+      aria-label={`${t.enlarge}: ${alt}`}
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
+        event.preventDefault();
+        setOpen(true);
+      }}
+      className="group/screen relative block rounded-xl no-underline focus-visible:outline-offset-2"
+    >
+      {panned}
+      <span
+        aria-hidden
+        lang={lang}
+        className="home-enlarge material-hud pointer-events-none absolute right-2 bottom-2 z-10 inline-flex h-7 items-center gap-1.5 rounded-full px-2.5 text-[12px] font-medium text-fg"
+      >
+        <Maximize2 className="size-3.5" />
+        <span className="home-enlarge-text">{t.tapHint}</span>
+      </span>
+    </a>
+  ) : (
+    panned
+  );
+
   return (
     <div className={cn('@container/screen min-w-0', className)}>
       {framed ? (
         <div className="relative">
-          <HudFrame label={hud ?? `REAL UI · ${spec.hud}`} orbit={orbit}>
+          <HudFrame label={hud ?? spec.hud} orbit={orbit}>
             {frame}
           </HudFrame>
           {/* On the frame's border, outside the capture, so it never covers what the screen says. */}
           {available ? (
-            <span lang={lang} className="home-real-badge absolute -top-3 right-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-stage px-2.5 py-0.5 text-[11px] font-medium text-fg">
+            <span lang={lang} className="home-real-badge absolute -top-3 right-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-stage px-2.5 py-0.5 text-[12px] font-medium text-fg">
               <span aria-hidden className="size-1.5 rounded-full bg-success" />
               {t.real}
             </span>
@@ -192,6 +227,42 @@ export function RealScreen({
             </li>
           ))}
         </ol>
+      ) : null}
+      {open ? (
+        <dialog
+          ref={dialogRef}
+          onClose={() => {
+            setOpen(false);
+            triggerRef.current?.focus();
+          }}
+          onClick={(event) => event.target === event.currentTarget && dialogRef.current?.close()}
+          aria-label={alt}
+          className="home-dialog m-auto max-h-[92dvh] w-[min(96vw,124rem)] max-w-none overflow-hidden rounded-2xl border border-[rgb(255_255_255_/_0.1)] bg-canvas p-0 text-fg shadow-window"
+        >
+          <div className="grid">
+            <div className="flex min-h-12 items-center gap-3 border-b border-line-subtle bg-rail px-4">
+              <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-success" />
+              <span lang={lang} className="text-data font-medium text-fg">
+                {t.real}
+              </span>
+              <span lang="en" translate="no" className="machine min-w-0 truncate text-[12px] text-fg-tertiary">
+                {spec.area}
+              </span>
+              <button
+                type="button"
+                onClick={() => dialogRef.current?.close()}
+                aria-label={t.close}
+                title={t.close}
+                className="pressable ml-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md text-fg-secondary hover:bg-raised hover:text-fg"
+              >
+                <X className="size-4" aria-hidden />
+              </button>
+            </div>
+            <div className="max-h-[calc(92dvh-3rem)] overflow-auto overscroll-contain">
+              <img src={src2x} width={size.width} height={size.height} alt={alt} decoding="async" className="block h-auto w-[1920px] max-w-none" />
+            </div>
+          </div>
+        </dialog>
       ) : null}
     </div>
   );

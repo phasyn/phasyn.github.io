@@ -1,35 +1,35 @@
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Mail } from 'lucide-react';
 import { Link } from 'react-router';
 import { BrandMark } from '../../../components/brand/BrandMark.tsx';
 import { GitHubMark } from '../../../components/brand/ExternalMarks.tsx';
-import { Wordmark } from '../../../components/brand/Wordmark.tsx';
-import { NebulaField, RevealText } from '../../../components/fx/index.ts';
+import { RevealText } from '../../../components/fx/index.ts';
 import { ButtonLink } from '../../../components/ui/Button.tsx';
 import { SourceSoon } from '../../../components/ui/SourceSoon.tsx';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { LINKS, pagePath } from '../../../site/config.ts';
 import { HOME } from '../copy.ts';
 
-/** Closing brand moment: the mark in its light, the source notice, and where to follow the project. */
+/**
+ * Follow: the mark in its light, the source notice, and the three ways to hear first (GitHub, Hugging Face, email). No local
+ * nebula: the page-wide one shows through (one WebGL context less), so the text sits on a calm background.
+ */
 export function ClosingSection() {
   const locale = useLocale();
   const t = useCopy(HOME).closing;
   return (
-    <section aria-labelledby="closing-title" className="relative isolate overflow-hidden">
-      <NebulaField position="absolute" intensity={1.05} particles={110} className="[mask-image:linear-gradient(180deg,transparent,#000_22%,#000_78%,transparent)]" />
-      <div className="site-container site-section relative grid justify-items-center gap-8 text-center">
+    <section id="follow" aria-labelledby="closing-title" className="relative isolate overflow-hidden">
+      <div className="site-container home-section relative grid justify-items-center gap-8 text-center">
         <div className="reveal relative grid place-items-center">
-          <span aria-hidden className="glow-backdrop absolute size-[26rem] max-w-[90vw] rounded-full opacity-90" />
-          <span aria-hidden className="home-mark-halo absolute size-[15rem] rounded-full" />
-          <BrandMark size={176} glow className="relative" />
+          <span aria-hidden className="glow-backdrop absolute size-[22rem] max-w-[90vw] rounded-full opacity-80" />
+          <span aria-hidden className="home-mark-halo absolute size-[12rem] rounded-full" />
+          <BrandMark size={120} glow loading="lazy" className="relative" />
         </div>
-        <Wordmark width={248} gradient tagline decorative className="reveal justify-items-center" />
         <RevealText as="h2" id="closing-title" text={t.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
         <p className="reveal max-w-[48ch] text-lead text-fg-secondary">{t.lead}</p>
         <SourceSoon className="reveal" />
         <div className="reveal flex flex-wrap justify-center gap-3">
           <ButtonLink href={LINKS.github} variant="primary" size="lg" icon={<GitHubMark className="size-4" />} className="home-cta">
-            GitHub
+            {t.github}
           </ButtonLink>
           <ButtonLink
             href={LINKS.huggingface}
@@ -41,7 +41,10 @@ export function ClosingSection() {
               </span>
             }
           >
-            Hugging Face
+            {t.huggingface}
+          </ButtonLink>
+          <ButtonLink href={`mailto:${LINKS.email}`} variant="secondary" size="lg" icon={<Mail className="size-4" aria-hidden />}>
+            {t.email}
           </ButtonLink>
         </div>
         <Link
