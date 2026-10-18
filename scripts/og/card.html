@@ -1,0 +1,534 @@
+<!doctype html>
+<!--
+  Social card template, 1200×630. scripts/og/render.mjs opens this file, calls renderCard() with one page × locale and
+  screenshots the result into public/og/<page>-<locale>.jpg. Colours come from src/styles/tokens.css, the wordmark is the
+  artwork of src/components/brand/Wordmark.tsx, the mark is public/brand/mark-*.webp. Every picture is real material:
+  generated stills and film frames, real app captures, the About-page nebula.
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Phasyn Studio social card</title>
+    <style>
+      :root {
+        --canvas: #070b14;
+        --surface: #0b1120;
+        --fg: #eef3ff;
+        --fg-secondary: #b5bfd9;
+        --cyan: #49cfff;
+        --blue: #3e89ff;
+        --iris: #727dff;
+        --violet: #ab7bff;
+        --gradient-brand: linear-gradient(115deg, var(--cyan) 0%, var(--blue) 36%, var(--iris) 68%, var(--violet) 100%);
+        --scrim: 7 11 20;
+        /* The site's font stacks per locale; CJK display type never gets letter-spacing (DESIGN_GUIDE §8). */
+        --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        --font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+        --tracking: -0.022em;
+      }
+      :root:lang(zh-Hant) {
+        --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang TC', 'Noto Sans TC', sans-serif;
+        --tracking: 0;
+      }
+      :root:lang(ja) {
+        --font-sans: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', system-ui, sans-serif;
+        --tracking: 0;
+      }
+
+      html,
+      body {
+        margin: 0;
+        background: var(--canvas);
+      }
+      .card {
+        position: relative;
+        isolation: isolate;
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+        background: var(--canvas);
+        color: var(--fg);
+        font-family: var(--font-sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .layer {
+        position: absolute;
+        inset: 0;
+      }
+      img {
+        display: block;
+      }
+
+      /* Brand lockup: mark + wordmark, top-left inside the 60 px safe area. */
+      .brand {
+        position: absolute;
+        top: 60px;
+        left: 60px;
+        z-index: 5;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .brand-mark {
+        width: 50px;
+        height: 50px;
+        filter: drop-shadow(0 0 10px rgb(79 123 255 / 0.45));
+      }
+      .wordmark {
+        display: block;
+        width: 172px;
+        height: auto;
+        overflow: visible;
+        color: var(--fg);
+        filter: drop-shadow(0 1px 8px rgb(var(--scrim) / 0.6));
+      }
+
+      /* Copy: page label (eyebrow), the page's own H1, optional byline. */
+      .copy {
+        position: absolute;
+        left: 60px;
+        z-index: 4;
+        margin: 0;
+      }
+      .eyebrow {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 0;
+        color: var(--cyan);
+        font-size: 25px;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+      }
+      :root:lang(en) .eyebrow {
+        font-size: 20px;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+      }
+      .eyebrow::before,
+      .center .eyebrow::after {
+        content: '';
+        flex: none;
+        width: 48px;
+        height: 2px;
+        background: var(--gradient-brand);
+        box-shadow: 0 0 10px rgb(73 207 255 / 0.55);
+      }
+      /* --h1 is the layout's size; renderCard() shrinks it when a line is wider than --measure. */
+      h1 {
+        margin: 20px 0 0;
+        font-size: var(--h1, 68px);
+        font-weight: 650;
+        line-height: 1.1;
+        letter-spacing: var(--tracking);
+      }
+      h1 .line {
+        display: block;
+        width: max-content;
+        white-space: nowrap;
+      }
+      .card.center h1 .line {
+        margin-inline: auto;
+      }
+      .byline {
+        margin: 22px 0 0;
+        color: var(--fg-secondary);
+        font-size: 23px;
+        font-weight: 500;
+        line-height: 1.4;
+        white-space: nowrap;
+      }
+
+      /* AI disclosure, styled like the site's AiBadge. */
+      .tag {
+        position: absolute;
+        z-index: 6;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        height: 38px;
+        margin: 0;
+        padding: 0 16px 0 13px;
+        border: 1px solid rgb(255 255 255 / 0.16);
+        border-radius: 999px;
+        background: rgb(var(--scrim) / 0.78);
+        color: var(--fg);
+        font-size: 18px;
+        font-weight: 500;
+        line-height: 1;
+        white-space: nowrap;
+      }
+      .tag svg {
+        width: 17px;
+        height: 17px;
+        color: var(--cyan);
+      }
+      .tag [lang='en'] {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      /* still: one generated still, full bleed, canvas-coloured scrims where the type sits (never a tint). */
+      .still-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .still-scrim {
+        background:
+          linear-gradient(0deg, rgb(var(--scrim) / 0.94) 0%, rgb(var(--scrim) / 0.72) 22%, rgb(var(--scrim) / 0.28) 44%, rgb(var(--scrim) / 0) 62%),
+          linear-gradient(90deg, rgb(var(--scrim) / 0.62) 0%, rgb(var(--scrim) / 0.2) 40%, rgb(var(--scrim) / 0) 60%),
+          linear-gradient(180deg, rgb(var(--scrim) / 0.6) 0%, rgb(var(--scrim) / 0) 24%);
+      }
+      .card[data-layout='still'] .copy {
+        bottom: 60px;
+        --measure: 760px;
+      }
+      .card[data-layout='still'] .tag {
+        right: 60px;
+        bottom: 60px;
+      }
+
+      /* Shared backdrop for the composed layouts: the canvas with a quiet brand glow. */
+      .backdrop {
+        background:
+          radial-gradient(52% 70% at 80% 46%, rgb(62 137 255 / 0.2), rgb(62 137 255 / 0) 70%),
+          radial-gradient(36% 46% at 100% 0%, rgb(171 123 255 / 0.16), rgb(171 123 255 / 0) 70%),
+          radial-gradient(40% 60% at 0% 100%, rgb(73 207 255 / 0.1), rgb(73 207 255 / 0) 70%),
+          var(--canvas);
+      }
+
+      /* A real capture inside the site's HUD frame (corner brackets + label). */
+      .hud {
+        position: absolute;
+        z-index: 3;
+        margin: 0;
+        padding: 10px;
+        border-radius: 22px;
+      }
+      .hud > i {
+        position: absolute;
+        width: 22px;
+        height: 22px;
+        border: 0 solid rgb(73 207 255 / 0.85);
+      }
+      .hud > i:nth-of-type(1) {
+        top: -1px;
+        left: -1px;
+        border-top-width: 2px;
+        border-left-width: 2px;
+        border-top-left-radius: 12px;
+      }
+      .hud > i:nth-of-type(2) {
+        top: -1px;
+        right: -1px;
+        border-top-width: 2px;
+        border-right-width: 2px;
+        border-top-right-radius: 12px;
+      }
+      .hud > i:nth-of-type(3) {
+        bottom: -1px;
+        left: -1px;
+        border-bottom-width: 2px;
+        border-left-width: 2px;
+        border-bottom-left-radius: 12px;
+      }
+      .hud > i:nth-of-type(4) {
+        right: -1px;
+        bottom: -1px;
+        border-right-width: 2px;
+        border-bottom-width: 2px;
+        border-bottom-right-radius: 12px;
+      }
+      .hud-label {
+        position: absolute;
+        top: -15px;
+        left: 30px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        height: 30px;
+        padding: 0 13px;
+        border: 1px solid rgb(73 207 255 / 0.42);
+        border-radius: 999px;
+        background: var(--surface);
+        color: var(--cyan);
+        font-family: var(--font-mono);
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        line-height: 1;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .hud-label::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--cyan);
+        box-shadow: 0 0 8px var(--cyan);
+      }
+      .shot {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        background: var(--canvas);
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 0.1),
+          0 28px 70px rgb(0 0 0 / 0.55),
+          0 0 60px rgb(62 137 255 / 0.18);
+      }
+      .shot-img {
+        position: absolute;
+        max-width: none;
+      }
+
+      .card[data-layout='screen'] .copy {
+        top: 50%;
+        transform: translateY(-38%);
+        --measure: 450px;
+      }
+      .card[data-layout='screen'] .hud {
+        top: 50%;
+        right: 50px;
+        transform: translateY(-50%);
+      }
+      /* The disclosure belongs to the generated take inside the capture, so it sits on the capture. */
+      .shot .tag {
+        right: 14px;
+        bottom: 14px;
+      }
+
+      .card[data-layout='timeline'] .copy {
+        top: 146px;
+        --measure: 1080px;
+      }
+      .card[data-layout='timeline'] .hud {
+        left: 50px;
+        bottom: 50px;
+      }
+
+      /* mosaic: real film frames side by side, untouched. */
+      .tiles {
+        position: absolute;
+        left: 60px;
+        right: 60px;
+        bottom: 60px;
+        z-index: 3;
+        display: flex;
+        gap: 24px;
+      }
+      .tile {
+        position: relative;
+        flex: 1 1 0;
+        aspect-ratio: 768 / 448;
+        margin: 0;
+        overflow: hidden;
+        border-radius: 14px;
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 0.12),
+          0 24px 60px rgb(0 0 0 / 0.5);
+      }
+      .tile img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .card[data-layout='mosaic'] .copy {
+        top: 146px;
+        --h1: 60px;
+        --measure: 1080px;
+      }
+      .card[data-layout='mosaic'] .tag {
+        top: 60px;
+        right: 60px;
+      }
+
+      /* mark: the About hero's nebula art, screen-blended on a canvas glow, with a quiet centre for the type. */
+      .nebula-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        mix-blend-mode: screen;
+      }
+      .nebula-scrim {
+        background:
+          radial-gradient(46% 50% at 50% 54%, rgb(var(--scrim) / 0.78), rgb(var(--scrim) / 0.3) 70%, rgb(var(--scrim) / 0) 100%),
+          linear-gradient(180deg, rgb(var(--scrim) / 0.35), rgb(var(--scrim) / 0) 24%, rgb(var(--scrim) / 0) 70%, rgb(var(--scrim) / 0.6));
+      }
+      .nebula-glow {
+        background:
+          radial-gradient(40% 60% at 6% 50%, rgb(73 207 255 / 0.16), rgb(73 207 255 / 0) 70%),
+          radial-gradient(40% 60% at 94% 50%, rgb(171 123 255 / 0.16), rgb(171 123 255 / 0) 70%),
+          var(--canvas);
+      }
+      /* mark: one centred stack (mark, label, H1, byline, wordmark), vertically centred like the About hero. */
+      .card.center .copy {
+        top: 50%;
+        right: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transform: translateY(-50%);
+        --measure: 1080px;
+      }
+      .big-mark {
+        width: 142px;
+        height: 142px;
+        margin-bottom: 18px;
+        filter: drop-shadow(0 0 22px rgb(79 123 255 / 0.5));
+      }
+      .card.center .wordmark {
+        width: 150px;
+        margin-top: 36px;
+      }
+    </style>
+  </head>
+  <body>
+    <main id="card" class="card">
+      <div class="layer" data-for="still">
+        <img class="still-img" data-src="still" alt="" />
+        <div class="layer still-scrim"></div>
+      </div>
+
+      <div class="layer backdrop" data-for="screen timeline mosaic"></div>
+
+      <figure class="hud" data-for="screen timeline">
+        <i></i><i></i><i></i><i></i>
+        <figcaption class="hud-label" data-text="hud"></figcaption>
+        <div class="shot"><img class="shot-img" data-src="shot" alt="" /></div>
+      </figure>
+
+      <div class="tiles" data-for="mosaic">
+        <figure class="tile"><img data-src="tile0" alt="" /></figure>
+        <figure class="tile"><img data-src="tile1" alt="" /></figure>
+        <figure class="tile"><img data-src="tile2" alt="" /></figure>
+      </div>
+
+      <div class="layer nebula-glow" data-for="mark"></div>
+      <div class="layer" data-for="mark">
+        <img class="nebula-img" data-src="nebula" alt="" />
+        <div class="layer nebula-scrim"></div>
+      </div>
+      <img class="big-mark" data-for="mark" data-src="mark" alt="" />
+
+      <header class="brand">
+        <img class="brand-mark" src="../../public/brand/mark-128.webp" alt="" />
+        <!-- PHASYN / STUDIO wordmark: the SVG paths of src/components/brand/Wordmark.tsx (fill = currentColor, blue triangle). -->
+        <svg class="wordmark" viewBox="0 0 681 160" aria-label="Phasyn Studio" role="img">
+          <defs>
+            <clipPath id="wm-clip"><rect x="0" y="0" width="681" height="100" /></clipPath>
+          </defs>
+          <g fill="none" stroke="currentColor" stroke-width="16" stroke-linejoin="miter" clip-path="url(#wm-clip)">
+            <path d="M8 100V8H54A27 27 0 0 1 54 62H8" />
+            <path d="M117 0V100M193 0V100M117 50H193" />
+            <path d="M445 8H381A20 20 0 0 0 361 28V30A20 20 0 0 0 381 50H417A20 20 0 0 1 437 70V72A20 20 0 0 1 417 92H353" />
+            <path d="M467 -10L517 50L567 -10M517 50V100" />
+          </g>
+          <path fill="currentColor" d="M221 100L277 0L333 100H314.66L277 32.75L239.34 100Z" />
+          <path fill="currentColor" d="M589 0H605V100H589ZM665 0H681V100H665ZM589 0H609L681 100H661Z" />
+          <path fill="#3e89ff" d="M253 100L277 57L301 100Z" />
+          <g fill="none" stroke="currentColor" stroke-width="6" opacity="0.88">
+            <path d="M27 133H9A6 6 0 0 0 3 139A6 6 0 0 0 9 145H18A6 6 0 0 1 24 151A6 6 0 0 1 18 157H0" />
+            <path d="M129 133H159M144 133V160" />
+            <path d="M264 130V146.5A10.5 10.5 0 0 0 285 146.5V130" />
+            <path d="M393.5 133H404.5A12 12 0 0 1 404.5 157H393.5Z" />
+            <path d="M535.5 130V160" />
+            <rect x="654" y="133" width="24" height="24" rx="12" />
+          </g>
+        </svg>
+      </header>
+
+      <section class="copy">
+        <p class="eyebrow" data-text="label"></p>
+        <h1 data-lines="lines"></h1>
+        <p class="byline" data-text="byline"></p>
+      </section>
+
+      <p class="tag" data-for="tag">
+        <!-- lucide Sparkles, as in the site's AiBadge -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z" />
+          <path d="M20 2v4" />
+          <path d="M22 4h-4" />
+          <circle cx="4" cy="20" r="2" />
+        </svg>
+        <span data-text="tag"></span>
+      </p>
+    </main>
+
+    <script>
+      // Fills the template for one card and resolves once every image is decoded and the fonts are ready.
+      window.renderCard = async (card) => {
+        const root = document.getElementById('card');
+        document.documentElement.lang = card.lang;
+        root.dataset.layout = card.layout;
+        root.classList.toggle('center', card.layout === 'mark');
+        const parts = new Set([card.layout, ...(card.tag ? ['tag'] : [])]);
+        for (const el of root.querySelectorAll('[data-for]')) {
+          if (!el.dataset.for.split(' ').some((part) => parts.has(part))) el.remove();
+        }
+        for (const el of root.querySelectorAll('[data-text]')) {
+          const value = card[el.dataset.text];
+          if (value) el.textContent = value;
+          else if (el.dataset.text !== 'tag') el.remove();
+        }
+        // Like the site's AiBadge: the verbatim English licence phrase inside zh-Hant / ja text is lang="en".
+        const powered = 'Powered by MiniMax H3';
+        const tagText = root.querySelector('[data-text="tag"]');
+        if (tagText && card.lang !== 'en' && card.tag?.includes(powered)) {
+          const [before, after] = card.tag.split(powered);
+          const en = Object.assign(document.createElement('span'), { lang: 'en', textContent: powered });
+          tagText.replaceChildren(before, en, after);
+        }
+        const copy = root.querySelector('.copy');
+        const h1 = root.querySelector('h1');
+        for (const line of card.lines) {
+          const span = document.createElement('span');
+          span.className = 'line';
+          span.textContent = line;
+          h1.append(span);
+        }
+        if (card.layout === 'mark') {
+          // About: the big mark heads the centred stack and the wordmark closes it (no corner lockup).
+          copy.prepend(root.querySelector('.big-mark'));
+          copy.append(root.querySelector('.wordmark'));
+          root.querySelector('.brand').remove();
+        }
+        if (card.layout === 'screen' && card.tag) root.querySelector('.shot').append(root.querySelector('.tag'));
+        for (const img of root.querySelectorAll('[data-src]')) {
+          const media = card.media[img.dataset.src];
+          if (!media) {
+            img.closest('.tile')?.remove();
+            continue;
+          }
+          img.src = `../../public/${media.src}`;
+          if (media.position) img.style.objectPosition = media.position;
+        }
+        // A capture region [x, y, w, h] (fractions of the full capture) shown at `width` px; the height follows the region.
+        const shot = card.media.shot;
+        if (shot) {
+          const [x, y, w, h] = shot.crop;
+          const scale = shot.width / (w * shot.size[0]);
+          const box = root.querySelector('.shot');
+          Object.assign(box.style, { width: `${shot.width}px`, height: `${Math.round(h * shot.size[1] * scale)}px` });
+          Object.assign(root.querySelector('.shot-img').style, {
+            width: `${shot.size[0] * scale}px`,
+            height: `${shot.size[1] * scale}px`,
+            left: `${-x * shot.size[0] * scale}px`,
+            top: `${-y * shot.size[1] * scale}px`,
+          });
+        }
+        await document.fonts.ready;
+        // Display lines never wrap: a line wider than the layout's measure shrinks the whole headline instead.
+        const measure = parseFloat(getComputedStyle(copy).getPropertyValue('--measure')) || Infinity;
+        const widest = Math.max(...[...h1.children].map((line) => line.getBoundingClientRect().width));
+        if (widest > measure) h1.style.fontSize = `${Math.floor((parseFloat(getComputedStyle(h1).fontSize) * measure) / widest)}px`;
+        await Promise.all([...document.images].map((img) => img.decode()));
+      };
+    </script>
+  </body>
+</html>
