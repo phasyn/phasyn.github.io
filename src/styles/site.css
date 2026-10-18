@@ -34,6 +34,17 @@
   --fx-intro-delay: 1450ms;
 }
 
+/*
+ * Large desktops (≥ 1920 px, FE-17): the content column widens and the lead grows a step. Both start from their 1920 px
+ * values and grow with the viewport (column 76 → 84 rem at ~2430 px, lead 21 → 24 px at 2240 px), so nothing jumps.
+ */
+@media (min-width: 120rem) {
+  :root {
+    --site-max: min(84rem, 76rem + (100vw - 120rem) / 4);
+    --text-lead: min(1.5rem, 0.1875rem + 0.9375vw);
+  }
+}
+
 :root.fx-intro-skip {
   --fx-intro-delay: 0ms;
 }
@@ -78,8 +89,9 @@
   padding-inline: var(--site-gutter);
 }
 
+/* Section rhythm (FE-17): 64 px on phones up to 128 px from ~1600 px, so a desktop screen is not half empty nebula. */
 @utility site-section {
-  padding-block: clamp(5rem, 3rem + 9vw, 11rem);
+  padding-block: clamp(4rem, 2rem + 6vw, 8rem);
 }
 
 /* Short wide-tracked Latin labels only (PHASE · FRAME · SYNTHESIS); never on CJK text. */
