@@ -1,5 +1,5 @@
 import { Clock, Maximize, Pause, Play, Volume2, VolumeX } from 'lucide-react';
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useImperativeHandle, useRef, useState, type KeyboardEvent, type Ref } from 'react';
 import { cn } from '../../lib/cn.ts';
 import { useInView, useReducedMotion } from '../../lib/hooks.ts';
 import { mediaUrl } from '../../lib/media.ts';
@@ -12,6 +12,14 @@ const UI: Copy<{ play: string; pause: string; mute: string; unmute: string; full
   ja: { play: '再生', pause: '一時停止', mute: 'ミュート', unmute: 'ミュート解除', fullscreen: 'フルスクリーン', unavailable: '映像を準備中です', unavailableHint: 'レンダリングが終わり次第、ここで再生できます。', seek: '再生位置' },
   en: { play: 'Play', pause: 'Pause', mute: 'Mute', unmute: 'Unmute', fullscreen: 'Full Screen', unavailable: 'Video in preparation', unavailableHint: 'It will play here as soon as rendering finishes.', seek: 'Playback position' },
 };
+
+/** Imperative control for pages that drive the player (e.g. chapter timestamps). */
+export interface FilmPlayerHandle {
+  /** Move playback to `seconds` without changing play or pause. */
+  seek: (seconds: number) => void;
+  /** Start playback with sound from `seconds`, activating the player like its play button. No-op when the media failed. */
+  playFrom: (seconds: number) => void;
+}
 
 export interface FilmPlayerProps {
   /** Media path (relative to the media base) or one path per locale for burned-in subtitles. */
@@ -29,6 +37,12 @@ export interface FilmPlayerProps {
   captions?: Copy<string>;
   className?: string;
   aspect?: string;
+  /** Imperative handle (`seek`, `playFrom`); React 19 passes `ref` as a prop. */
+  ref?: Ref<FilmPlayerHandle>;
+  /** Playback position, on every media `timeupdate`. */
+  onTimeUpdate?: (seconds: number) => void;
+  /** The current locale's parsed subtitle cues once loaded (an empty list when the file is missing). */
+  onCues?: (cues: Cue[]) => void;
 }
 
 function formatTime(seconds: number): string {
@@ -42,7 +56,7 @@ function formatTime(seconds: number): string {
  * Branded video player: poster first, media loads on demand, linear progress (no springs on
  * playheads, DESIGN_GUIDE §11.5), HUD controls, keyboard shortcuts (Space/K, ←/→, M, F).
  */
-export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9' }: FilmPlayerProps) {
+export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9', ref, onTimeUpdate, onCues }: FilmPlayerProps) {
   const locale = useLocale();
   const ui = UI[locale];
   const reducedMotion = useReducedMotion();
@@ -59,14 +73,26 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
   const ambientActive = ambient && !activated && !reducedMotion;
   const [cues, setCues] = useState<Cue[]>([]);
   const captionPath = captions?.[locale];
+  // Latest callbacks without re-running effects when a parent passes new function identities.
+  const onCuesRef = useRef(onCues);
+  const onTimeRef = useRef(onTimeUpdate);
+  useEffect(() => {
+    onCuesRef.current = onCues;
+    onTimeRef.current = onTimeUpdate;
+  });
 
   useEffect(() => {
     if (!captionPath) return;
     let alive = true;
+    const done = (parsed: Cue[]) => {
+      if (!alive) return;
+      setCues(parsed);
+      onCuesRef.current?.(parsed);
+    };
     fetch(captionPath)
       .then((response) => (response.ok ? response.text() : ''))
-      .then((text) => alive && setCues(parseVtt(text)))
-      .catch(() => alive && setCues([]));
+      .then((text) => done(parseVtt(text)))
+      .catch(() => done([]));
     return () => {
       alive = false;
     };
@@ -107,6 +133,30 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
     if (video.paused) void video.play().catch(() => {});
     else video.pause();
   }, [activated]);
+
+  useImperativeHandle(
+    ref,
+    () => ({
+      seek: (seconds: number) => {
+        const video = videoRef.current;
+        if (!video) return;
+        const end = Number.isFinite(video.duration) ? video.duration : seconds;
+        video.currentTime = Math.max(0, Math.min(end, seconds));
+      },
+      playFrom: (seconds: number) => {
+        const video = videoRef.current;
+        if (!video || failed) return;
+        if (!activated) {
+          setActivated(true);
+          video.muted = false;
+          setMuted(false);
+        }
+        video.currentTime = Math.max(0, seconds);
+        void video.play().catch(() => {});
+      },
+    }),
+    [activated, failed],
+  );
 
   const seek = (delta: number) => {
     const video = videoRef.current;
@@ -154,7 +204,11 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
         onEnded={() => setPlaying(false)}
-        onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
+        onTimeUpdate={(event) => {
+          const current = event.currentTarget.currentTime;
+          setTime(current);
+          onTimeRef.current?.(current);
+        }}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
         // `src` on the element itself: a failed <source> child fires its error on the child, which the video never sees.
         src={url}

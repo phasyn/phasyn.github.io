@@ -1,6 +1,10 @@
+import { useState } from 'react';
 import { DecodeText, HudFrame, RevealText } from '../../components/fx/index.ts';
+import type { Cue } from '../../components/media/captions.ts';
 import { FilmPlayer } from '../../components/media/FilmPlayer.tsx';
 import { cn } from '../../lib/cn.ts';
+import { useLocale } from '../../i18n/locale.tsx';
+import { HTML_LANG } from '../../site/config.ts';
 import { useInView, useReducedMotion } from '../../lib/hooks.ts';
 import { chapterCaptions, chapterNumber, chapterSource, chapterTimingPath, clock, type ChapterSpec } from './chapters.ts';
 import type { TourCopy } from './copy.ts';
@@ -32,11 +36,15 @@ function currentStep(times: readonly (number | null)[] | null, time: number | nu
  */
 export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
   const copy = t.chapters[spec.id];
+  const locale = useLocale();
+  const lang = HTML_LANG[locale];
+  // English pages reuse the cues FilmPlayer loads for its subtitles; other locales fetch the English timing file.
+  const [playerCues, setPlayerCues] = useState<Cue[] | null>(null);
   const reducedMotion = useReducedMotion();
   const film = useFilmControl(reducedMotion);
   const [nearRef, near] = useInView<HTMLElement>({ rootMargin: '600px 0px' });
   const anchors = spec.steps.map((step) => step.anchor);
-  const times = useStepTimes(chapterTimingPath(spec), anchors, near);
+  const times = useStepTimes(chapterTimingPath(spec), anchors, near, locale === 'en' ? playerCues : undefined);
   const current = film.time === null ? null : currentStep(times, film.time);
   const number = chapterNumber(spec);
   const label = t.chapter.label(spec.number);
@@ -50,10 +58,15 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
       className="tour-heading scroll-mt-[calc(var(--site-header-h)+4.25rem)] py-16 first:pt-10 md:py-24 lg:scroll-mt-[calc(var(--site-header-h)+1.5rem)] lg:first:pt-24"
     >
       <header className="grid gap-4">
-        <p aria-hidden lang="en" className="eyebrow flex flex-wrap items-center gap-x-3 gap-y-1 text-brand-cyan">
-          <DecodeText text={`CH ${number}`} duration={600} />
+        <p aria-hidden className="flex flex-wrap items-center gap-x-3 gap-y-1">
+          <span lang="en" className="eyebrow text-brand-cyan">
+            <DecodeText text={`CH ${number}`} duration={600} />
+          </span>
           <span className="tour-eyebrow-line w-10" />
-          <span className="machine tracking-[0.12em] text-fg-tertiary">≈ {clock(spec.length)}</span>
+          {/* Planned length (no letter-spacing: the label is CJK in two locales). */}
+          <span lang={lang} className="text-caption font-medium text-fg-tertiary tabular-nums">
+            {t.chapter.planned(clock(spec.length))}
+          </span>
         </p>
         <h2 id={`${spec.id}-title`} tabIndex={-1} aria-label={`${label}: ${copy.title}`} className="max-w-[24ch] text-headline tracking-display text-balance-cjk text-fg outline-none">
           <RevealText text={copy.title} on="view" />
@@ -67,6 +80,9 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
         <HudFrame label={`REC · ${number}`} orbit={active} innerClassName="rounded-[1.15rem]">
           <div ref={film.wrapRef}>
             <FilmPlayer
+              ref={film.playerRef}
+              onTimeUpdate={film.onTimeUpdate}
+              {...(locale === 'en' ? { onCues: setPlayerCues } : {})}
               src={chapterSource(spec)}
               captions={chapterCaptions(spec)}
               poster={spec.poster}

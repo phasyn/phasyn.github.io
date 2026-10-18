@@ -38,6 +38,8 @@ export interface TourCopy {
   index: { heading: string; total: (chapters: number, minutes: number) => string };
   chapter: {
     label: (n: number) => string;
+    /** A planned video length (the cuts don't exist yet). */
+    planned: (time: string) => string;
     lengthLabel: string;
     whatYoullSee: string;
     playFrom: (time: string) => string;
@@ -54,7 +56,7 @@ export interface TourCopy {
     close: string;
     captures: Record<UiKey, string>;
   };
-  agent: { eyebrow: string; title: string; body: string };
+  agent: { eyebrow: string; title: string; body: string; batch: string };
   notes: { title: string; items: readonly string[] };
   closing: { title: string; lead: string; benchmarks: { body: string; cta: string }; about: { body: string; cta: string } };
 }
@@ -65,14 +67,15 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '看它實際怎麼動。',
       lead: '五個章節，都是在英文介面上的真實操作，只有等待機器運算的片段才加速。錄影製作中。',
-      stats: { chapters: '個章節', minutes: '分鐘', gpus: '顆 GPU', gpusSub: '兩台機器' },
+      stats: { chapters: '個章節', minutes: '分鐘（預計）', gpus: '顆 GPU', gpusSub: '兩台機器' },
       start: '從第 1 章開始',
       agent: '或交給 Agent',
       capture: '真實畫面：Image Studio 裡生成完成的 take',
     },
-    index: { heading: '章節', total: (chapters, minutes) => `共 ${chapters} 章 · 約 ${minutes} 分鐘` },
+    index: { heading: '章節', total: (chapters, minutes) => `共 ${chapters} 章 · 預計約 ${minutes} 分鐘` },
     chapter: {
       label: (n) => `第 ${n} 章`,
+      planned: (time) => `預計 ${time}`,
       lengthLabel: '影片長度',
       whatYoullSee: '影片中會看到',
       playFrom: (time) => `從 ${time} 開始播放`,
@@ -121,6 +124,7 @@ export const TOUR: Copy<TourCopy> = {
           { text: '[[Speed]] → 1.5×：聲音變速但音高不變；再用 [[Text]] 放上標題。' },
           { text: '[[Export Sequence…]] → [[Start Export]]：由 FFmpeg 輸出一支 MP4。', measure: '兩段未加效果的片段（先前示範）' },
         ],
+        note: { tone: 'info', text: '匯出：MP4（H.264＋AAC，完整重新編碼；畫質預設 CRF 18／23／28）。' },
       },
       c4: {
         title: '圖片反推 Prompt',
@@ -177,6 +181,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'AGENT SKILL · PHASYNCTL · MCP',
       title: '或者，交給 Agent。',
       body: 'Phasyn Studio 的 skill 讓 Agent 使用 `phasynctl` 命令列工具，以及可選的 MCP 伺服器（22 個工具）。它能讀取即時狀態、比較執行，並在送出前先 dry run。',
+      batch: '用 `phasynctl runs create／wait／download` 寫腳本，就能批次送出、等完成、下載結果；Video Studio 也有 [[Batch Render]]。Agent 用同一組工具檢查、比較與調校。',
     },
     notes: {
       title: '關於這些錄影',
@@ -200,14 +205,15 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '実際の操作を、そのまま。',
       lead: '全 5 章、英語 UI での実際の操作を、マシンの処理を待つ場面だけ早送りして収録します。録画は現在制作中です。',
-      stats: { chapters: 'チャプター', minutes: '分', gpus: 'GPU', gpusSub: '2 台のマシン' },
+      stats: { chapters: 'チャプター', minutes: '分（予定）', gpus: 'GPU', gpusSub: '2 台のマシン' },
       start: '第 1 章から見る',
       agent: 'エージェントに任せる',
       capture: '実際の画面：Image Studio で生成を終えたテイク',
     },
-    index: { heading: 'チャプター', total: (chapters, minutes) => `全 ${chapters} 章 · 約 ${minutes} 分` },
+    index: { heading: 'チャプター', total: (chapters, minutes) => `全 ${chapters} 章 · 約 ${minutes} 分（予定）` },
     chapter: {
       label: (n) => `第 ${n} 章`,
+      planned: (time) => `予定 ${time}`,
       lengthLabel: '動画の長さ',
       whatYoullSee: '映像の流れ',
       playFrom: (time) => `${time} から再生`,
@@ -256,6 +262,7 @@ export const TOUR: Copy<TourCopy> = {
           { text: '[[Speed]] → 1.5× にしても音声のピッチは変わりません。[[Text]] でタイトルも入れます。' },
           { text: '[[Export Sequence…]] → [[Start Export]] で、FFmpeg が 1 本の MP4 を書き出します。', measure: 'エフェクトなし 2 クリップ（以前のデモ）' },
         ],
+        note: { tone: 'info', text: '書き出し：MP4（H.264＋AAC、すべて再エンコード。画質プリセットは CRF 18／23／28）。' },
       },
       c4: {
         title: '画像から Prompt へ',
@@ -312,6 +319,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'AGENT SKILL · PHASYNCTL · MCP',
       title: 'エージェントに任せる',
       body: 'Phasyn Studio のスキルで、エージェントは `phasynctl` CLI と、任意の MCP サーバー（22 ツール）を使えます。ライブの状態を読み、実行を比較し、送信前にドライランで確かめます。',
+      batch: '`phasynctl runs create／wait／download` でスクリプトを書けば、まとめて送信し、完了を待ち、結果をダウンロードできます。Video Studio にも [[Batch Render]] があります。エージェントは同じツールで確認・比較・調整を行います。',
     },
     notes: {
       title: 'この録画について',
@@ -333,16 +341,17 @@ export const TOUR: Copy<TourCopy> = {
   en: {
     hero: {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
-      title: 'See it work, for real.',
+      title: 'See It Work, for Real.',
       lead: 'Five chapters of real sessions in the English\u00a0UI, sped up only where the machines are working. The recordings are in production.',
-      stats: { chapters: 'chapters', minutes: 'minutes', gpus: 'GPUs', gpusSub: 'on 2 machines' },
+      stats: { chapters: 'chapters', minutes: 'minutes (planned)', gpus: 'GPUs', gpusSub: 'on 2 machines' },
       start: 'Start Chapter 1',
       agent: 'Or Hand It to an Agent',
       capture: 'Real screen: a finished take in Image Studio',
     },
-    index: { heading: 'Chapters', total: (chapters, minutes) => `${chapters} chapters · about ${minutes} min` },
+    index: { heading: 'Chapters', total: (chapters, minutes) => `${chapters} chapters · about ${minutes} min (planned)` },
     chapter: {
       label: (n) => `Chapter ${n}`,
+      planned: (time) => `≈ ${time} (planned)`,
       lengthLabel: 'Video length',
       whatYoullSee: 'What You’ll See',
       playFrom: (time) => `Play from ${time}`,
@@ -391,6 +400,7 @@ export const TOUR: Copy<TourCopy> = {
           { text: '[[Speed]] → 1.5×: the audio changes speed without changing pitch; [[Text]] adds a title.' },
           { text: '[[Export Sequence…]] → [[Start Export]]: FFmpeg writes one MP4.', measure: 'two plain clips · earlier demo' },
         ],
+        note: { tone: 'info', text: 'Export: MP4 (H.264 + AAC, fully re-encoded; quality presets CRF 18 / 23 / 28).' },
       },
       c4: {
         title: 'Image to Prompt',
@@ -447,6 +457,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'AGENT SKILL · PHASYNCTL · MCP',
       title: 'Or Hand It to an Agent.',
       body: 'The Phasyn Studio skill gives an agent the `phasynctl` CLI and an optional MCP server with 22 tools. It reads live status, compares runs and dry-runs a render before anything is sent.',
+      batch: 'Script `phasynctl runs create`, `wait` and `download` to submit a batch, wait for it and download the results; Video Studio also has [[Batch Render]]. An agent uses the same tools to check, compare and tune.',
     },
     notes: {
       title: 'About These Recordings',

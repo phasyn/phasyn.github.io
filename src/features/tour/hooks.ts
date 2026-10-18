@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { parseVtt, type Cue } from '../../components/media/captions.ts';
+import type { FilmPlayerHandle } from '../../components/media/FilmPlayer.tsx';
 import type { ChapterId } from './chapters.ts';
 
 // Reading line: a chapter is current while it crosses the band 40–45 % down the viewport.
@@ -39,46 +40,28 @@ export function useActiveChapter(ids: readonly ChapterId[]): ChapterId | null {
 }
 
 export interface FilmControl {
-  /** Wrap FilmPlayer directly in an element with this ref. */
+  /** The element around the player (scrolled into view and observed before a seek). */
   wrapRef: RefObject<HTMLDivElement | null>;
-  /** Playback position while the video has played at least once; null before. */
+  /** Pass to FilmPlayer as `ref`. */
+  playerRef: RefObject<FilmPlayerHandle | null>;
+  /** Pass to FilmPlayer as `onTimeUpdate`. */
+  onTimeUpdate: (seconds: number) => void;
+  /** Playback position once the video has played; null before. */
   time: number | null;
-  playing: boolean;
-  /** Start (or move) playback at `seconds`, bringing the player into view first. */
+  /** Start playback at `seconds`, bringing the player into view first. */
   seek: (seconds: number) => void;
 }
 
 /**
- * Adapter around the shared FilmPlayer, which exposes no imperative handle (shared change requested in the report):
- * reads time from the media events (captured on the wrapper, media events do not bubble) and seeks through the DOM.
- * FilmPlayer pauses itself below 35 % visibility, so a seek scrolls the player in first and starts once it is well in view.
+ * Chapter-timestamp control over the shared FilmPlayer's imperative handle. FilmPlayer pauses itself below 35 % visibility,
+ * so a seek scrolls the player in first and starts once it is well in view (the latest seek wins; unmount cancels).
  */
 export function useFilmControl(reducedMotion: boolean): FilmControl {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<FilmPlayerHandle>(null);
   const [time, setTime] = useState<number | null>(null);
-  const [playing, setPlaying] = useState(false);
   const pending = useRef<{ observer: IntersectionObserver; timer: number } | null>(null);
-
-  useEffect(() => {
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    const onTime = (event: Event) => {
-      const video = event.target as HTMLVideoElement;
-      if (video.tagName === 'VIDEO') setTime(video.currentTime);
-    };
-    const onPlay = () => setPlaying(true);
-    const onStop = () => setPlaying(false);
-    wrap.addEventListener('timeupdate', onTime, true);
-    wrap.addEventListener('play', onPlay, true);
-    wrap.addEventListener('pause', onStop, true);
-    wrap.addEventListener('ended', onStop, true);
-    return () => {
-      wrap.removeEventListener('timeupdate', onTime, true);
-      wrap.removeEventListener('play', onPlay, true);
-      wrap.removeEventListener('pause', onStop, true);
-      wrap.removeEventListener('ended', onStop, true);
-    };
-  }, []);
+  const onTimeUpdate = useCallback((seconds: number) => setTime(seconds), []);
 
   const cancelPending = useCallback(() => {
     if (!pending.current) return;
@@ -91,17 +74,10 @@ export function useFilmControl(reducedMotion: boolean): FilmControl {
 
   const seek = useCallback(
     (seconds: number) => {
-      const frame = wrapRef.current?.firstElementChild as HTMLElement | null;
-      const video = frame?.querySelector('video');
-      if (!frame || !video) return;
+      const frame = wrapRef.current;
+      if (!frame || !playerRef.current) return;
       cancelPending();
-      const start = () => {
-        // Before its first play FilmPlayer shows a poster button that activates the player (sound on, from 0).
-        const poster = frame.querySelector<HTMLButtonElement>(':scope > button');
-        if (poster) poster.click();
-        video.currentTime = seconds;
-        void video.play().catch(() => {});
-      };
+      const start = () => playerRef.current?.playFrom(seconds);
       const rect = frame.getBoundingClientRect();
       const visible = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0)) / Math.max(1, rect.height);
       if (visible >= 0.6) {
@@ -127,7 +103,7 @@ export function useFilmControl(reducedMotion: boolean): FilmControl {
     [cancelPending, reducedMotion],
   );
 
-  return { wrapRef, time, playing, seek };
+  return { wrapRef, playerRef, onTimeUpdate, time, seek };
 }
 
 const cueCache = new Map<string, Promise<Cue[]>>();
@@ -146,32 +122,46 @@ function loadCues(path: string): Promise<Cue[]> {
 
 const normalize = (text: string) => text.replace(/\s+/g, ' ').trim().toLowerCase();
 
+function matchAnchors(cues: readonly Cue[], anchors: readonly string[]): (number | null)[] {
+  let from = 0;
+  return anchors.map((anchor) => {
+    const wanted = normalize(anchor);
+    const index = cues.findIndex((cue, i) => i >= from && normalize(cue.text).startsWith(wanted));
+    if (index < 0) return null;
+    from = index + 1;
+    return cues[index]?.start ?? null;
+  });
+}
+
 /**
  * Where each step starts in the video: the first cue at or after the previous step whose text begins with the step's English
- * anchor line. Read once from the site-hosted English subtitles (all locales share one timing) when `enabled` (the chapter is
- * near the viewport). A missing file or an unmatched anchor simply means no timestamp for that step.
+ * anchor line. English pages reuse the cues FilmPlayer already loaded (`playerCues`: null while it loads); other locales read
+ * the site-hosted English subtitles once (all locales share one timing) when `enabled` (the chapter is near the viewport).
+ * A missing file or an unmatched anchor simply means no timestamp for that step.
  */
-export function useStepTimes(path: string, anchors: readonly string[], enabled: boolean): readonly (number | null)[] | null {
-  const [times, setTimes] = useState<readonly (number | null)[] | null>(null);
-  const key = anchors.join('\u0000');
+export function useStepTimes(
+  path: string,
+  anchors: readonly string[],
+  enabled: boolean,
+  playerCues?: readonly Cue[] | null,
+): readonly (number | null)[] | null {
+  const [fetched, setFetched] = useState<readonly Cue[] | null>(null);
+  const usePlayer = playerCues !== undefined;
   useEffect(() => {
-    if (!enabled) return;
+    if (usePlayer || !enabled) return;
     let alive = true;
     void loadCues(path).then((cues) => {
-      if (!alive || cues.length === 0) return;
-      let from = 0;
-      const found = key.split('\u0000').map((anchor) => {
-        const wanted = normalize(anchor);
-        const index = cues.findIndex((cue, i) => i >= from && normalize(cue.text).startsWith(wanted));
-        if (index < 0) return null;
-        from = index + 1;
-        return cues[index]?.start ?? null;
-      });
-      if (found.some((time) => time !== null)) setTimes(found);
+      if (alive) setFetched(cues);
     });
     return () => {
       alive = false;
     };
-  }, [path, key, enabled]);
-  return times;
+  }, [path, enabled, usePlayer]);
+  const cues = usePlayer ? playerCues : fetched;
+  const key = anchors.join('\u0000');
+  return useMemo(() => {
+    if (!cues || cues.length === 0) return null;
+    const found = matchAnchors(cues, key.split('\u0000'));
+    return found.some((time) => time !== null) ? found : null;
+  }, [cues, key]);
 }

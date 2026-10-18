@@ -119,7 +119,7 @@ export function ChapterIndex({ t, active }: ChapterIndexProps) {
                         </span>
                         <span className="min-w-0 font-medium leading-snug [text-wrap:pretty]">{title(spec.id)}</span>
                         <span aria-hidden className="col-start-2 flex items-center gap-2">
-                          <span className="machine text-[11px] text-fg-tertiary">{clock(spec.length)}</span>
+                          <span className="shrink-0 text-[11px] text-fg-tertiary tabular-nums">{t.chapter.planned(clock(spec.length))}</span>
                           <span className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-line-subtle">
                             <span
                               ref={(element) => {

@@ -38,6 +38,9 @@ export function AgentSection({ t }: { t: TourCopy }) {
           <p className="reveal max-w-[44ch] text-lead text-balance-cjk text-fg-secondary">
             <RichText text={t.agent.body} />
           </p>
+          <p className="reveal max-w-[48ch] text-body text-fg-secondary [text-wrap:pretty]">
+            <RichText text={t.agent.batch} />
+          </p>
           <ul aria-hidden lang="en" className="reveal flex flex-wrap gap-2">
             <li className="inline-flex h-8 items-center gap-2 rounded-full border border-line-strong bg-raised/80 px-3 font-mono text-[12px] text-fg">
               <Terminal className="size-3.5 text-brand-cyan" aria-hidden />
