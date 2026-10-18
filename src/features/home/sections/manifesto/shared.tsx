@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 import { BrandMark } from '../../../../components/brand/BrandMark.tsx';
 import { useLocale } from '../../../../i18n/locale.tsx';
 import { cn } from '../../../../lib/cn.ts';
-import { pagePath } from '../../../../site/config.ts';
+import { HTML_LANG, pagePath } from '../../../../site/config.ts';
 import type { HomeCopy } from '../../copy.ts';
 import { AccelGauge, CreditMeter, GlitchThumbs, QualityPrice, RerollQueue, type VisualProps } from './PainVisuals.tsx';
 
@@ -45,17 +45,71 @@ export function splitHot(text: string, hot: readonly string[]): { text: string; 
   return parts;
 }
 
+const CJK = /[\u3000-\u9fff\uac00-\ud7af\uff00-\uffef]/;
+const CLOSING = /^[、。，．！？：；）」』】〉》’”…ー・,.!?:;)\]]+$/;
+/** Longest CJK phrase kept together; longer runs may break between words. */
+const MAX_PHRASE = 10;
+const hasSegmenter = typeof Intl !== 'undefined' && 'Segmenter' in Intl;
+
+/**
+ * CJK lines break only between phrases (Intl word segments joined up to MAX_PHRASE characters, closing punctuation kept with the
+ * phrase before it), so words such as 需求 or 仕上がり never split; Latin text is returned whole.
+ */
+function phrases(text: string, lang: string): string[] {
+  if (!hasSegmenter || !CJK.test(text)) return [text];
+  const words: string[] = [];
+  for (const { segment } of new Intl.Segmenter(lang, { granularity: 'word' }).segment(text)) {
+    if (CLOSING.test(segment) && words.length) words[words.length - 1] += segment;
+    else words.push(segment);
+  }
+  const out: string[] = [];
+  let current = '';
+  for (const word of words) {
+    if (/^\s+$/.test(word)) {
+      if (current) out.push(current);
+      out.push(word);
+      current = '';
+      continue;
+    }
+    if (current && Array.from(current + word).length > MAX_PHRASE) {
+      out.push(current);
+      current = word;
+    } else current += word;
+    if (CLOSING.test(word.slice(-1))) {
+      out.push(current);
+      current = '';
+    }
+  }
+  if (current) out.push(current);
+  return out;
+}
+
+/** Text with a break opportunity (<wbr>) between phrases; CJK text otherwise keeps words whole (keep-all). */
+function Phrased({ text, lang, first }: { text: string; lang: string; first: boolean }) {
+  return (
+    <>
+      {phrases(text, lang).map((group, index) => (
+        <Fragment key={index}>
+          {(index > 0 || !first) && !CLOSING.test(group.charAt(0)) ? <wbr /> : null}
+          {group}
+        </Fragment>
+      ))}
+    </>
+  );
+}
+
 /** A manifesto line with its pain words tinted (danger or warning). */
 export function BeatText({ text, hot, tone }: { text: string; hot: readonly string[]; tone: Tone }) {
+  const lang = HTML_LANG[useLocale()];
   return (
     <>
       {splitHot(text, hot).map((part, index) =>
         part.hot ? (
           <em key={index} className={cn('home-hot not-italic', tone === 'danger' ? 'home-hot-danger' : 'home-hot-warning')}>
-            {part.text}
+            <Phrased text={part.text} lang={lang} first={index === 0} />
           </em>
         ) : (
-          <Fragment key={index}>{part.text}</Fragment>
+          <Phrased key={index} text={part.text} lang={lang} first={index === 0} />
         ),
       )}
     </>

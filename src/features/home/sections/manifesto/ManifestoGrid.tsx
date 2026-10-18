@@ -19,7 +19,7 @@ export function ManifestoGrid({ t }: { t: ManifestoCopy }) {
           </h2>
         </header>
 
-        <ol className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
+        <ol className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
           {t.beats.map((beat, index) => {
             const meta = BEATS[index];
             if (!meta) return null;

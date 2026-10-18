@@ -144,7 +144,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
           <span className="home-mf-scan absolute inset-0" />
         </div>
 
-        <div className="home-mf-play site-container relative grid h-full grid-rows-[auto_minmax(0,1fr)_auto] gap-5 pt-[calc(var(--site-header-h)+1.25rem)] pb-5 md:gap-6 md:pb-8">
+        <div className="home-mf-play site-container relative grid h-full grid-cols-1 grid-rows-[auto_minmax(0,1fr)_auto] gap-5 pt-[calc(var(--site-header-h)+1.25rem)] pb-5 md:gap-6 md:pb-8">
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
               <p aria-hidden lang="en" className="eyebrow flex shrink-0 items-center gap-3 text-brand-cyan">
@@ -158,13 +158,13 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
             <Progress beat={beat} />
           </div>
 
-          <div className="home-mf-main grid min-h-0 content-center gap-6 md:gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-14">
-            <ol className="grid">
+          <div className="home-mf-main grid min-h-0 grid-cols-1 content-center gap-6 md:gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:items-center lg:gap-14">
+            <ol className="grid min-w-0 grid-cols-1">
               {t.beats.map((line, index) => {
                 const meta = BEATS[index]!;
                 const state = index === beat ? 'on' : index < beat ? 'past' : 'next';
                 return (
-                  <li key={index} className="home-mf-line [grid-area:1/1]" data-state={state}>
+                  <li key={index} className="home-mf-line min-w-0 [grid-area:1/1]" data-state={state}>
                     <span aria-hidden className="machine flex items-center gap-2 text-[11px] tracking-[0.18em] uppercase">
                       <span className={cn('font-semibold', TONE_TEXT[meta.tone])}>{`0${index + 1}`}</span>
                       <span className="h-px w-6 bg-line-strong" />
@@ -178,7 +178,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
               })}
             </ol>
 
-            <div ref={hudRef} aria-hidden className="home-mf-hud mx-auto w-full max-w-[36rem]">
+            <div ref={hudRef} aria-hidden className="home-mf-hud mx-auto w-full min-w-0 max-w-[36rem]">
               <HudFrame label={current.tag} scan innerClassName="bg-sunken/80">
                 <div className="grid p-5 sm:p-7">
                   {BEATS.map((meta, index) => (
@@ -209,7 +209,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
                   >
                     <span className={cn('machine text-[11px]', TONE_TEXT[meta.tone])}>{`0${index + 1}`}</span>
                     <X className={cn('size-3 shrink-0', TONE_TEXT[meta.tone])} />
-                    <span className="truncate">{line.text}</span>
+                    <span className="min-w-0 truncate">{line.text}</span>
                   </li>
                 );
               })}
