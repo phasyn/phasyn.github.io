@@ -90,7 +90,7 @@ export function PipelineSection() {
   const [activeStep, setActiveStep] = useState(0);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
   const windowPlay = usePlayback<HTMLDivElement>({ threshold: 0.25 });
-  const clip = { firstFrame: t.firstFrame, clipLabel: t.clipLabel, realBadge: t.realBadge, sound: t.sound, mute: t.mute, play: t.play, replay: t.replay };
+  const clip = { firstFrame: t.firstFrame, clipLabel: t.clipLabel, loudness: t.loudness, realBadge: t.realBadge, sound: t.sound, mute: t.mute, play: t.play, pause: t.pause, replay: t.replay };
 
   useEffect(() => {
     const steps = stepRefs.current.filter((node): node is HTMLLIElement => node !== null);

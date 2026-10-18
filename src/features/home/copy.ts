@@ -30,7 +30,10 @@ export interface HomeCopy {
   hero: {
     eyebrow: string;
     title: string;
-    lead: string;
+    /** Two sentences, shown as two lines. */
+    lead: [string, string];
+    /** Caption of the real stills in the hero's film strip. */
+    strip: string;
     watch: string;
     tour: string;
     pause: string;
@@ -54,11 +57,14 @@ export interface HomeCopy {
     notes: string[];
     firstFrame: string;
     clipLabel: string;
+    /** Note under the clip: the web copy's audio is loudness-normalised. */
+    loudness: string;
     realBadge: string;
     caption: string;
     sound: string;
     mute: string;
     play: string;
+    pause: string;
     replay: string;
   };
   features: SectionHeading & {
@@ -66,8 +72,10 @@ export interface HomeCopy {
     /** `note`: responsible-use line (MIGRATION decision #13). */
     swap: TextBlock & { note: string };
     advisor: TextBlock & { sources: string };
-    timeline: TextBlock;
-    imageStudio: TextBlock & { caption: string; chips: string[]; removeBackground: string };
+    /** `spec`: measured output and export format. */
+    timeline: TextBlock & { spec: string };
+    /** `license`: model licences of the outputs shown. */
+    imageStudio: TextBlock & { caption: string; chips: string[]; removeBackground: string; license: string };
   };
   architecture: SectionHeading & {
     diagram: {
@@ -87,6 +95,9 @@ export interface HomeCopy {
     };
     /** Captions of the real screens next to the diagram. */
     real: { graph: string; timeline: string; inspector: string };
+    /** Which GPUs have runtimes today, and what multiple machines are for. */
+    runtimes: string;
+    multi: string;
     process: TextBlock;
     direct: TextBlock;
     rent: TextBlock & { steps: string[]; today: string };
@@ -100,6 +111,8 @@ export interface HomeCopy {
     compareCaption: string;
     agentTitle: string;
     agentBody: string;
+    /** Scripting line around the `code` command. */
+    agentScript: { before: string; code: string; after: string };
     terminalCaption: string;
   };
   benchmarks: SectionHeading & {
@@ -137,7 +150,8 @@ export const HOME: Copy<HomeCopy> = {
     hero: {
       eyebrow: 'PHASE · FRAME · SYNTHESIS',
       title: '從分鏡，到成片。',
-      lead: '一個人打造的 AI 影片工作台。文字、圖片與影片串成一條可控制的流程，在你自己的機器上執行。',
+      lead: ['一個人打造的 AI 影片工作台。', '文字、圖片與影片串成一條可控制的流程，在你自己的機器上執行。'],
+      strip: 'Phasyn Studio 實際輸出 · Qwen-Image 2.1 · 1152×672 · 每張約 27 秒（RTX 5080）',
       watch: '觀看影片',
       tour: '操作導覽',
       pause: '暫停背景動畫',
@@ -191,16 +205,18 @@ export const HOME: Copy<HomeCopy> = {
       notes: [
         'Image Studio 的實際畫面：提示詞送出後，先在 Text Conditioning 做文字編碼。',
         'Image Studio 的實際畫面：生成完成的 take，在檢視器裡標示為 In Use。',
-        '實際輸出：以這張 Qwen-Image 2.1 靜態圖為首幀，H3 fl2va 生成了含聲音的影片。',
+        '實際輸出：以這張 Qwen-Image 2.1 靜態圖為首幀，H3 fl2va 生成了含聲音的影片（run cfa759df）。',
       ],
       firstFrame: '首幀',
       clipLabel: '以這張首幀生成的 fl2va 影片',
+      loudness: '網頁版已做響度正規化；原始輸出約 −37～−50 LUFS、AAC 32 kHz。',
       realBadge: '實際輸出',
       caption:
-        '介面是 Phasyn Studio 的實際畫面（英文介面）。靜態圖與影片是實際輸出。靜態圖：以 Image Studio 所用的 t2i-pc 流程、Qwen-Image 2.1 生成（1152×672，端到端約 27 秒：文字編碼、DiT 與 VAE 在 RTX 5080，合成在 CPU）。影片：以這張圖為首幀，用 H3 fl2va 生成（768×448、5.17 秒、含生成的聲音；這類片段端到端 57–76 秒：文字編碼在 DGX Spark GB10，DiT 與影片解碼在 RTX 5080，音訊解碼在 RTX 3060）。',
+        '介面是 Phasyn Studio 的實際畫面（英文介面）。靜態圖與影片是實際輸出。靜態圖：以 Image Studio 所用的 t2i-pc 流程、Qwen-Image 2.1 生成（1152×672，端到端約 27 秒：文字編碼、DiT 與 VAE 在 RTX 5080，合成在 CPU）。影片：以這張圖為首幀，用 H3 fl2va 生成（768×448、24 fps、124 幀＝5.17 秒、含生成的聲音）。它就是下方 Records 畫面裡的 run cfa759df，端到端 57.2 秒：文字編碼在 DGX Spark GB10，DiT 與影片解碼在 RTX 5080，音訊解碼在 RTX 3060。',
       sound: '開啟聲音',
       mute: '關閉聲音',
       play: '播放片段',
+      pause: '暫停片段',
       replay: '重播',
     },
     features: {
@@ -225,6 +241,7 @@ export const HOME: Copy<HomeCopy> = {
       timeline: {
         title: '時間軸與效果',
         body: '剪輯、效果、渲染一次完成：分割、修剪、吸附，交叉溶解、淡入淡出、不變調的變速、調色與標題，最後用 FFmpeg 匯出 MP4。',
+        spec: '目前實測的輸出：768×448、24 fps、124 幀（5.17 秒），聲音 AAC 32 kHz 立體聲。匯出：MP4（H.264＋AAC，完整重新編碼；畫質預設 CRF 18／23／28）。',
       },
       imageStudio: {
         title: 'Image Studio',
@@ -232,6 +249,7 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Phasyn Studio 實際輸出 · Qwen-Image 2.1，經 Image Studio 所用的 t2i-pc 流程 · 1152×672 · 每張端到端約 27 秒（文字編碼、DiT 與 VAE 在 RTX 5080，合成在 CPU）',
         chips: ['文字生成圖片', '圖生圖', '遮罩編輯'],
         removeBackground: '去背',
+        license: 'Qwen-Image 2.1 為研究、非商用授權；MiniMax H3 依 Community License（含地域限制與使用規範）。商用前請自行確認授權條款。',
       },
     },
     architecture: {
@@ -248,11 +266,11 @@ export const HOME: Copy<HomeCopy> = {
         ditSub: '逐層串流',
         videoVae: '影片 VAE',
         audioVae: '音訊 VAE',
-        mux: '混流',
+        mux: '封裝（mux）',
         control: '控制',
         data: '資料 · FileRef',
         caption:
-          '瀏覽器連到 Controller；Controller 透過每台機器上的 NodeGateway 下指令。文字編碼在 DGX Spark 上執行，結果以 FileRef 直接交給 PC 上的 DiT；DiT 的輸出再分給 RTX 5080 上的影片 VAE 與 RTX 3060 上的音訊 VAE，最後在 CPU 上混流。',
+          '瀏覽器連到 Controller；Controller 透過每台機器上的 NodeGateway 下指令。文字編碼在 DGX Spark 上執行，結果以 FileRef 直接交給 PC 上的 DiT；DiT 的輸出再分給 RTX 5080 上的影片 VAE 與 RTX 3060 上的音訊 VAE，最後在 CPU 上封裝（mux）。',
       },
       real: {
         graph: '實際畫面 · Components：fl2va-pc 流程的節點圖。te 在 DGX Spark（GB10）；venc、dit 與 video 在 RTX 5080；audio 在 RTX 3060。',
@@ -260,9 +278,11 @@ export const HOME: Copy<HomeCopy> = {
           '實際畫面 · Records：同一條流程的一次實際渲染，6 個步驟共 57.156 秒。Step Timeline 為每個資源群組畫一條軌道：DGX Spark 的 GB10、PC 的 RTX 5080 與 RTX 3060，以及 CPU。兩台機器、三顆 GPU。',
         inspector: '實際畫面 · Components：dit-5080 的元件檢視器。每個元件都能單獨啟動、停止、重新啟動；同一個 Node 一次只載入一個 DiT。',
       },
+      runtimes: '目前的執行環境：RTX 50 系列、RTX 30 系列、DGX Spark（GB10）；RTX 40 系列（例如 4090）還沒有對應的執行環境。',
+      multi: '多機的用途是把同一次渲染的各個元件分到不同 GPU；目前一次執行一個 run，不是多支影片平行運算。',
       process: {
         title: '一個元件，一個程序',
-        body: '文字編碼、DiT、影片 VAE、音訊 VAE、混流各自獨立執行；載入、精度與卸載都能逐一設定。某個模型當掉，也不會拖垮整個應用程式。',
+        body: '文字編碼、DiT、影片 VAE、音訊 VAE、封裝（mux）各自獨立執行；載入、精度與卸載都能逐一設定。某個模型當掉，也不會拖垮整個應用程式。',
       },
       direct: {
         title: '節點之間直接傳遞',
@@ -275,7 +295,7 @@ export const HOME: Copy<HomeCopy> = {
         today:
           '目前還沒有打包成現成流程。現在要加入一台 GPU 節點需要手動安裝，執行環境只支援 RTX 50 系列、RTX 30 系列與 GB10；系統沒有登入與 TLS，雲端節點必須放在私有網路裡。',
       },
-      setup: '目前的設定：文字編碼在 DGX Spark（GB10）上；DiT 與影片 VAE 在 RTX 5080；音訊 VAE 在 RTX 3060；混流在 CPU。',
+      setup: '目前的設定：文字編碼在 DGX Spark（GB10）上；DiT 與影片 VAE 在 RTX 5080；音訊 VAE 在 RTX 3060；封裝（mux）在 CPU。',
       pause: '暫停架構圖動畫',
       play: '播放架構圖動畫',
     },
@@ -290,8 +310,9 @@ export const HOME: Copy<HomeCopy> = {
       ],
       runCaption: '實際畫面 · Records：一次 fl2va 渲染的執行紀錄。6 個步驟全部完成，共 57.156 秒；最慢的是 RTX 5080 上的 dit（31.951 秒）。',
       compareCaption: 'Records · Compare：最多 8 份紀錄並排，比較設定差異與量測值。',
-      agentTitle: '太專業？沒關係。',
-      agentBody: 'Phasyn Studio 附帶 Agent Skill：phasynctl 命令列工具，以及可選用、提供 22 個工具的 MCP 伺服器。讓 Agent 幫你檢查、比較與調校。',
+      agentTitle: '交給 Agent，或寫成腳本。',
+      agentBody: 'Phasyn Studio 附帶 Agent Skill：phasynctl 命令列工具，以及可選用、提供 22 個工具的 MCP 伺服器。',
+      agentScript: { before: '用 ', code: 'phasynctl runs create / wait / download', after: ' 寫腳本，就能批次送出、等完成、下載結果；Video Studio 也有 Batch Render。Agent 用同一組工具檢查、比較與調校。' },
       terminalCaption: '終端機：Agent 用 phasynctl 檢查系統、比較紀錄。',
     },
     benchmarks: {
@@ -299,8 +320,8 @@ export const HOME: Copy<HomeCopy> = {
       title: '實測數字，照實公開。',
       lead: '40 個 H3 DiT 引擎（22 個用於文字與首幀、18 個用於參考素材），全部在同一張 RTX 5080 上測過。依照自己的硬體，挑一種適合的跑法。',
       stats: [
-        { value: '54.1', unit: 's', label: '一段 5.17 秒、有聲音的影片', detail: 't2va · 768×448 · 模型已載入 · 文字編碼在 DGX Spark，DiT 與影片 VAE 在 RTX 5080，音訊在 RTX 3060' },
-        { value: '33.2', unit: 's', label: '最快的文字生成影片 DiT', detail: 'DiT 步驟實耗（去噪計算 26.0 s）· INT8 · PAI 8 步 · RTX 5080' },
+        { value: '57.2', unit: 's', label: '一段 5.17 秒、有聲音的影片', detail: 'fl2va · 768×448 · run cfa759df · 文字編碼在 DGX Spark，DiT 與影片 VAE 在 RTX 5080，音訊在 RTX 3060' },
+        { value: '33.2', unit: 's', label: '最快的文字生成影片 DiT', detail: 'DiT 階段實耗（其中去噪運算 26.0 s）· INT8 · PAI 8 步 · RTX 5080' },
         { value: '37/40', unit: '', label: '順利跑完的 DiT 引擎', detail: '同一張 RTX 5080，共 3.2 小時 · 3 個 NF4 引擎載入失敗，照實列為失敗' },
       ],
       footnote: '每個速度數字都會註明每一步在哪台機器上執行。',
@@ -328,9 +349,9 @@ export const HOME: Copy<HomeCopy> = {
         dit: 'DiT · dit-5080',
         video: '影片 VAE · vae-5080',
         audio: '音訊 VAE · audio-3060',
-        mux: '混流 · CPU',
+        mux: '封裝（mux）· CPU',
         render: '同一次 fl2va 渲染 · 端到端',
-        fastest: '最快 t2va DiT 步驟 · INT8 PAI 8',
+        fastest: '最快 t2va DiT 階段 · INT8 PAI 8',
         still: 'Qwen-Image 2.1 · 1152×672',
         fileRef: 'FileRef DGX → PC',
         metrics: 'Recorder 指標',
@@ -389,7 +410,8 @@ export const HOME: Copy<HomeCopy> = {
     hero: {
       eyebrow: 'PHASE · FRAME · SYNTHESIS',
       title: '絵コンテから、完成映像まで。',
-      lead: '個人で開発している AI 映像制作のワークベンチです。テキスト、画像、映像をひとつの制御可能なパイプラインにまとめ、自分のマシンで動かします。',
+      lead: ['個人で開発している AI 映像制作のワークベンチです。', 'テキスト、画像、映像をひとつの制御可能なパイプラインにまとめ、自分のマシンで動かします。'],
+      strip: 'Phasyn Studio の実際の出力 · Qwen-Image 2.1 · 1152×672 · 1 枚あたり約 27 秒（RTX 5080）',
       watch: '映像を見る',
       tour: '操作ガイドを見る',
       pause: '背景アニメーションを一時停止',
@@ -443,16 +465,18 @@ export const HOME: Copy<HomeCopy> = {
       notes: [
         'Image Studio の実際の画面です。送信したプロンプトは、まず Text Conditioning でエンコードされます。',
         'Image Studio の実際の画面です。生成が終わった take が、ビューアーで In Use になっています。',
-        '実際の出力です。この Qwen-Image 2.1 の静止画を最初のフレームに、H3 fl2va が音声付きの映像を生成しました。',
+        '実際の出力です。この Qwen-Image 2.1 の静止画を最初のフレームに、H3 fl2va が音声付きの映像を生成しました（run cfa759df）。',
       ],
       firstFrame: '最初のフレーム',
       clipLabel: 'この最初のフレームから生成した fl2va 映像',
+      loudness: 'Web 版はラウドネスを正規化しています（元の出力は約 −37〜−50 LUFS、AAC 32 kHz）。',
       realBadge: '実際の出力',
       caption:
-        'UI は Phasyn Studio の実際の画面（英語 UI）です。静止画と映像は実際の出力です。静止画は Image Studio と同じ t2i-pc パイプラインの Qwen-Image 2.1 で生成しました（1152×672、エンドツーエンド約 27 秒：テキストエンコーダー・DiT・VAE は RTX 5080、合成は CPU）。映像はこの画像を最初のフレームにして H3 fl2va で生成しました（768×448、5.17 秒、生成した音声付き。同様のクリップはエンドツーエンドで 57〜76 秒：テキストエンコードは DGX Spark GB10、DiT と映像デコードは RTX 5080、音声デコードは RTX 3060）。',
+        'UI は Phasyn Studio の実際の画面（英語 UI）です。静止画と映像は実際の出力です。静止画は Image Studio と同じ t2i-pc パイプラインの Qwen-Image 2.1 で生成しました（1152×672、エンドツーエンド約 27 秒：テキストエンコーダー・DiT・VAE は RTX 5080、合成は CPU）。映像はこの画像を最初のフレームにして H3 fl2va で生成しました（768×448、24 fps、124 フレーム＝5.17 秒、生成した音声付き）。下の Records の画面と同じ run cfa759df で、エンドツーエンド 57.2 秒でした（テキストエンコードは DGX Spark GB10、DiT と映像デコードは RTX 5080、音声デコードは RTX 3060）。',
       sound: '音声をオン',
       mute: '音声をオフ',
       play: 'クリップを再生',
+      pause: 'クリップを一時停止',
       replay: 'もう一度再生',
     },
     features: {
@@ -477,6 +501,7 @@ export const HOME: Copy<HomeCopy> = {
       timeline: {
         title: 'タイムラインとエフェクト',
         body: '編集、エフェクト、レンダリングまでひと続きで行えます。分割、トリム、スナップ、クロスディゾルブ、フェード、ピッチを保つ速度変更、色調整、タイトル。最後は FFmpeg で MP4 に書き出します。',
+        spec: '現在実測している出力：768×448、24 fps、124 フレーム（5.17 秒）、音声は AAC 32 kHz ステレオ。書き出し：MP4（H.264＋AAC、完全に再エンコード。画質プリセットは CRF 18／23／28）。',
       },
       imageStudio: {
         title: 'Image Studio',
@@ -484,6 +509,7 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Phasyn Studio の実際の出力 · Qwen-Image 2.1、Image Studio と同じ t2i-pc パイプライン · 1152×672 · 1 枚あたりエンドツーエンド約 27 秒（テキストエンコーダー・DiT・VAE は RTX 5080、合成は CPU）',
         chips: ['テキストから画像', '画像から画像', 'マスク編集'],
         removeBackground: '背景除去',
+        license: 'Qwen-Image 2.1 は研究・非商用のライセンス、MiniMax H3 は Community License（地域の制限と利用規定を含む）に従います。商用で使う前に、各ライセンスの条項をご確認ください。',
       },
     },
     architecture: {
@@ -512,6 +538,8 @@ export const HOME: Copy<HomeCopy> = {
           '実際の画面 · Records：同じパイプラインで実際にレンダリングした 1 回分で、6 ステップの合計は 57.156 秒です。Step Timeline はリソースグループごとに 1 本のトラックを描きます。DGX Spark の GB10、PC の RTX 5080 と RTX 3060、そして CPU。2 台のマシン、3 つの GPU です。',
         inspector: '実際の画面 · Components：dit-5080 のコンポーネントインスペクターです。コンポーネントごとに起動・停止・再起動でき、1 つの Node で読み込む DiT は一度に 1 つです。',
       },
+      runtimes: '現在の実行環境：RTX 50 シリーズ、RTX 30 シリーズ、DGX Spark（GB10）。RTX 40 シリーズ（4090 など）にはまだ対応していません。',
+      multi: '複数のマシンを使うのは、1 回のレンダリングのコンポーネントを別々の GPU に分けるためです。現在は一度に 1 つの run を実行し、複数の映像を並列に処理するものではありません。',
       process: {
         title: '1 コンポーネント、1 プロセス',
         body: 'テキストエンコーダー、DiT、映像 VAE、音声 VAE、mux がそれぞれ独立して動き、ロード、精度、オフロードを個別に設定できます。ひとつのモデルが落ちても、アプリ全体が止まることはありません。',
@@ -542,8 +570,9 @@ export const HOME: Copy<HomeCopy> = {
       ],
       runCaption: '実際の画面 · Records：fl2va レンダリング 1 回分の実行記録です。6 ステップすべてが完了し、合計 57.156 秒。いちばん遅いのは RTX 5080 の dit（31.951 秒）でした。',
       compareCaption: 'Records · Compare：最大 8 件の記録を並べて、設定の差分と計測値を比べます。',
-      agentTitle: '専門的すぎる？ 大丈夫です。',
-      agentBody: 'Phasyn Studio には Agent Skill が付属しています。phasynctl コマンドラインツールと、必要に応じて使える 22 ツールの MCP サーバーで、エージェントが確認、比較、調整を代わりに行います。',
+      agentTitle: 'エージェントに任せる。スクリプトにもできます。',
+      agentBody: 'Phasyn Studio には Agent Skill が付属しています。phasynctl コマンドラインツールと、必要に応じて使える 22 ツールの MCP サーバーです。',
+      agentScript: { before: '', code: 'phasynctl runs create / wait / download', after: ' でスクリプトを書けば、まとめて送信し、完了を待ち、結果をダウンロードできます。Video Studio には Batch Render もあります。エージェントも同じツールで確認、比較、調整を行います。' },
       terminalCaption: 'ターミナル：エージェントが phasynctl でシステムを確認し、記録を比較します。',
     },
     benchmarks: {
@@ -551,7 +580,7 @@ export const HOME: Copy<HomeCopy> = {
       title: '実測した数字を、そのまま公開します。',
       lead: 'H3 の DiT エンジン 40 種（テキスト・先頭フレーム用 22、参照素材用 18）を、すべて同じ RTX 5080 で計測しました。お手持ちのハードウェアに合った動かし方を選べます。',
       stats: [
-        { value: '54.1', unit: 's', label: '音声付き 5.17 秒の映像', detail: 't2va · 768×448 · モデル読み込み済み · テキストエンコードは DGX Spark、DiT と映像 VAE は RTX 5080、音声は RTX 3060' },
+        { value: '57.2', unit: 's', label: '音声付き 5.17 秒の映像', detail: 'fl2va · 768×448 · run cfa759df · テキストエンコードは DGX Spark、DiT と映像 VAE は RTX 5080、音声は RTX 3060' },
         { value: '33.2', unit: 's', label: 'テキストから映像の最速 DiT', detail: 'DiT ステップの実時間（ノイズ除去の計算は 26.0 s）· INT8 · PAI 8 ステップ · RTX 5080' },
         { value: '37/40', unit: '', label: '完走した DiT エンジン', detail: '同じ RTX 5080 で合計 3.2 時間 · NF4 の 3 種は読み込みに失敗し、失敗として記載' },
       ],
@@ -641,7 +670,8 @@ export const HOME: Copy<HomeCopy> = {
     hero: {
       eyebrow: 'PHASE · FRAME · SYNTHESIS',
       title: 'From storyboard to synthesis.',
-      lead: 'A personal AI filmmaking workbench. Text, image and video in one controllable pipeline — running on your own machines.',
+      lead: ['A personal AI filmmaking workbench.', 'Text, image and video in one controllable pipeline — running on your own machines.'],
+      strip: 'Real Phasyn Studio output · Qwen-Image 2.1 · 1152×672 · about 27 s each (RTX 5080)',
       watch: 'Watch the Film',
       tour: 'Take the Tour',
       pause: 'Pause Background Animation',
@@ -695,16 +725,18 @@ export const HOME: Copy<HomeCopy> = {
       notes: [
         'The real Image Studio: once you send a prompt, Text Conditioning encodes it first.',
         'The real Image Studio: the finished take, marked In Use in the viewer.',
-        'Real output: with this Qwen-Image 2.1 still as the first frame, H3 fl2va generated the clip, sound included.',
+        'Real output: with this Qwen-Image 2.1 still as the first frame, H3 fl2va generated the clip, sound included (run cfa759df).',
       ],
       firstFrame: 'First frame',
       clipLabel: 'The fl2va clip generated from this first frame',
+      loudness: 'The web copy is loudness-normalized; the raw output is about −37 to −50 LUFS, AAC 32 kHz.',
       realBadge: 'Real output',
       caption:
-        'The interface is the real Phasyn Studio (English UI). The still and the clip are real output. Still: Qwen-Image 2.1 through t2i-pc, the pipeline Image Studio uses (1152×672, about 27 s end to end: text encoder, DiT and VAE on the RTX 5080, compositing on the CPU). Clip: H3 fl2va with that still as its first frame (768×448, 5.17 s with generated sound; clips like it took 57–76 s end to end: text encoding on DGX Spark GB10, DiT and video decode on RTX 5080, audio decode on RTX 3060).',
+        'The interface is the real Phasyn Studio (English UI). The still and the clip are real output. Still: Qwen-Image 2.1 through t2i-pc, the pipeline Image Studio uses (1152×672, about 27 s end to end: text encoder, DiT and VAE on the RTX 5080, compositing on the CPU). Clip: H3 fl2va with that still as its first frame (768×448, 24 fps, 124 frames = 5.17 s, with generated sound). It is run cfa759df, the run in the Records screen below: 57.2 s end to end, with text encoding on DGX Spark GB10, DiT and video decode on RTX 5080, audio decode on RTX 3060.',
       sound: 'Turn Sound On',
       mute: 'Turn Sound Off',
       play: 'Play Clip',
+      pause: 'Pause Clip',
       replay: 'Replay',
     },
     features: {
@@ -729,6 +761,7 @@ export const HOME: Copy<HomeCopy> = {
       timeline: {
         title: 'Timeline and Effects',
         body: 'Edit, add effects and render in one place: split, trim, snap, cross dissolves, fades, pitch-preserving speed, color and titles — then export an MP4 with FFmpeg.',
+        spec: 'Measured output today: 768×448, 24 fps, 124 frames (5.17 s), AAC 32 kHz stereo. Export: MP4 (H.264 + AAC, fully re-encoded; CRF 18 / 23 / 28 presets).',
       },
       imageStudio: {
         title: 'Image Studio',
@@ -736,6 +769,7 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Real Phasyn Studio output · Qwen-Image 2.1 through t2i-pc, the pipeline Image Studio uses · 1152×672 · about 27 s each end to end (text encoder, DiT and VAE on the RTX 5080, compositing on the CPU)',
         chips: ['Text to image', 'Image to image', 'Masked edit'],
         removeBackground: 'Remove background',
+        license: 'Qwen-Image 2.1 is licensed for research and non-commercial use; MiniMax H3 follows its Community License, including regional restrictions and a usage policy. Check the license terms before any commercial use.',
       },
     },
     architecture: {
@@ -764,6 +798,8 @@ export const HOME: Copy<HomeCopy> = {
           'Real screen · Records: one real render of that pipeline, 6 steps in 57.156 s. The Step Timeline draws one track per resource group: the GB10 in the DGX Spark, the RTX 5080 and RTX 3060 in the PC, and the CPU — three GPUs on two machines.',
         inspector: 'Real screen · Components: the dit-5080 component inspector. Each component starts, stops and restarts on its own; a Node loads one DiT at a time.',
       },
+      runtimes: 'Runtimes today: RTX 50 series, RTX 30 series and DGX Spark (GB10). No RTX 40 series runtime yet.',
+      multi: 'Multiple machines split the components of one render across GPUs. Today it runs one run at a time — not several videos in parallel.',
       process: {
         title: 'One Process per Component',
         body: 'Text encoder, DiT, video VAE, audio VAE and mux each run on their own, with their own load, precision and offload settings. A crashing model doesn’t take the app down with it.',
@@ -794,8 +830,9 @@ export const HOME: Copy<HomeCopy> = {
       ],
       runCaption: 'Real screen · Records: the run details of one fl2va render. All 6 steps done in 57.156 s; the slowest was dit on the RTX 5080 (31.951 s).',
       compareCaption: 'Records · Compare: up to eight recordings side by side — settings differences and measured values.',
-      agentTitle: 'Too Technical? No Problem.',
-      agentBody: 'Phasyn Studio ships with an agent skill: the phasynctl CLI plus an optional MCP server with 22 tools, so an agent can check, compare and tune the system for you.',
+      agentTitle: 'Hand It to an Agent — or a Script.',
+      agentBody: 'Phasyn Studio ships with an agent skill: the phasynctl CLI plus an optional MCP server with 22 tools.',
+      agentScript: { before: 'Script ', code: 'phasynctl runs create / wait / download', after: ' to submit in batches, wait for completion and download the results; Video Studio also has Batch Render. An agent uses the same tools to check, compare and tune.' },
       terminalCaption: 'Terminal: an agent uses phasynctl to check the system and compare runs.',
     },
     benchmarks: {
@@ -803,7 +840,7 @@ export const HOME: Copy<HomeCopy> = {
       title: 'Measured. Published As Is.',
       lead: '40 H3 DiT engines (22 for text and first frame, 18 for references), all benchmarked on the same RTX 5080 — so you can choose a setup that fits your hardware.',
       stats: [
-        { value: '54.1', unit: 's', label: 'A 5.17-second clip with sound', detail: 't2va · 768×448 · models loaded · text encoding on DGX Spark, DiT and video VAE on RTX 5080, audio on RTX 3060' },
+        { value: '57.2', unit: 's', label: 'A 5.17-second clip with sound', detail: 'fl2va · 768×448 · run cfa759df · text encoding on DGX Spark, DiT and video VAE on RTX 5080, audio on RTX 3060' },
         { value: '33.2', unit: 's', label: 'Fastest text-to-video DiT', detail: 'DiT step wall time (denoise compute 26.0 s) · INT8 · PAI 8-step · RTX 5080' },
         { value: '37/40', unit: '', label: 'DiT engines that completed', detail: 'One RTX 5080, 3.2 hours in total · 3 NF4 engines failed to load and are listed as failures' },
       ],

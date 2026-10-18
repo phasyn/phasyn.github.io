@@ -120,6 +120,7 @@ export function FeaturesSection() {
               <ArtImage art="timeline" size={124} fallback={Sparkles} className="-mt-3 -mr-3 hidden sm:block" />
             </div>
             <RealScreen screen="timeline-effects" className="mt-7" displayWidth="min(46rem, 88vw)" />
+            <p className="mt-4 text-caption leading-relaxed text-fg-tertiary">{t.timeline.spec}</p>
           </Tile>
 
           <Tile className="md:col-span-2 lg:col-span-6" tilt={2}>
@@ -156,7 +157,10 @@ export function FeaturesSection() {
                     />
                   ))}
                 </div>
-                <figcaption className="text-caption leading-relaxed text-fg-tertiary">{t.imageStudio.caption}</figcaption>
+                <figcaption className="grid gap-1.5 text-caption leading-relaxed text-fg-tertiary">
+                  <span>{t.imageStudio.caption}</span>
+                  <span className="text-fg-disabled">{t.imageStudio.license}</span>
+                </figcaption>
               </figure>
             </div>
           </Tile>

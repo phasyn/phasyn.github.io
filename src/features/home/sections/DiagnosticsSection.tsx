@@ -55,6 +55,13 @@ export function DiagnosticsSection() {
               <h3 className="text-headline tracking-display text-balance-cjk text-fg">{t.agentTitle}</h3>
             </div>
             <p className="text-reading text-fg-secondary">{t.agentBody}</p>
+            <p className="text-reading text-fg-secondary">
+              {t.agentScript.before}
+              <code translate="no" className="machine rounded-md border border-line-subtle bg-sunken px-1.5 py-0.5 text-[0.875em] whitespace-nowrap text-fg">
+                {t.agentScript.code}
+              </code>
+              {t.agentScript.after}
+            </p>
             <figure className="grid gap-3">
               <RealScreen screen="terminal-phasynctl" displayWidth="min(37rem, 94vw)" />
               <figcaption className="text-caption leading-relaxed text-fg-tertiary">{t.terminalCaption}</figcaption>

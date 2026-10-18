@@ -40,8 +40,6 @@ export const RUN = {
 
 /** Benchmark facts (work/product/product-analysis.md §1, §9; lead update 2026-10-18). DiT times are on one RTX 5080. */
 export const BENCH = {
-  /** t2va, 5.17 s clip at 768×448 with audio, models loaded: TE on DGX Spark, DiT + video VAE on RTX 5080, audio on RTX 3060. */
-  renderSeconds: 54.1,
   clipSeconds: 5.17,
   clipSize: '768×448',
   /**

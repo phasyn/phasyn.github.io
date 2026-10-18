@@ -1,4 +1,4 @@
-import { ArrowRight, Boxes, CloudCog, Network } from 'lucide-react';
+import { ArrowRight, Boxes, CloudCog, Cpu, Info, Network } from 'lucide-react';
 import { useState } from 'react';
 import { HudFrame } from '../../../components/fx/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
@@ -60,7 +60,17 @@ export function ArchitectureSection() {
           </figure>
         </HudFrame>
 
-        <p className="reveal mt-5 text-caption text-fg-tertiary">{t.setup}</p>
+        <div className="reveal mt-5 grid gap-3 md:grid-cols-2">
+          <p className="flex items-start gap-2.5 rounded-2xl border border-line-subtle bg-surface px-4 py-3 text-body text-fg-secondary">
+            <Cpu className="mt-0.5 size-4 shrink-0 text-action-fg" aria-hidden />
+            {t.runtimes}
+          </p>
+          <p className="flex items-start gap-2.5 rounded-2xl border border-line-subtle bg-surface px-4 py-3 text-body text-fg-secondary">
+            <Info className="mt-0.5 size-4 shrink-0 text-action-fg" aria-hidden />
+            {t.multi}
+          </p>
+          <p className="text-caption text-fg-tertiary md:col-span-2">{t.setup}</p>
+        </div>
 
         <div className="mt-12 grid gap-10">
           <figure className="reveal grid gap-3">

@@ -46,19 +46,21 @@ export interface ClipLabels {
   note: string;
   firstFrame: string;
   clipLabel: string;
+  loudness: string;
   realBadge: string;
   sound: string;
   mute: string;
   play: string;
+  pause: string;
   replay: string;
 }
 
-const still = REAL.stills.ocean;
+const still = REAL.stills[REAL.clip.firstFrame];
 
 /**
- * Step 3 — the real output: the H3 fl2va clip made from the real ocean still (its first frame, shown beside it). It plays once,
- * muted, when the step is shown; a thin line tracks its own clock. Play, replay and sound are real buttons. Nothing autoplays
- * under reduced motion: the clip then starts only from Play.
+ * Step 3 — the real output: the H3 fl2va clip of run cfa759df, made from the real rain still (its first frame, shown beside it).
+ * It plays once, muted, when the step is shown; a thin line tracks its own clock. Play / Pause / Replay and Sound are real
+ * buttons. Nothing autoplays under reduced motion: the clip then starts only from Play.
  */
 export function ClipPane({ active, armed, labels, className }: { active: boolean; armed: boolean; labels: ClipLabels; className?: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -111,6 +113,19 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
     void video.play().catch(() => setPlaying(false));
   };
 
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (playing && video) {
+      video.pause();
+      return;
+    }
+    if (ended || !video || video.currentTime === 0) {
+      restart(!muted);
+      return;
+    }
+    void video.play().catch(() => setPlaying(false));
+  };
+
   const toggleSound = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -130,7 +145,7 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
             ref={videoRef}
             aria-label={labels.clipLabel}
             className="absolute inset-0 size-full object-cover"
-            src={mediaUrl(REAL.oceanClip)}
+            src={mediaUrl(REAL.clip.src)}
             poster={still.src}
             muted
             playsInline
@@ -168,7 +183,7 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
           />
           <span className="grid min-w-0 gap-0.5">
             <span className="text-caption font-medium text-fg-secondary">{labels.firstFrame}</span>
-            <span lang="en" className="machine truncate text-[11px] text-fg-tertiary">
+            <span lang="en" className="machine text-[11px] text-fg-tertiary">
               Qwen-Image 2.1 · 1152×672
             </span>
           </span>
@@ -177,8 +192,8 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
             <span lang="en" className="text-caption font-medium text-fg-secondary">
               H3 fl2va
             </span>
-            <span lang="en" className="machine flex items-center gap-1 truncate text-[11px] text-fg-tertiary">
-              768×448 · 5.17 s
+            <span lang="en" className="machine flex flex-wrap items-center gap-x-1 text-[11px] text-fg-tertiary">
+              768×448 · 5.17&nbsp;s · {REAL.clip.run}
               <AudioLines className="size-3 text-brand-cyan" aria-hidden />
             </span>
           </span>
@@ -186,12 +201,11 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
         <span className="ml-auto flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => restart(!muted)}
-            disabled={playing}
-            className="pressable inline-flex min-h-9 items-center gap-2 rounded-full border border-line-strong bg-raised px-3.5 text-data font-medium text-fg hover:border-action/60 disabled:opacity-50"
+            onClick={togglePlay}
+            className="pressable inline-flex min-h-9 items-center gap-2 rounded-full border border-line-strong bg-raised px-3.5 text-data font-medium text-fg hover:border-action/60"
           >
-            {ended ? <RotateCcw className="size-4" aria-hidden /> : playing ? <Pause className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
-            {ended ? labels.replay : labels.play}
+            {playing ? <Pause className="size-4" aria-hidden /> : ended ? <RotateCcw className="size-4" aria-hidden /> : <Play className="size-4" aria-hidden />}
+            {playing ? labels.pause : ended ? labels.replay : labels.play}
           </button>
           <button
             type="button"
@@ -204,7 +218,10 @@ export function ClipPane({ active, armed, labels, className }: { active: boolean
           </button>
         </span>
       </div>
-      <figcaption className="text-caption leading-relaxed text-fg-tertiary">{labels.note}</figcaption>
+      <figcaption className="grid gap-1 text-caption leading-relaxed text-fg-tertiary">
+        <span>{labels.note}</span>
+        <span className="text-fg-disabled">{labels.loudness}</span>
+      </figcaption>
     </figure>
   );
 }

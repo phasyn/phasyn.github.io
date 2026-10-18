@@ -1487,3 +1487,33 @@
   word-break: keep-all;
   overflow-wrap: normal;
 }
+
+/*
+ * Caption of the real stills in the hero's film strip: shown only while the pinned hero is in its strip phase (scroll timeline,
+ * motion allowed, tall viewports). Elsewhere the scene never reaches the strip, so the caption stays hidden.
+ */
+.home-hero-strip {
+  opacity: 0;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+    .home-hero-strip {
+      animation: home-strip-caption linear both;
+      animation-timeline: --home-hero;
+      animation-range: contain 34% contain 100%;
+    }
+  }
+}
+
+@keyframes home-strip-caption {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  30%,
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
