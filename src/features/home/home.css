@@ -1,0 +1,120 @@
+/*
+ * Home page layer: the few effects utilities cannot express. Brand moments only. Everything here is progressive: content is
+ * fully visible in the prerendered HTML, scroll-driven effects run only where scroll timelines exist, and the global
+ * reduced-motion rule in tokens.css cancels every animation (each element then shows its static, complete state).
+ */
+
+/* Hero media fades into the page canvas at the bottom, so neither the WebGL scene nor the poster shows a seam. */
+.home-hero-media {
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 74%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0%, #000 74%, transparent 100%);
+}
+
+/* Legibility scrim under the hero copy: left on landscape viewports, bottom on portrait ones (matches the scene layout). */
+.home-hero-scrim {
+  background:
+    linear-gradient(90deg, rgb(7 11 20 / 0.82) 0%, rgb(7 11 20 / 0.5) 34%, rgb(7 11 20 / 0) 60%),
+    linear-gradient(180deg, rgb(7 11 20 / 0.55) 0%, rgb(7 11 20 / 0) 22%);
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .home-hero-scrim {
+    background:
+      linear-gradient(180deg, rgb(7 11 20 / 0.5) 0%, rgb(7 11 20 / 0) 18%),
+      linear-gradient(180deg, rgb(7 11 20 / 0) 34%, rgb(7 11 20 / 0.78) 60%, rgb(7 11 20 / 0.94) 100%);
+  }
+}
+
+/* The hero is a named view timeline for its copy. */
+.home-hero {
+  view-timeline-name: --home-hero;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .home-hero-copy {
+      animation: home-hero-out linear both;
+      animation-timeline: --home-hero;
+      animation-range: exit 0% exit 52%;
+    }
+
+    /* Manifesto: each line brightens and settles as it reaches the reading zone. */
+    .home-manifesto-line {
+      animation: home-line-in linear both;
+      animation-timeline: view();
+      animation-range: entry 15% cover 40%;
+    }
+  }
+}
+
+@keyframes home-hero-out {
+  to {
+    opacity: 0;
+    transform: translateY(-64px);
+  }
+}
+
+@keyframes home-line-in {
+  from {
+    opacity: 0.14;
+    transform: translateY(0.28em);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/*
+ * Architecture data packets: a short bright dash travelling along each node-to-node path (pathLength="100" on the path).
+ * Paused by the owner when off screen or when the user pauses; reduced motion shows the solid path instead.
+ */
+.home-flow {
+  stroke-dasharray: 6 94;
+  animation: home-flow var(--home-flow-duration, 2.8s) linear infinite;
+  animation-delay: var(--home-flow-delay, 0s);
+}
+
+.home-flow-paused .home-flow {
+  animation-play-state: paused;
+}
+
+@keyframes home-flow {
+  from {
+    stroke-dashoffset: 6;
+  }
+  to {
+    stroke-dashoffset: -94;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-flow {
+    stroke-dasharray: none;
+    opacity: 0.55;
+  }
+}
+
+/* Pipeline: the sticky window swaps panes with a short cross-fade (opacity/transform only, interruptible transitions). */
+.home-pane {
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-spring-smooth) var(--ease-spring-smooth);
+}
+
+.home-pane[data-inactive] {
+  opacity: 0;
+  transform: translateY(10px) scale(0.985);
+  pointer-events: none;
+}
+
+/* Pipeline step text dims when it is not the step being shown (desktop sticky layout only). */
+@media (min-width: 52.5rem) {
+  .home-step {
+    transition: opacity var(--duration-spring-smooth) var(--ease-spring-smooth);
+  }
+
+  .home-step[data-dim] {
+    opacity: 0.38;
+  }
+}
