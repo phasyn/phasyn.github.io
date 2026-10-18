@@ -90,6 +90,12 @@ export interface FilmPlayerProps {
    * `h3` (Powered by MiniMax H3), `qwen` (Qwen-Image 2.1), `mixed` (recordings and films containing both).
    */
   badge?: AiBadgeVariant;
+  /**
+   * `false` while the film is not published yet (e.g. a chapter not recorded): the in-preparation state shows straight away,
+   * also in the prerendered HTML, and neither the video nor its captions are requested, so a missing file never costs a
+   * 404 (FE-15). Default `true`.
+   */
+  available?: boolean;
   /** Imperative handle (`seek`, `playFrom`); React 19 passes `ref` as a prop. */
   ref?: Ref<FilmPlayerHandle>;
   /** Playback position, on every media `timeupdate`. */
@@ -115,7 +121,7 @@ const CONTROL = 'pressable grid size-8 shrink-0 place-items-center rounded-md ho
  * Branded video player: poster first, media attached only near the viewport, linear progress (no springs on playheads,
  * DESIGN_GUIDE §11.5), HUD controls with shortcut tooltips, keyboard shortcuts (Space/K, ←/→, M, F), full-screen toggle.
  */
-export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9', badge, ref, onTimeUpdate, onCues }: FilmPlayerProps) {
+export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9', badge, available = true, ref, onTimeUpdate, onCues }: FilmPlayerProps) {
   const locale = useLocale();
   const ui = UI[locale];
   const reducedMotion = useReducedMotion();
@@ -129,6 +135,8 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
   const [time, setTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [failed, setFailed] = useState(false);
+  // Not published yet, or the file turned out to be missing or unplayable.
+  const preparing = failed || !available;
   const [fullscreen, setFullscreen] = useState(false);
   const path = typeof src === 'string' ? src : src[locale];
   const url = mediaUrl(path);
@@ -147,7 +155,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
 
   useEffect(() => {
     const frame = frameRef.current;
-    if (!frame || near) return;
+    if (!frame || near || !available) return;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry?.isIntersecting) return;
@@ -158,7 +166,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
     );
     observer.observe(frame);
     return () => observer.disconnect();
-  }, [near]);
+  }, [near, available]);
 
   // Subtitles load with the media, not with the page.
   useEffect(() => {
@@ -223,7 +231,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
   const start = useCallback(
     (from: number) => {
       const video = videoRef.current;
-      if (!video) return;
+      if (!video || !available) return;
       if (!activated) {
         setActivated(true);
         video.muted = false;
@@ -237,7 +245,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
       video.currentTime = from;
       void video.play().catch(() => {});
     },
-    [activated, near],
+    [activated, available, near],
   );
 
   const toggle = useCallback(() => {
@@ -258,7 +266,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
     () => ({
       seek: (seconds: number) => {
         const video = videoRef.current;
-        if (!video) return;
+        if (!video || !available) return;
         if (!near) {
           pendingRef.current = { from: Math.max(0, seconds), play: pendingRef.current?.play ?? false };
           setNear(true);
@@ -268,11 +276,11 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         video.currentTime = Math.max(0, Math.min(end, seconds));
       },
       playFrom: (seconds: number) => {
-        if (failed) return;
+        if (preparing) return;
         start(Math.max(0, seconds));
       },
     }),
-    [failed, near, start],
+    [available, preparing, near, start],
   );
 
   const seekBy = (delta: number) => {
@@ -367,7 +375,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         </div>
       ) : null}
 
-      {failed ? (
+      {preparing ? (
         <div
           role="status"
           // With a badge, the card stays clear of it even in small players.
@@ -381,7 +389,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         </div>
       ) : null}
 
-      {!showControls && !failed ? (
+      {!showControls && !preparing ? (
         <button
           type="button"
           onClick={toggle}
