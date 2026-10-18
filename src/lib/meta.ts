@@ -1,0 +1,35 @@
+import type { MetaDescriptor } from 'react-router';
+import { HTML_LANG, LOCALES, OG_LOCALE, SITE_URL, pageUrl, type Locale, type Page } from '../site/config.ts';
+
+interface PageMeta {
+  locale: Locale;
+  page: Page;
+  title: string;
+  description: string;
+  /** Site-relative image path (1200×630). */
+  image?: string;
+}
+
+/** Title, description, canonical, hreflang alternates and social cards for one prerendered page. */
+export function pageMeta({ locale, page, title, description, image = '/brand/og-1200x630.jpg' }: PageMeta): MetaDescriptor[] {
+  const url = pageUrl(locale, page);
+  const imageUrl = `${SITE_URL}${image}`;
+  return [
+    { title },
+    { name: 'description', content: description },
+    { tagName: 'link', rel: 'canonical', href: url },
+    ...LOCALES.map((alt) => ({ tagName: 'link', rel: 'alternate', hrefLang: HTML_LANG[alt], href: pageUrl(alt, page) })),
+    { tagName: 'link', rel: 'alternate', hrefLang: 'x-default', href: pageUrl('en', page) },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:site_name', content: 'Phasyn Studio' },
+    { property: 'og:title', content: title },
+    { property: 'og:description', content: description },
+    { property: 'og:url', content: url },
+    { property: 'og:image', content: imageUrl },
+    { property: 'og:locale', content: OG_LOCALE[locale] },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:title', content: title },
+    { name: 'twitter:description', content: description },
+    { name: 'twitter:image', content: imageUrl },
+  ];
+}

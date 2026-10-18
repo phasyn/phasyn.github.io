@@ -1,0 +1,133 @@
+/*
+ * Marketing-site layer on top of the App's token owner (tokens.css, unchanged copy of the brand
+ * system's tokens.tailwind.css). Everything here is a "brand moment" extension the App does not need:
+ * display type scale, page layout, reveal-on-scroll, and the few site-only effects. Tokens only — no
+ * stray colours outside rgb() alpha variants of brand values.
+ */
+
+@theme {
+  /* Display scale for marketing pages (the App tops out at text-title 24/32). */
+  --text-hero: clamp(2.75rem, 1.35rem + 5.6vw, 6.25rem);
+  --text-hero--line-height: 1.03;
+  --text-hero--font-weight: 650;
+  --text-display: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);
+  --text-display--line-height: 1.07;
+  --text-display--font-weight: 650;
+  --text-headline: clamp(1.625rem, 1.2rem + 1.6vw, 2.625rem);
+  --text-headline--line-height: 1.16;
+  --text-headline--font-weight: 600;
+  --text-lead: clamp(1.0625rem, 0.96rem + 0.42vw, 1.3125rem);
+  --text-lead--line-height: 1.6;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1rem;
+  --text-eyebrow--font-weight: 600;
+  --radius-3xl: 22px;
+}
+
+/* Latin display type tightens slightly; CJK never gets letter-spacing (DESIGN_GUIDE §8). */
+:root {
+  --display-tracking: -0.022em;
+  --site-header-h: 3.5rem;
+  --site-gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+  --site-max: 76rem;
+}
+
+:root:lang(zh-Hant),
+:root:lang(ja) {
+  --display-tracking: 0;
+}
+
+@utility tracking-display {
+  letter-spacing: var(--display-tracking);
+}
+
+/* Balanced headline wrapping; Japanese breaks at phrase boundaries where supported. */
+@utility text-balance-cjk {
+  text-wrap: balance;
+  line-break: strict;
+  :root:lang(ja) & {
+    word-break: auto-phrase;
+  }
+}
+
+@utility site-container {
+  width: 100%;
+  max-width: calc(var(--site-max) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+@utility site-section {
+  padding-block: clamp(5rem, 3rem + 9vw, 11rem);
+}
+
+/* Short wide-tracked Latin labels only (PHASE · FRAME · SYNTHESIS); never on CJK text. */
+@utility eyebrow {
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/* Soft brand glow behind hero objects (brand moment only). */
+@utility glow-backdrop {
+  background:
+    radial-gradient(closest-side, rgb(62 137 255 / 0.22), transparent 70%),
+    radial-gradient(60% 50% at 70% 60%, rgb(171 123 255 / 0.14), transparent 70%);
+}
+
+/* Fine film grain to keep large gradients from banding. */
+@utility grain {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+}
+
+/*
+ * Reveal on scroll without JavaScript: content is visible in the prerendered HTML and only animates
+ * where scroll-driven animations exist and motion is allowed.
+ */
+@keyframes site-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: site-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+  }
+}
+
+@layer base {
+  html {
+    scroll-padding-top: calc(var(--site-header-h) + 1rem);
+  }
+
+  body {
+    overflow-x: clip;
+  }
+
+  /* Marketing pages use a larger reading size than the App's 14 px body. */
+  main {
+    font-size: var(--text-reading);
+    line-height: var(--text-reading--line-height);
+  }
+}
