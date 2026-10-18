@@ -51,6 +51,12 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
   const url = mediaUrl(path);
   const ambientActive = ambient && !activated && !reducedMotion;
 
+  // The prerendered <video> may fail (missing file) before hydration, when React is not listening yet: check on mount.
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video && (video.error || video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE)) setFailed(true);
+  }, [url]);
+
   // Ambient preview plays only while visible; it never runs under reduced motion.
   useEffect(() => {
     const video = videoRef.current;
@@ -127,10 +133,10 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
         onEnded={() => setPlaying(false)}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        // `src` on the element itself: a failed <source> child fires its error on the child, which the video never sees.
+        src={url}
         onError={() => setFailed(true)}
-      >
-        <source src={url} type="video/mp4" onError={() => setFailed(true)} />
-      </video>
+      />
 
       {failed ? (
         <div role="status" className="absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0.15),rgb(2_4_9_/_0.6))] p-6">
