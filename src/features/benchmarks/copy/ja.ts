@@ -218,7 +218,7 @@ const ja: BenchCopy = {
     title: '10 月 18 日の計測',
     lead: '6 本の動画と 4 枚の静止画は、10 月 18 日にオリジナルキャラクター The Courier を使い、コントローラー API の本番ルート（t2i-pc・fl2va-pc・ref2va-pc）で生成しました。各 1 回の実行で、時間はコントローラーが記録したステップ時間です。',
     refTitle: 'ref2va の参照画像',
-    refBody: 'キャラクターシート自体も、同じ日に Qwen-Image 2.1（t2i-pc）で約 30 秒かけて生成しました。',
+    refBody: 'キャラクターシート自体も、同じ日に Qwen-Image 2.1（t2i-pc）で生成しました。1 回 26.0–26.1 s、テキストエンコーダーがコールドのときは 36.6 s です。',
     stillsTitle: 'Qwen-Image 2.1 の静止画',
     stillsBody: '1152×672・40 ステップ。テキストエンコード、DiT、VAE は RTX 5080、合成は CPU です。これらの静止画は fl2va の先頭フレームにも使いました。',
     clipAria: (scene) => scene,

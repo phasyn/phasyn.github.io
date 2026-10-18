@@ -218,7 +218,7 @@ const en: BenchCopy = {
     title: 'Six Clips, Four Stills',
     lead: 'Made on 2026-10-18 with an original character, The Courier, through the controller API’s production routes (t2i-pc, fl2va-pc and ref2va-pc). Each was a single run; the times are the controller’s step times.',
     refTitle: 'The ref2va Reference',
-    refBody: 'The character sheet itself was generated the same day with Qwen-Image 2.1 (t2i-pc), in about 30 s.',
+    refBody: 'The character sheet itself was generated the same day with Qwen-Image 2.1 (t2i-pc): 26.0–26.1 s per run, 36.6 s with a cold text encoder.',
     stillsTitle: 'Qwen-Image 2.1 Stills',
     stillsBody: '1152×672, 40 steps. Text encode, DiT and VAE run on the RTX 5080; compositing on the CPU. These stills were also the first frames for fl2va.',
     clipAria: (scene) => scene,

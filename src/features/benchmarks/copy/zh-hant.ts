@@ -218,7 +218,7 @@ const zhHant: BenchCopy = {
     title: '10 月 18 日實測',
     lead: '六段影片與四張靜態圖，都是 10 月 18 日以原創角色 The Courier、透過 Controller API 的正式路由（t2i-pc、fl2va-pc、ref2va-pc）生成。每項只跑一次；時間是 Controller 記錄的步驟時間。',
     refTitle: 'ref2va 的參考圖',
-    refBody: '角色設定圖本身也是同一天以 Qwen-Image 2.1（t2i-pc）生成，約 30 秒。',
+    refBody: '角色設定圖本身也是同一天以 Qwen-Image 2.1（t2i-pc）生成：每次 26.0–26.1 s，文字編碼器冷啟動時 36.6 s。',
     stillsTitle: 'Qwen-Image 2.1 靜態圖',
     stillsBody: '1152×672、40 步；文字編碼、DiT 與 VAE 都在 RTX 5080，合成在 CPU。這些靜態圖也當成 fl2va 的首幀。',
     clipAria: (scene) => scene,
