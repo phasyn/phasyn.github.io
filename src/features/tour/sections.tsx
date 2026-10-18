@@ -35,7 +35,7 @@ export function AgentSection({ t }: { t: TourCopy }) {
           <h2 id="agent-title" tabIndex={-1} aria-label={t.agent.title} className="text-headline tracking-display text-balance-cjk text-fg outline-none">
             <RevealText text={t.agent.title} on="view" />
           </h2>
-          <p className="reveal max-w-[44ch] text-lead text-fg-secondary [text-wrap:pretty]">
+          <p className="reveal max-w-[44ch] text-lead text-balance-cjk text-fg-secondary">
             <RichText text={t.agent.body} />
           </p>
           <ul aria-hidden lang="en" className="reveal flex flex-wrap gap-2">
@@ -99,7 +99,7 @@ export function ClosingSection({ t }: { t: TourCopy }) {
       <NebulaField position="absolute" intensity={1} particles={110} className="-z-10 [mask-image:linear-gradient(180deg,transparent,#000_25%,#000_80%,transparent)]" />
       <div className="site-container site-section grid justify-items-center gap-8 text-center">
         <RevealText as="h2" id="closing-title" text={t.closing.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
-        <p className="reveal max-w-[44ch] text-lead text-fg-secondary [text-wrap:pretty]">{t.closing.lead}</p>
+        <p className="reveal max-w-[44ch] text-lead text-balance-cjk text-fg-secondary">{t.closing.lead}</p>
         <ul className="grid w-full max-w-[52rem] gap-4 text-left sm:grid-cols-2">
           {cards.map(({ to, title, body, cta, Icon, tag }) => (
             <li key={to} className="reveal min-w-0">

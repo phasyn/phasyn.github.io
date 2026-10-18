@@ -20,7 +20,7 @@ export function TourHero({ t }: { t: TourCopy }) {
   const stats = [
     { value: String(CHAPTERS.length), label: t.hero.stats.chapters, approx: false },
     { value: String(minutes), label: t.hero.stats.minutes, approx: true },
-    { value: '3', label: t.hero.stats.gpus, approx: false },
+    { value: '3', label: t.hero.stats.gpus, sub: t.hero.stats.gpusSub, approx: false },
   ];
 
   // In-page jumps: smooth where motion is allowed, focus to the target heading for keyboard users.
@@ -45,14 +45,17 @@ export function TourHero({ t }: { t: TourCopy }) {
           <span className="tour-eyebrow-line hidden w-10 [transform-origin:right_center] sm:inline-block" />
         </p>
         <RevealText as="h1" id="tour-title" text={t.hero.title} on="load" delay={150} className="max-w-[16ch] text-hero tracking-display text-balance-cjk text-fg" />
-        <p className="tour-hero-in max-w-[40ch] text-lead text-fg-secondary [text-wrap:pretty]" style={at(700)}>
+        <p className="tour-hero-in max-w-[40ch] text-lead text-balance-cjk text-fg-secondary" style={at(700)}>
           {t.hero.lead}
         </p>
 
-        <dl className="tour-hero-in mt-1 flex flex-wrap items-stretch justify-center gap-px overflow-hidden rounded-2xl border border-line bg-line-subtle" style={at(850)}>
+        <dl className="tour-hero-in mt-1 grid w-full max-w-[26rem] grid-cols-3 gap-px overflow-hidden rounded-2xl border border-line bg-line-subtle" style={at(850)}>
           {stats.map((stat) => (
-            <div key={stat.label} className="grid min-w-[6.5rem] justify-items-center gap-0.5 bg-[rgb(7_11_20_/_0.78)] px-3.5 py-3 sm:min-w-[7.5rem] sm:px-5">
-              <dt className="order-2 text-caption text-fg-tertiary">{stat.label}</dt>
+            <div key={stat.label} className="grid content-start justify-items-center gap-0.5 bg-[rgb(7_11_20_/_0.78)] px-2 py-3 sm:px-4">
+              <dt className="order-2 text-caption text-fg-tertiary">
+                {stat.label}
+                {stat.sub ? <span className="block text-[11px] leading-4 text-fg-tertiary/80">{stat.sub}</span> : null}
+              </dt>
               <dd className="order-1 font-mono text-[1.75rem] leading-none font-semibold text-fg tabular-nums">
                 {stat.approx ? <span className="mr-1 text-[0.6em] text-fg-tertiary">≈</span> : null}
                 <DecodeText text={stat.value} duration={700} delay={300} afterIntro />

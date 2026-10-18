@@ -36,20 +36,6 @@
   will-change: transform;
 }
 
-@keyframes tour-fade-in {
-  from {
-    opacity: 0;
-  }
-}
-
-.tour-highlight {
-  animation: tour-fade-in 420ms var(--ease-enter) both;
-}
-
-.tour-highlight rect {
-  filter: drop-shadow(0 0 3px rgb(73 207 255 / 0.9));
-}
-
 /* Neutral "real capture pending" well: a faint blueprint grid, no fake UI. */
 .tour-pending-grid {
   background-image:
@@ -152,8 +138,8 @@
   }
 }
 
+/* No `display` here: unlayered rules would beat Tailwind's layered `hidden`/`inline-block` utilities. */
 .tour-eyebrow-line {
-  display: inline-block;
   height: 1px;
   flex: none;
   background: var(--gradient-brand);

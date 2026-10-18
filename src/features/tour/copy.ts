@@ -30,7 +30,7 @@ export interface TourCopy {
     eyebrow: string;
     title: string;
     lead: string;
-    stats: { chapters: string; minutes: string; gpus: string };
+    stats: { chapters: string; minutes: string; gpus: string; gpusSub: string };
     start: string;
     agent: string;
     capture: string;
@@ -65,7 +65,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '看它實際怎麼動。',
       lead: '五個章節，都是在英文介面上的真實操作，只有等待機器運算的片段才加速。錄影製作中。',
-      stats: { chapters: '個章節', minutes: '分鐘', gpus: '顆 GPU · 兩台機器' },
+      stats: { chapters: '個章節', minutes: '分鐘', gpus: '顆 GPU', gpusSub: '兩台機器' },
       start: '從第 1 章開始',
       agent: '或交給 Agent',
       capture: '真實畫面：Image Studio 裡生成完成的 take',
@@ -200,7 +200,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '実際の操作を、そのまま。',
       lead: '全 5 章、英語 UI での実際の操作を、マシンの処理を待つ場面だけ早送りして収録します。録画は現在制作中です。',
-      stats: { chapters: 'チャプター', minutes: '分', gpus: 'つの GPU · 2 台のマシン' },
+      stats: { chapters: 'チャプター', minutes: '分', gpus: 'GPU', gpusSub: '2 台のマシン' },
       start: '第 1 章から見る',
       agent: 'エージェントに任せる',
       capture: '実際の画面：Image Studio で生成を終えたテイク',
@@ -335,7 +335,7 @@ export const TOUR: Copy<TourCopy> = {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: 'See it work, for real.',
       lead: 'Five chapters of real sessions in the English\u00a0UI, sped up only where the machines are working. The recordings are in production.',
-      stats: { chapters: 'chapters', minutes: 'minutes', gpus: 'GPUs on 2 machines' },
+      stats: { chapters: 'chapters', minutes: 'minutes', gpus: 'GPUs', gpusSub: 'on 2 machines' },
       start: 'Start Chapter 1',
       agent: 'Or Hand It to an Agent',
       capture: 'Real screen: a finished take in Image Studio',

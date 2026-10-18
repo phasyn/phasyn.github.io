@@ -58,7 +58,7 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
         <h2 id={`${spec.id}-title`} tabIndex={-1} aria-label={`${label}: ${copy.title}`} className="max-w-[24ch] text-headline tracking-display text-balance-cjk text-fg outline-none">
           <RevealText text={copy.title} on="view" />
         </h2>
-        <p className="reveal max-w-[62ch] text-lead text-fg-secondary [text-wrap:pretty]">
+        <p className="reveal max-w-[62ch] text-lead text-balance-cjk text-fg-secondary">
           <RichText text={copy.summary} />
         </p>
       </header>
