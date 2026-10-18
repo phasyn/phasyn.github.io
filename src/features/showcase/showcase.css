@@ -1,0 +1,110 @@
+/*
+ * Showcase page layer: the few effects utilities cannot express. Content is complete in the prerendered HTML; motion is
+ * layered on top and collapses to the same, static content under prefers-reduced-motion (tokens.css cancels animations).
+ */
+
+/* Step segments in the device series colours (DataTicker / Tour keys). */
+.sc-seg-gb10 {
+  background: var(--color-series-2);
+}
+.sc-seg-rtx5080 {
+  background: var(--color-series-1);
+}
+.sc-seg-rtx3060 {
+  background: var(--color-series-3);
+}
+.sc-seg-cpu {
+  background: var(--color-series-neutral);
+}
+.sc-seg-unknown {
+  background: var(--color-line-strong);
+}
+
+/* Eyebrow light line (draws in with its heading where scroll timelines exist). */
+.sc-eyebrow-line {
+  display: inline-block;
+  height: 1px;
+  flex: none;
+  background: var(--gradient-brand);
+  box-shadow: 0 0 10px rgb(73 207 255 / 0.55);
+  transform-origin: left center;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sc-heading .sc-eyebrow-line {
+      animation: sc-line-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 32%;
+    }
+  }
+}
+
+@keyframes sc-line-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Hero entrances after the first-visit splash (--fx-intro-delay is 0 when it is skipped). */
+@keyframes sc-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sc-in {
+    animation: sc-in 900ms var(--ease-enter) both;
+    animation-delay: calc(var(--fx-intro-delay, 0ms) + var(--sc-at, 0ms));
+  }
+}
+
+/* Theatre: the incoming featured item fades/settles in (opacity/transform only; interruptible by the next pick). */
+@keyframes sc-swap {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sc-swap {
+    animation: sc-swap 520ms var(--ease-enter) both;
+  }
+}
+
+/* Lane segments grow from the left when a card scrolls into view (scroll-driven; static otherwise). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sc-lanes-grow .sc-seg {
+      transform-origin: left center;
+      animation: sc-grow linear both;
+      animation-timeline: view();
+      animation-range: entry 20% cover 45%;
+    }
+  }
+}
+
+@keyframes sc-grow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
