@@ -125,10 +125,8 @@ export function FeaturesSection() {
           <Tile className="md:col-span-2 lg:col-span-6" tilt={2}>
             <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-12">
               <div className="grid content-start gap-3">
-                <div className="flex items-start justify-between gap-4">
-                  <TileHeading title={t.imageStudio.title} />
-                  <ArtImage art="imageStudio" size={96} fallback={Sparkles} className="-mt-2 -mr-2 hidden sm:block lg:hidden" />
-                </div>
+                <ArtImage art="imageStudio" size={112} fallback={Sparkles} className="-mt-2 -ml-2 hidden sm:block" />
+                <TileHeading title={t.imageStudio.title} />
                 <p className="max-w-[44ch] text-reading text-fg-secondary">{t.imageStudio.body}</p>
                 <ul className="mt-2 flex flex-wrap gap-2">
                   {t.imageStudio.chips.map((chip) => (
@@ -154,7 +152,6 @@ export function FeaturesSection() {
                       height={REAL.stills[key].height}
                       loading="lazy"
                       decoding="async"
-                      sizes="(min-width: 80rem) 330px, (min-width: 52.5rem) 45vw, 90vw"
                       className="aspect-[12/7] w-full rounded-xl border border-line-subtle bg-stage object-cover"
                     />
                   ))}

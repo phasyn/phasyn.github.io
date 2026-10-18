@@ -95,7 +95,7 @@ export function ArchitectureSection() {
               <p className="text-reading text-fg-secondary">{t.process.body}</p>
             </div>
             <figure className="grid content-start gap-3">
-              <RealScreen screen="component-inspector-precision" crop="inspector" hud="REAL UI · INSPECTOR" displayWidth="16rem" />
+              <RealScreen screen="component-inspector-precision" crop="inspector" hud="REAL UI · INSPECTOR" badge="top-right" displayWidth="16rem" />
               <figcaption className="text-caption leading-relaxed text-fg-tertiary">{t.real.inspector}</figcaption>
             </figure>
           </article>

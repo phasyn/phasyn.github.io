@@ -16,7 +16,7 @@ const STEP_TAGS = ['TEXT · REAL UI', 'IMAGE · REAL UI', 'VIDEO · REAL OUTPUT'
 /** The real screens of steps 1 and 2 (step 3 is the real clip). */
 const STEP_SCREENS: readonly { screen: ScreenKey; hotspots: readonly HotspotId[] }[] = [
   { screen: 'image-studio-generating', hotspots: ['generating.flow', 'generating.te', 'generating.take'] },
-  { screen: 'image-studio-takes', hotspots: ['takes.video', 'takes.inUse', 'takes.strip'] },
+  { screen: 'image-studio-takes', hotspots: ['takes.inUse', 'takes.strip'] },
 ];
 
 /** Decorative step rail above the sticky window (the ordered list on the left carries the semantics). */
@@ -168,7 +168,7 @@ export function PipelineSection() {
                     return (
                       <div
                         key={step.label}
-                        className="home-pane [grid-area:1/1]"
+                        className="home-pane self-center [grid-area:1/1]"
                         {...(shown ? {} : { 'data-inactive': '', inert: true, 'aria-hidden': true })}
                       >
                         <Pane index={index} active={shown && windowPlay.visible} armed={windowPlay.armed} notes={t.notes} clip={clip} />
