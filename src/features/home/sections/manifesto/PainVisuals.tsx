@@ -263,8 +263,8 @@ export function AccelGauge({ register, still }: VisualProps) {
       <svg viewBox="0 0 240 142" className="w-full max-w-[19rem] overflow-visible">
         <path d="M 30 124 A 90 90 0 0 1 210 124" className="home-gauge-track" pathLength={100} />
         <path d="M 30 124 A 90 90 0 0 1 210 124" className="home-gauge-potential" pathLength={100} />
-        {ticks.map((tick, index) => (
-          <line key={index} {...tick} className={tick.major ? 'home-gauge-tick-major' : 'home-gauge-tick'} />
+        {ticks.map(({ major, ...line }, index) => (
+          <line key={index} {...line} className={major ? 'home-gauge-tick-major' : 'home-gauge-tick'} />
         ))}
         <g className="home-gauge-needle">
           <line x1="120" y1="124" x2="42" y2="124" />

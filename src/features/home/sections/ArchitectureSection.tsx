@@ -79,6 +79,7 @@ export function ArchitectureSection() {
               crop="timeline"
               hotspots={['run.te', 'run.audio', 'run.mux']}
               hud="REAL UI · RECORDS · STEP TIMELINE"
+              badge="top-right"
               orbit
               displayWidth="min(76rem, 94vw)"
             />

@@ -57,6 +57,10 @@ export type HotspotId =
 export interface Hotspot {
   id: HotspotId;
   at: Point;
+  /** Where the label sits relative to the point (default: right, or left near the frame's right edge). */
+  side?: 'left' | 'right';
+  /** Label above the point (default: only near the frame's bottom edge). */
+  up?: boolean;
 }
 
 export interface CaptureSize {
@@ -132,9 +136,10 @@ export const SCREENS: Record<ScreenKey, ScreenSpec> = {
     crops: { panel: [0.262, 0.04, 0.536, 0.8], graph: [0.275, 0.435, 0.5175, 0.195] },
     focus: [0.55, 0.52],
     hotspots: [
-      { id: 'graph.te', at: [0.4195, 0.5045] },
-      { id: 'graph.dit', at: [0.6188, 0.4975] },
-      { id: 'graph.audio', at: [0.7178, 0.5392] },
+      // Just above or below each node card, so the labels never cover the cards' own text.
+      { id: 'graph.te', at: [0.387, 0.474], side: 'right' },
+      { id: 'graph.dit', at: [0.5865, 0.4682], side: 'right' },
+      { id: 'graph.audio', at: [0.6865, 0.5832], side: 'right' },
     ],
   },
   'component-inspector-precision': {
@@ -152,10 +157,10 @@ export const SCREENS: Record<ScreenKey, ScreenSpec> = {
     crops: { panel: [0.122, 0.04, 0.674, 0.8], timeline: [0.2635, 0.5537, 0.5333, 0.2148] },
     focus: [0.45, 0.62],
     hotspots: [
-      { id: 'run.elapsed', at: [0.631, 0.134] },
+      { id: 'run.elapsed', at: [0.668, 0.134], side: 'right' },
       { id: 'run.compare', at: [0.553, 0.171] },
-      { id: 'run.timeline', at: [0.306, 0.568] },
-      { id: 'run.slowest', at: [0.2, 0.737] },
+      { id: 'run.timeline', at: [0.4, 0.722], side: 'right' },
+      { id: 'run.slowest', at: [0.133, 0.737], side: 'left' },
       { id: 'run.te', at: [0.3609, 0.6509] },
       { id: 'run.audio', at: [0.6068, 0.7213] },
       { id: 'run.mux', at: [0.7669, 0.756] },

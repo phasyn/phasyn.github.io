@@ -726,6 +726,7 @@
 }
 
 .home-mf-visual {
+  align-self: center;
   transition:
     opacity 420ms var(--ease-standard),
     transform 620ms var(--ease-spring-smooth),

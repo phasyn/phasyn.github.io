@@ -26,8 +26,12 @@ interface RealScreenProps {
   /** Parent gate, e.g. false for a sticky pane that is not the one being shown. */
   active?: boolean;
   eager?: boolean;
+  /** Corner of the "Real screen" badge (pick the corner where the capture has the least to read). */
+  badge?: 'bottom-left' | 'top-right' | 'bottom-right';
   className?: string;
 }
+
+const BADGE_POSITION = { 'bottom-left': 'bottom-2 left-2', 'top-right': 'top-2 right-2', 'bottom-right': 'right-2 bottom-2' } as const;
 
 const FULL_RECT: Rect = [0, 0, 1, 1];
 const pct = (value: number) => `${(value * 100).toFixed(3)}%`;
@@ -49,6 +53,7 @@ export function RealScreen({
   drift = true,
   active = true,
   eager = false,
+  badge = 'bottom-left',
   className,
 }: RealScreenProps) {
   const t = useCopy(HOME).screens;
@@ -127,8 +132,8 @@ export function RealScreen({
                         key={spot.id}
                         className="home-spot"
                         style={{ left: pct(spot.at[0]), top: pct(spot.at[1]), ['--i' as string]: index } as CSSProperties}
-                        {...(rx > 0.62 ? { 'data-left': '' } : {})}
-                        {...(ry > 0.8 ? { 'data-up': '' } : {})}
+                        {...((spot.side ?? (rx > 0.62 ? 'left' : 'right')) === 'left' ? { 'data-left': '' } : {})}
+                        {...((spot.up ?? ry > 0.8) ? { 'data-up': '' } : {})}
                       >
                         <span className="home-spot-dot machine">{index + 1}</span>
                         <span lang={lang} className="home-spot-label material-hud">
@@ -141,7 +146,7 @@ export function RealScreen({
               ) : null}
             </div>
           </div>
-          <span lang={lang} className="material-hud absolute bottom-2 left-2 z-10 inline-flex h-6 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium text-fg">
+          <span lang={lang} className={cn('material-hud absolute z-10 inline-flex', BADGE_POSITION[badge], 'h-6 items-center gap-1.5 rounded-full px-2 text-[11px] font-medium text-fg')}>
             <span aria-hidden className="size-1.5 rounded-full bg-success" />
             {t.real}
           </span>

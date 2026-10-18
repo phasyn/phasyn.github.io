@@ -36,7 +36,7 @@ export function DiagnosticsSection() {
         <figure className="reveal mt-12 grid gap-3">
           <RealScreen
             screen="records-run-steps"
-            hotspots={['run.elapsed', 'run.compare', 'run.timeline', 'run.slowest']}
+            hotspots={['run.elapsed', 'run.timeline', 'run.slowest']}
             hud={`REAL UI · RECORDS · RUN ${RUN.id}`}
             orbit
             displayWidth="min(76rem, 94vw)"
