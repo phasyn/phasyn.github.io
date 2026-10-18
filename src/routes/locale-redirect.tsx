@@ -1,18 +1,21 @@
 import { BrandMark } from '../components/brand/BrandMark.tsx';
 import { Wordmark } from '../components/brand/Wordmark.tsx';
-import { HTML_LANG, LOCALES, LOCALE_STORAGE_KEY, pagePath, pageUrl } from '../site/config.ts';
+import { HOME_META } from '../features/home/meta.ts';
+import { pageMeta } from '../lib/meta.ts';
+import { HTML_LANG, LOCALES, LOCALE_STORAGE_KEY, SITE_URL, pagePath } from '../site/config.ts';
 import { COMMON } from '../i18n/common.ts';
 
 // `/` picks a locale before first paint: saved choice → browser language → English.
 const chooser = `(function(){try{var ok={'zh-hant':1,ja:1,en:1},l=null;try{l=localStorage.getItem('${LOCALE_STORAGE_KEY}')}catch(e){}if(!ok[l]){var n=((navigator.languages&&navigator.languages[0])||navigator.language||'').toLowerCase();l=n.indexOf('zh')===0?'zh-hant':n.indexOf('ja')===0?'ja':'en'}location.replace('/'+l+'/'+location.search+location.hash)}catch(e){}})();`;
 
+// `/` shares the English home page's title, description and social card, so a bare phasyn.dev link gets a preview.
 export function meta() {
-  return [
-    { title: 'Phasyn Studio — AI-Native Filmmaking Platform' },
-    { name: 'description', content: 'Phasyn Studio: a personal AI filmmaking workbench — text, image and video in one controllable pipeline.' },
-    ...LOCALES.map((locale) => ({ tagName: 'link', rel: 'alternate', hrefLang: HTML_LANG[locale], href: pageUrl(locale, 'home') })),
-    { tagName: 'link', rel: 'alternate', hrefLang: 'x-default', href: pageUrl('en', 'home') },
-  ];
+  const { title, description } = HOME_META.en;
+  return pageMeta({ locale: 'en', page: 'home', title, description }).map((tag) => {
+    if ('rel' in tag && tag.rel === 'canonical') return { ...tag, href: `${SITE_URL}/` };
+    if ('property' in tag && tag.property === 'og:url') return { ...tag, content: `${SITE_URL}/` };
+    return tag;
+  });
 }
 
 export default function LocaleRedirect() {

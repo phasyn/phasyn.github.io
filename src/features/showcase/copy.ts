@@ -294,9 +294,9 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     closing: {
       title: '想看它怎麼操作，還是想看數字？',
-      lead: '操作導覽一步步走過真實的 App 畫面；數據分析寫明每一步跑在哪張卡。',
+      lead: '操作導覽一步步走過真實的 App 畫面；效能實測寫明每一步跑在哪張卡。',
       tour: '看操作導覽',
-      benchmarks: '看數據分析',
+      benchmarks: '看效能實測',
       film: '看介紹影片',
     },
   },

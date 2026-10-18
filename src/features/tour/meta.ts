@@ -3,14 +3,14 @@ import type { Copy } from '../../i18n/locale.tsx';
 export const TOUR_META: Copy<{ title: string; description: string }> = {
   'zh-hant': {
     title: '操作導覽 — Phasyn Studio',
-    description: '實際操作錄影：從文字生圖、圖片轉影片、參考素材與 Prompt 建議，到時間軸剪輯、反推、元件調整與效能紀錄。',
+    description: '操作導覽：文字生圖、圖片轉影片、參考素材與 Prompt Advisor、時間軸剪輯、圖片反推、元件調整與效能紀錄（實際操作錄影製作中）。',
   },
   ja: {
     title: '操作ガイド — Phasyn Studio',
-    description: '実際の操作を録画したガイドです。テキストから画像、画像から映像、参照素材と Prompt アドバイス、タイムライン編集、逆推定、コンポーネント調整、性能記録まで。',
+    description: '実際の操作を収録する操作ガイドです（録画は準備中）。テキストから画像、画像から動画、参照素材と Prompt Advisor、タイムライン編集、プロンプト逆引き、コンポーネントの調整、性能の記録まで。',
   },
   en: {
     title: 'Tour — Phasyn Studio',
-    description: 'Real recorded sessions: text to image, image to video, references and Prompt Advisor, timeline editing, reverse prompting, component tuning and performance records.',
+    description: 'Five chapters of the real app: text to image to video, Prompt Advisor, timeline editing, image to prompt and measured records of every run (recordings still being made).',
   },
 };

@@ -5,11 +5,11 @@ import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { pagePath } from '../../../site/config.ts';
 import { SectionHeading } from '../components/SectionHeading.tsx';
 import { HOME } from '../copy.ts';
-import { BENCH } from '../data.ts';
+import { BENCH, RUN } from '../data.ts';
 
 /** The three measured numbers, aligned with HOME[locale].benchmarks.stats. */
 const NUMBERS = [
-  { value: BENCH.renderSeconds, decimals: 1, suffix: '' },
+  { value: Math.round(RUN.totalSeconds * 10) / 10, decimals: 1, suffix: '' },
   { value: BENCH.fastestT2vaDitSeconds, decimals: 1, suffix: '' },
   { value: BENCH.ditEnginesOk, decimals: 0, suffix: `/${BENCH.ditEngines}` },
 ] as const;
