@@ -12,6 +12,7 @@ function graphemes(text: string): string[] {
 
 const CJK = /[　-鿿가-힯＀-￯]/;
 const CLOSING = /^[、。，．！？：；）」』】〉》’”…ー・,.!?:;)\]]+$/;
+const NO_BREAK = /^[\u00a0\u202f\u2060]+$/;
 /** Longest CJK phrase kept on one line; longer runs fall back to word boundaries so nothing overflows. */
 const MAX_PHRASE = 10;
 
@@ -23,9 +24,17 @@ const MAX_PHRASE = 10;
 function wordGroups(text: string, lang: string): string[] {
   if (!hasSegmenter) return Array.from(text);
   const words: string[] = [];
+  let glue = false;
   for (const { segment } of new Intl.Segmenter(lang, { granularity: 'word' }).segment(text)) {
-    if (CLOSING.test(segment) && words.length) words[words.length - 1] += segment;
-    else words.push(segment);
+    const last = words.length - 1;
+    // A no-break space (or word joiner) binds both neighbours into one group: "RTX 5080", "1 枚" stay together.
+    if (NO_BREAK.test(segment) && last >= 0) {
+      words[last] += segment;
+      glue = true;
+    } else if ((glue || CLOSING.test(segment)) && last >= 0) {
+      words[last] += segment;
+      glue = false;
+    } else words.push(segment);
   }
   if (!CJK.test(text)) return words;
   const phrases: string[] = [];

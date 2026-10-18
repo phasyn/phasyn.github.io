@@ -24,6 +24,9 @@ export function BrandMark({ size = 32, glow = false, label, loading = 'eager', c
       draggable={false}
       decoding="async"
       loading={loading}
+      // Low priority: tiny decorative marks never compete with real content, and React does not preload them
+      // (a preloaded mark hidden by CSS, e.g. the other header variant, would trigger an "unused preload" warning).
+      fetchPriority="low"
       className={cn('shrink-0 object-contain select-none', glow && 'drop-shadow-[0_0_14px_rgb(79_123_255_/_0.45)]', className)}
       style={{ width: size, height: size }}
     />

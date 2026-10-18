@@ -1,0 +1,27 @@
+WEBVTT
+Language: en
+
+p1-v5-1
+00:00:00.011 --> 00:00:07.231
+Have an image? Get its prompt back.
+
+p1-v5-2
+00:00:07.397 --> 00:00:16.386
+The analysis runs on DGX Spark.
+
+p1-v5-3
+00:00:16.549 --> 00:00:24.413
+Eight sections, from subject
+to visible text.
+
+p1-v5-4
+00:00:24.613 --> 00:00:29.852
+Core and detailed prompts, ready to edit.
+
+p1-v5-5
+00:00:30.052 --> 00:00:43.391
+Regenerate each candidate and score it.
+
+p1-v5-6
+00:00:43.558 --> 00:00:52.773
+Send the best one to Image Studio.
