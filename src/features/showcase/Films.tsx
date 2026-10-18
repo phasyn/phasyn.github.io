@@ -26,6 +26,18 @@ export function PipelineChips({ pipeline, className }: { pipeline: string; class
   );
 }
 
+/** "1.75" for a display factor (two decimals at most, no trailing zeros). */
+export function scaleText(scale: number): string {
+  return String(Math.round(scale * 100) / 100);
+}
+
+/** Disclosure for launch cuts: native clips enlarged on a blurred backdrop (resampling only). */
+export function ScaleNote({ item, className }: { item: ShowcaseItem; className?: string }) {
+  const copy = SHOWCASE[useLocale()].gallery;
+  if (item.media.displayScale === undefined) return null;
+  return <p className={cn('text-[12px] text-fg-tertiary', className)}>{copy.scaled(scaleText(item.media.displayScale))}</p>;
+}
+
 export function MusicChip({ className }: { className?: string }) {
   const copy = SHOWCASE[useLocale()].gallery;
   return (
@@ -92,15 +104,23 @@ export function ShotList({ item, className }: { item: ShowcaseItem; className?: 
   );
 }
 
-/** One edited piece: muted preview while on screen, play for sound; kind, length, shots, pipelines, music credit. */
-export function FilmCard({ item, className }: { item: ShowcaseItem; className?: string }) {
+/**
+ * One edited piece: muted preview while on screen, play for sound; kind, length, shots, pipelines, music credit. `frame`
+ * aligns a row: a piece whose own aspect is within 5 % of it is framed at the row's aspect (FilmPlayer covers, so only a
+ * sliver of a cut's blurred backdrop is trimmed); anything further off keeps its own.
+ */
+export function FilmCard({ item, frame, className }: { item: ShowcaseItem; frame?: number; className?: string }) {
   const locale = useLocale();
   const copy = SHOWCASE[locale];
   const title = item.title[locale];
+  const own = item.width / item.height;
+  const aspect = frame && Math.abs(own - frame) / frame <= 0.05 ? String(frame) : `${item.width} / ${item.height}`;
   return (
     <article id={`film-${item.slug}`} aria-label={title} className={cn('grid content-start gap-3 scroll-mt-[calc(var(--site-header-h)+1rem)]', className)}>
       <div className="relative">
-        {item.media.clip ? <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} /> : null}
+        {item.media.clip ? (
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={aspect} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+        ) : null}
         <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
           <AiBadge />
           <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
@@ -124,6 +144,7 @@ export function FilmCard({ item, className }: { item: ShowcaseItem; className?: 
         </span>
         {item.music ? <MusicChip className="ml-auto" /> : null}
       </div>
+      <ScaleNote item={item} />
       <ShotList item={item} />
     </article>
   );
@@ -137,6 +158,13 @@ export function FilmsRow({ items }: { items: readonly ShowcaseItem[] }) {
   if (!items.length) return null;
   const visible = hydrated ? items.slice(0, limit) : items;
   const hidden = items.length - visible.length;
+  // The row's frame: the most common aspect among its pieces (films are 768×448).
+  const counts = new Map<number, number>();
+  for (const item of items) {
+    const ratio = Math.round((item.width / item.height) * 1000) / 1000;
+    counts.set(ratio, (counts.get(ratio) ?? 0) + 1);
+  }
+  const frame = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   return (
     <div className="grid gap-6">
       <div className="grid gap-1">
@@ -146,7 +174,7 @@ export function FilmsRow({ items }: { items: readonly ShowcaseItem[] }) {
       <ul className="grid gap-x-6 gap-y-10 md:grid-cols-2">
         {visible.map((item) => (
           <li key={item.slug}>
-            <FilmCard item={item} />
+            <FilmCard item={item} {...(frame ? { frame } : {})} />
           </li>
         ))}
       </ul>
@@ -177,12 +205,14 @@ export function SocialRow({ items }: { items: readonly ShowcaseItem[] }) {
         <h3 className="text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.social}</h3>
         <p className="text-body text-fg-secondary">{copy.gallery.socialLead}</p>
       </div>
-      <ul className="-mx-(--site-gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--site-gutter) pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
+      <ul className="-mx-(--site-gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--site-gutter) pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {items.map((item) => (
           <li key={item.slug} className="w-[min(15rem,70vw)] shrink-0 snap-start sm:w-auto">
             <article aria-label={item.title[locale]} className="grid gap-2">
               <div className="relative">
-                {item.media.clip ? <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} ambient aspect={`${item.width} / ${item.height}`} /> : null}
+                {item.media.clip ? (
+                  <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} ambient aspect={`${item.width} / ${item.height}`} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+                ) : null}
                 <AiBadge className="pointer-events-none absolute top-3 left-3" />
               </div>
               <p className="text-body font-semibold text-balance-cjk text-fg">{item.title[locale]}</p>
@@ -190,10 +220,52 @@ export function SocialRow({ items }: { items: readonly ShowcaseItem[] }) {
                 {item.seconds !== null ? `${formatSeconds(item.seconds)} ${copy.card.seconds} · ` : ''}
                 {item.width}×{item.height}
               </p>
+              {item.music ? <MusicChip className="justify-self-start" /> : null}
+              <ScaleNote item={item} />
             </article>
           </li>
         ))}
       </ul>
     </div>
+  );
+}
+
+/** The making-of, shown with the breakdown it illustrates: a large player with the producer's captions and its shot list. */
+export function MakingOf({ item, className }: { item: ShowcaseItem; className?: string }) {
+  const locale = useLocale();
+  const copy = SHOWCASE[locale];
+  const title = item.title[locale];
+  return (
+    <article aria-labelledby={`making-of-${item.slug}`} className={cn('grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-8', className)}>
+      <div className="relative">
+        {item.media.clip ? (
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+        ) : null}
+        <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
+          <AiBadge />
+          <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
+            {copy.card.kind[item.kind]}
+          </span>
+        </div>
+      </div>
+      <div className="grid content-start gap-3">
+        <h3 id={`making-of-${item.slug}`} className="grid gap-1">
+          <span className="text-caption font-semibold text-brand-cyan">{copy.gallery.makingOf[0]}</span>
+          <span className="text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.makingOf[1]}</span>
+        </h3>
+        <p className="text-body text-fg-secondary">{copy.gallery.makingOfLead}</p>
+        <p className="machine text-caption text-fg-secondary tabular-nums">
+          {item.seconds !== null ? `${formatSeconds(item.seconds)} ${copy.card.seconds}` : ''}
+          {item.shots.length ? ` · ${copy.gallery.shots(item.shots.length)}` : ''}
+        </p>
+        <ShotStrip item={item} />
+        <div className="flex flex-wrap items-center gap-2">
+          <PipelineChips pipeline={item.pipeline} />
+          {item.music ? <MusicChip /> : null}
+        </div>
+        <ScaleNote item={item} />
+        <ShotList item={item} />
+      </div>
+    </article>
   );
 }

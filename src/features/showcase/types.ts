@@ -116,6 +116,13 @@ export interface ShowcaseMedia {
   rawSampleRate?: number;
   /** Edited pieces: integrated loudness of the published mix (already mastered; kept as delivered). */
   mixLufs?: number;
+  /** Site-relative WebVTT per locale (FilmPlayer `captions`), when the producer supplied them. */
+  captions?: Record<Locale, string>;
+  /**
+   * Launch cuts frame native clips larger on a blurred backdrop (resampling only, no super-resolution): the largest factor
+   * from the cut's framing record, for disclosure. Absent = shown at native size.
+   */
+  displayScale?: number;
 }
 
 export interface ShowcaseReference {
