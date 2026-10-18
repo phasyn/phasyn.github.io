@@ -1,5 +1,6 @@
 import { ArrowRight, Cog, Cpu, Download, Power, PowerOff, Upload, type LucideIcon } from 'lucide-react';
 import { Fragment } from 'react';
+import { CountUp, HudFrame, SpotlightCard } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
 import { CUTOUTS, Cutout, type CutoutSlug } from './art.tsx';
 import { SETUP_IDS, SETUP_MACHINES, type AboutCopy, type CapabilityId } from './copy.ts';
@@ -8,28 +9,45 @@ import { StatusChip, type Status } from './status.tsx';
 
 /* Figures inside the reading column: solid surfaces and crisp lines; the only glow comes from the Codex art. */
 
-/** Which machine runs which step today (BRIEF §3). A data table: static, no art, no entrance motion. */
+/**
+ * Which machine runs which step today (BRIEF §3), in the kit's HUD frame (corner brackets + live tag; the tag is
+ * decorative and the same facts are in the table). The table itself stays solid and crisp; memory sizes count up.
+ */
 export function SetupFigure({ setup }: { setup: AboutCopy['built']['setup'] }) {
   const display = useDisplayBreak();
   return (
-    <figure className="my-10 overflow-hidden rounded-xl border border-line bg-surface shadow-edge md:my-12">
-      <figcaption className="flex items-center gap-2 border-b border-line-subtle px-5 py-3 text-caption font-semibold text-fg-tertiary">
-        <Cpu aria-hidden className="size-3.5" />
-        {setup.caption}
-      </figcaption>
-      <dl className="divide-y divide-line-subtle">
-        {SETUP_IDS.map((id) => (
-          <div key={id} className="grid gap-1 px-5 py-3.5 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:items-baseline sm:gap-6">
-            <dt className="flex items-baseline gap-2.5 whitespace-nowrap">
-              <span className="text-body font-semibold text-fg">{SETUP_MACHINES[id].name}</span>
-              <span className="machine text-data text-fg-tertiary">{SETUP_MACHINES[id].spec}</span>
-            </dt>
-            <dd className="text-body text-fg-secondary">{setup.roles[id]}</dd>
-          </div>
-        ))}
-      </dl>
-      <p className={cn('border-t border-line-subtle bg-sunken/60 px-5 py-3 text-caption text-fg-tertiary [text-wrap:pretty]', display)}>{setup.note}</p>
-    </figure>
+    <HudFrame label="LIVE · 3 MACHINES" className="my-12 md:my-14">
+      <figure className="overflow-hidden rounded-xl border border-line bg-surface shadow-edge">
+        <figcaption className="flex items-center gap-2 border-b border-line-subtle px-5 pt-4 pb-3 text-caption font-semibold text-fg-tertiary">
+          <Cpu aria-hidden className="size-3.5" />
+          {setup.caption}
+        </figcaption>
+        <dl className="divide-y divide-line-subtle">
+          {SETUP_IDS.map((id) => {
+            const machine = SETUP_MACHINES[id];
+            return (
+              <div key={id} className="grid gap-1 px-5 py-3.5 sm:grid-cols-[minmax(0,13rem)_minmax(0,1fr)] sm:items-baseline sm:gap-6">
+                <dt className="flex items-baseline gap-2.5 whitespace-nowrap">
+                  <span className="text-body font-semibold text-fg">{machine.name}</span>
+                  <span className="machine text-data text-fg-tertiary">
+                    {machine.memoryGb !== undefined ? (
+                      <>
+                        <CountUp value={machine.memoryGb} duration={1100} />
+                        {' GB'}
+                      </>
+                    ) : (
+                      machine.chip
+                    )}
+                  </span>
+                </dt>
+                <dd className="text-body text-fg-secondary">{setup.roles[id]}</dd>
+              </div>
+            );
+          })}
+        </dl>
+        <p className={cn('border-t border-line-subtle bg-sunken/60 px-5 py-3 text-caption text-fg-tertiary [text-wrap:pretty]', display)}>{setup.note}</p>
+      </figure>
+    </HudFrame>
   );
 }
 
@@ -77,22 +95,24 @@ export function CapabilityGrid({ ids, capabilities, className }: { ids: readonly
         const art = CAPABILITY_ART[id];
         const status = CAPABILITY_STATUS[id];
         return (
-          <li key={id} className="reveal rounded-xl border border-line bg-surface p-5 shadow-edge" style={stagger(index)}>
-            <div className="flex items-start justify-between gap-3">
-              <span className="-m-1 grid size-24 shrink-0 place-items-center">
-                {'area' in art ? <AreaArt area={art.area} size={72} /> : <Cutout slug={art.cutout} size={96} className="size-24" />}
-              </span>
-              {status ? <StatusChip status={status} /> : null}
-            </div>
-            <h3 className="mt-3 text-section font-semibold text-fg text-balance-cjk">{capabilities[id].title}</h3>
-            <p className={cn('mt-1.5 text-body text-fg-secondary [text-wrap:pretty]', display)}>{capabilities[id].text}</p>
-            {/* The last item of the author's image list (去背) is not in the product yet: its own line, with its own status. */}
-            {id === 'images' ? (
-              <p className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-body text-fg-secondary">
-                <span>{capabilities.images.coming}</span>
-                <StatusChip status="coming" />
-              </p>
-            ) : null}
+          <li key={id} className="reveal" style={stagger(index)}>
+            <SpotlightCard tilt={4} className="h-full p-5">
+              <div className="flex items-start justify-between gap-3">
+                <span className="-m-1 grid size-24 shrink-0 place-items-center">
+                  {'area' in art ? <AreaArt area={art.area} size={72} /> : <Cutout slug={art.cutout} size={96} className="size-24" />}
+                </span>
+                {status ? <StatusChip status={status} /> : null}
+              </div>
+              <h3 className="mt-3 text-section font-semibold text-fg text-balance-cjk">{capabilities[id].title}</h3>
+              <p className={cn('mt-1.5 text-body text-fg-secondary [text-wrap:pretty]', display)}>{capabilities[id].text}</p>
+              {/* The last item of the author's image list (去背) is not in the product yet: its own line, with its own status. */}
+              {id === 'images' ? (
+                <p className="mt-2 flex flex-wrap items-center gap-x-2.5 gap-y-1 text-body text-fg-secondary">
+                  <span>{capabilities.images.coming}</span>
+                  <StatusChip status="coming" />
+                </p>
+              ) : null}
+            </SpotlightCard>
           </li>
         );
       })}

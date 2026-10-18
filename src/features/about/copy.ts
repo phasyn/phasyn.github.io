@@ -42,11 +42,11 @@ export type RoadmapId = (typeof ROADMAP_IDS)[number];
 export const SETUP_IDS = ['rtx5080', 'rtx3060', 'gb10'] as const;
 export type SetupId = (typeof SETUP_IDS)[number];
 
-/** Current hardware (BRIEF §2–§3). Names and specs are not translated. */
-export const SETUP_MACHINES: Record<SetupId, { name: string; spec: string }> = {
-  rtx5080: { name: 'RTX 5080', spec: '16 GB' },
-  rtx3060: { name: 'RTX 3060', spec: '12 GB' },
-  gb10: { name: 'DGX Spark', spec: 'GB10' },
+/** Current hardware (BRIEF §2–§3): GPU memory in GB, or the chip name. Names and units are not translated. */
+export const SETUP_MACHINES: Record<SetupId, { name: string; memoryGb?: number; chip?: string }> = {
+  rtx5080: { name: 'RTX 5080', memoryGb: 16 },
+  rtx3060: { name: 'RTX 3060', memoryGb: 12 },
+  gb10: { name: 'DGX Spark', chip: 'GB10' },
 };
 
 interface TitledText {

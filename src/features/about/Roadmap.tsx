@@ -1,3 +1,4 @@
+import { SpotlightCard } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
 import { CUTOUTS, Cutout, type CutoutSlug } from './art.tsx';
 import { ROADMAP_IDS, type AboutCopy, type RoadmapId } from './copy.ts';
@@ -32,21 +33,21 @@ const ROADMAP_META: Record<RoadmapId, { status: RoadmapStatus; art: CutoutSlug }
 export function Roadmap({ roadmap }: { roadmap: AboutCopy['roadmap'] }) {
   const body = useBodyClass();
   return (
-    <ol className="relative mt-10 grid gap-12 before:absolute before:top-3 before:bottom-3 before:left-[0.4375rem] before:w-px before:bg-line md:mt-12">
+    <ol className="relative mt-10 grid gap-5 before:absolute before:top-9 before:bottom-8 before:left-[0.4375rem] before:w-px before:bg-[linear-gradient(to_bottom,var(--color-action-fg),var(--color-line)_45%,var(--color-line))] md:mt-12">
       {ROADMAP_IDS.map((id, index) => {
         const { status, art } = ROADMAP_META[id];
         const item = roadmap.items[id];
         return (
-          <li key={id} className="reveal relative grid grid-cols-[0.875rem_minmax(0,1fr)] gap-x-5 sm:gap-x-6">
+          <li key={id} className="reveal relative grid grid-cols-[0.875rem_minmax(0,1fr)] gap-x-4 sm:gap-x-5">
             <span
               aria-hidden
               className={cn(
-                'relative mt-1.5 size-3.5 rounded-full border-2 bg-canvas',
-                status === 'inDevelopment' ? 'border-action-fg' : 'border-line-strong',
+                'relative mt-7 size-3.5 rounded-full border-2 bg-canvas',
+                status === 'inDevelopment' ? 'border-action-fg shadow-[0_0_10px_rgb(143_176_255_/_0.55)]' : 'border-line-strong',
               )}
             />
-            <div className="grid min-w-0 content-start sm:grid-cols-[minmax(0,1fr)_7.5rem] sm:gap-x-8">
-              <Cutout slug={art} size={120} className="mb-3 size-24 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mb-0 sm:size-30" />
+            <SpotlightCard tilt={3} className="grid min-w-0 content-start p-5 sm:grid-cols-[minmax(0,1fr)_7.5rem] sm:gap-x-7 sm:p-6">
+              <Cutout slug={art} size={120} className="mb-3 size-24 sm:col-start-2 sm:row-span-2 sm:row-start-1 sm:mb-0 sm:size-30 sm:self-center" />
               <div className="flex flex-wrap items-center gap-x-3 gap-y-2 sm:col-start-1 sm:row-start-1">
                 {/* The number sits inside the heading so a long title wraps with it instead of leaving it alone. */}
                 <h3 className="text-section font-semibold text-fg text-balance-cjk">
@@ -59,7 +60,7 @@ export function Roadmap({ roadmap }: { roadmap: AboutCopy['roadmap'] }) {
               </div>
               <p className={cn('mt-2 text-fg-secondary [text-wrap:pretty] sm:col-start-1 sm:row-start-2', body)}>{item.text}</p>
               {id === 'multipass' ? <RenderPasses passes={roadmap.passes} /> : null}
-            </div>
+            </SpotlightCard>
           </li>
         );
       })}
@@ -76,7 +77,7 @@ function RenderPasses({ passes }: { passes: AboutCopy['roadmap']['passes'] }) {
   return (
     <ol className="mt-5 grid gap-3 sm:col-span-2 sm:grid-cols-3">
       {passes.map((pass, index) => (
-        <li key={pass.label} className="rounded-lg border border-line bg-surface p-4">
+        <li key={pass.label} className="rounded-lg border border-line-subtle bg-sunken/70 p-4">
           <span aria-hidden className="flex gap-1">
             {[0, 1, 2].map((segment) => (
               <span key={segment} className={cn('h-1 flex-1 rounded-full', segment <= index ? 'bg-action-fg' : 'bg-line')} />

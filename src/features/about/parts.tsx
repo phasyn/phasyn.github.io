@@ -1,8 +1,11 @@
 import type { CSSProperties, ReactNode } from 'react';
+import { DecodeText, RevealText } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
+import { useReducedMotion } from '../../lib/hooks.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import type { Locale } from '../../site/config.ts';
 import { SECTION_IDS, SECTION_TAGS, type SectionId } from './copy.ts';
+import { useViewTrigger } from './motion.tsx';
 
 /*
  * Long-read typography. CJK reads best at ~40 characters per line with
@@ -57,17 +60,21 @@ export function sectionNumber(id: SectionId): string {
   return String(SECTION_IDS.indexOf(id) + 1).padStart(2, '0');
 }
 
+/**
+ * Eyebrow (decoding Latin label, decorative) and the chapter title, which reveals character by character when it
+ * scrolls into view (RevealText groups words, so CJK titles still break between phrases only). The heading keeps
+ * its own id and accessible name; RevealText does not pass an id through.
+ */
 export function SectionHeading({ id, title, align = 'start' }: { id: SectionId; title: string; align?: 'start' | 'center' }) {
-  const display = useDisplayBreak();
   return (
     <div className={cn('grid gap-4', align === 'center' && 'justify-items-center text-center')}>
       <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-brand-cyan">
-        <span className="tabular-nums">{sectionNumber(id)}</span>
+        <DecodeText text={sectionNumber(id)} duration={500} />
         <span className="h-px w-8 bg-brand-gradient" />
-        <span>{SECTION_TAGS[id]}</span>
+        <DecodeText text={SECTION_TAGS[id]} />
       </p>
-      <h2 id={`${id}-title`} className={withBalance(cn('text-headline tracking-display text-fg', display))}>
-        {title}
+      <h2 id={`${id}-title`} aria-label={title} className={withBalance('text-headline tracking-display text-fg')}>
+        <RevealText text={title} on="view" />
       </h2>
     </div>
   );
@@ -102,22 +109,48 @@ export function Lead({ children, className }: { children: ReactNode; className?:
 }
 
 /**
- * The author's strongest lines, set large with a thin brand-gradient rule. They are part of the
- * reading flow (not repeated elsewhere), so they stay plain paragraphs for assistive tech.
+ * The author's strongest lines, set large under a thin brand-gradient rule. They are part of the reading flow (not
+ * repeated elsewhere), so they stay plain paragraphs for assistive tech. When one scrolls into view the rule draws in
+ * with a glow and a single light sweep crosses the words: an identical, aria-hidden copy laid exactly over the text
+ * with the kit's `fx-sweep-text` (it ends transparent). Static under reduced motion and without JavaScript.
  */
-export function Statement({ children, className }: { children: ReactNode; className?: string }) {
+export function Statement({ text, className }: { text: string; className?: string }) {
   const locale = useLocale();
+  const reducedMotion = useReducedMotion();
+  const [ref, state] = useViewTrigger<HTMLDivElement>(reducedMotion);
+  // Base and sweep copy must wrap identically: same classes, with `text-balance-cjk` appended outside cn() for both.
+  const type = cn('text-headline tracking-display', STATEMENT_LEADING[locale], DISPLAY_BREAK[locale]);
   return (
-    <div className={cn('reveal my-12 md:my-16', className)}>
-      <span aria-hidden className="block h-px w-14 bg-brand-gradient" />
-      <p className={withBalance(cn('mt-6 text-headline tracking-display text-fg', STATEMENT_LEADING[locale], DISPLAY_BREAK[locale]))}>{children}</p>
+    <div ref={ref} data-fx={state ?? undefined} className={cn('group/stmt my-12 md:my-16', className)}>
+      <span
+        aria-hidden
+        className="block h-px w-20 origin-left bg-brand-gradient transition-[scale,box-shadow] duration-[900ms] ease-(--ease-enter) group-data-[fx=armed]/stmt:scale-x-0 group-data-[fx=play]/stmt:shadow-[0_0_6px_rgb(73_207_255_/_0.95),0_0_22px_rgb(114_125_255_/_0.6)]"
+      />
+      <div className="relative mt-6">
+        <p className={withBalance(cn(type, 'text-fg'))}>{text}</p>
+        {state === 'play' ? (
+          // The kit's band is white: over near-white type it only shows with a glow. drop-shadow follows the painted
+          // band alone (the rest of this copy is transparent); an even ease lets the light cross at a readable pace.
+          <p
+            aria-hidden
+            className={withBalance(
+              cn(
+                type,
+                'fx-sweep-text pointer-events-none absolute inset-0 [filter:drop-shadow(0_0_10px_rgb(73_207_255_/_0.85))_drop-shadow(0_0_2px_rgb(255_255_255_/_0.6))] [[data-fx=play]_&]:[animation-timing-function:cubic-bezier(0.45,0,0.25,1)]',
+              ),
+            )}
+          >
+            {text}
+          </p>
+        ) : null}
+      </div>
     </div>
   );
 }
 
 /**
- * Brand area glass icon (Codex art, 160 px + @2x, 7–20 KB). Only at ≥ 28 px per DESIGN_GUIDE §10;
- * decorative. Loaded eagerly: it is tiny, and a lazy image never appears in a capture that does not scroll.
+ * Brand area glass icon (Codex art, 160 px + @2x, 7–20 KB). Only at ≥ 28 px per DESIGN_GUIDE §10; decorative.
+ * Lazy (all of them sit below the hero; React would otherwise preload every eager image in the HTML head).
  */
 export function AreaArt({ area, size = 48, className }: { area: 'image' | 'video' | 'inference' | 'components' | 'records'; size?: number; className?: string }) {
   return (
@@ -128,6 +161,7 @@ export function AreaArt({ area, size = 48, className }: { area: 'image' | 'video
       height={size}
       alt=""
       aria-hidden
+      loading="lazy"
       decoding="async"
       draggable={false}
       className={cn('shrink-0 select-none', className)}

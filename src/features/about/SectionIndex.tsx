@@ -46,7 +46,8 @@ export function SectionIndex({ heading, titles, className }: { heading: string; 
   const display = useDisplayBreak();
   return (
     <nav aria-labelledby={headingId} className={className}>
-      <div className="rounded-xl border border-line bg-surface p-4 sm:p-5 lg:sticky lg:top-[calc(var(--site-header-h)+3rem)] lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0">
+      {/* On wide screens the rail floats over the living backdrop, so it keeps a light canvas tint under its small text. */}
+      <div className="rounded-xl border border-line bg-surface p-4 sm:p-5 lg:sticky lg:top-[calc(var(--site-header-h)+3rem)] lg:-ml-4 lg:border-0 lg:bg-[rgb(7_11_20_/_0.66)] lg:p-4">
         <p id={headingId} className="text-caption font-semibold text-fg-tertiary">
           {heading}
         </p>

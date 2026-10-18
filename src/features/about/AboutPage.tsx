@@ -39,11 +39,20 @@ export function AboutPage() {
             className="mx-auto mt-6 w-full max-w-[42.5rem] lg:col-start-1 lg:row-start-1 lg:mt-0 lg:max-w-none lg:pt-28"
           />
 
-          <article aria-labelledby="about-title" className="mx-auto w-full max-w-[42.5rem] lg:col-start-2 lg:row-start-1">
+          {/*
+           * Reading veil: the layout's living nebula frames the column but never sits under body text (BRIEF §4.1
+           * guardrail). A canvas-coloured band behind the article, solid under the text and fading only in a bleed
+           * outside it (the page gutter on narrow screens, so it never passes the viewport; 3rem on wide ones).
+           * `isolate` keeps it above the fixed backdrop.
+           */}
+          <article
+            aria-labelledby="about-title"
+            className="relative isolate mx-auto w-full max-w-[42.5rem] [--veil-bleed:var(--site-gutter)] before:pointer-events-none before:absolute before:inset-y-0 before:-right-(--veil-bleed) before:-left-(--veil-bleed) before:-z-10 before:bg-[linear-gradient(90deg,rgb(7_11_20_/_0),rgb(7_11_20_/_0.84)_var(--veil-bleed),rgb(7_11_20_/_0.84)_calc(100%_-_var(--veil-bleed)),rgb(7_11_20_/_0))] lg:col-start-2 lg:row-start-1 lg:[--veil-bleed:3rem]"
+          >
             <StorySection id="why" title={copy.titles.why}>
               <Lead>{copy.why.lead}</Lead>
               <Prose paragraphs={copy.why.body} className="mt-6" />
-              <Statement>{copy.why.statement}</Statement>
+              <Statement text={copy.why.statement} />
               <Prose paragraphs={copy.why.after} />
             </StorySection>
 
@@ -72,7 +81,7 @@ export function AboutPage() {
                 <Prose paragraphs={[copy.scale.diagnostics]} />
               </ArtAside>
               <ArtAside slug={CUTOUTS.agentSkill} className="mt-12 md:mt-16">
-                <Statement className="my-0 md:my-0">{copy.scale.statement}</Statement>
+                <Statement text={copy.scale.statement} className="my-0 md:my-0" />
               </ArtAside>
             </StorySection>
 
@@ -94,7 +103,8 @@ export function AboutPage() {
 
             <StorySection id="benchmarks" title={copy.titles.benchmarks}>
               <Prose paragraphs={copy.benchmarks.body} />
-              <div className="reveal mt-8 grid gap-5 rounded-xl border border-line bg-surface p-5 shadow-edge sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:p-6">
+              {/* The page's one primary action: an orbiting light on its frame (kit utility; static under reduced motion). */}
+              <div className="reveal fx-orbit-border mt-8 grid gap-5 rounded-xl border border-line bg-surface p-5 shadow-edge sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:p-6">
                 <AreaArt area="records" size={52} />
                 <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-6">
                   <p className={cn('text-body text-fg-secondary [text-wrap:pretty]', display)}>{copy.benchmarks.note}</p>

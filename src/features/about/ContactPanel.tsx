@@ -1,6 +1,7 @@
 import { Mail } from 'lucide-react';
 import { BrandMark } from '../../components/brand/BrandMark.tsx';
 import { GitHubMark } from '../../components/brand/ExternalMarks.tsx';
+import { NebulaField } from '../../components/fx/index.ts';
 import { ButtonLink } from '../../components/ui/Button.tsx';
 import { SourceSoon } from '../../components/ui/SourceSoon.tsx';
 import { LINKS } from '../../site/config.ts';
@@ -9,28 +10,30 @@ import type { AboutCopy } from './copy.ts';
 import { SectionHeading, useDisplayBreak, withBalance } from './parts.tsx';
 
 /**
- * Closing brand moment: the quiet aurora behind the mark (the page's second and last glow).
- * A 1600 px copy of /brand/backgrounds/aurora.webp (9 KB instead of 84 KB; a soft gradient loses
- * nothing), decoded synchronously so the panel is never painted without it.
+ * Closing brand moment: a local living nebula behind the mark (with the hero, the page's only glowing scenes). The
+ * quiet aurora (a 1600 px copy of /brand/backgrounds/aurora.webp, 9 KB) is screen-blended on top: it is the still
+ * scene without JavaScript or WebGL, and adds its cyan ribbon to the live one.
  */
 export const ABOUT_CLOSING_BACKGROUND = { src: '/images/about/aurora-1600.webp', width: 1600, height: 1000 } as const;
 
-const SCRIM = 'radial-gradient(70% 80% at 50% 45%, rgb(7 11 20 / 0.55), rgb(7 11 20 / 0.1) 75%, rgb(7 11 20 / 0) 100%)';
+const SCRIM = 'radial-gradient(62% 70% at 50% 50%, rgb(7 11 20 / 0.72), rgb(7 11 20 / 0.25) 70%, rgb(7 11 20 / 0) 100%)';
 
 export function ContactPanel({ title, contact, emailLabel }: { title: string; contact: AboutCopy['contact']; emailLabel: string }) {
   const display = useDisplayBreak();
   return (
     <section id="contact" aria-labelledby="contact-title" className="site-container pt-8 pb-24 md:pt-12 md:pb-32">
-      <div className="reveal relative isolate overflow-hidden rounded-3xl border border-line bg-canvas px-5 py-16 text-center shadow-raised sm:px-10 md:py-24">
+      <div className="reveal relative isolate overflow-hidden rounded-3xl border border-line px-5 py-16 text-center shadow-raised sm:px-10 md:py-24">
+        <NebulaField position="absolute" intensity={1.1} particles={110} className="-z-30" />
         <img
           src={ABOUT_CLOSING_BACKGROUND.src}
           width={ABOUT_CLOSING_BACKGROUND.width}
           height={ABOUT_CLOSING_BACKGROUND.height}
           alt=""
           aria-hidden
+          loading="lazy"
           decoding="sync"
           draggable={false}
-          className="absolute inset-0 -z-20 size-full object-cover object-[30%_60%] select-none"
+          className="absolute inset-0 -z-20 size-full object-cover object-[30%_60%] opacity-80 mix-blend-screen select-none"
         />
         <div aria-hidden className="absolute inset-0 -z-10" style={{ backgroundImage: SCRIM }} />
         <span aria-hidden className="absolute inset-x-0 top-0 h-px bg-brand-gradient opacity-60" />
