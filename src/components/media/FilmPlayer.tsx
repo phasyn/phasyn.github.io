@@ -78,6 +78,8 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
   useEffect(() => {
     const video = videoRef.current;
     if (video && (video.error || video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE)) setFailed(true);
+    // Metadata may also have loaded before hydration, so onLoadedMetadata never fired: read the duration now.
+    else if (video && video.readyState >= HTMLMediaElement.HAVE_METADATA && Number.isFinite(video.duration)) setDuration(video.duration);
   }, [url]);
 
   // Ambient preview plays only while visible; it never runs under reduced motion.
@@ -98,6 +100,8 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
     if (!video) return;
     if (!activated) {
       setActivated(true);
+      // The play overlay that had focus unmounts now: keep focus inside the player so Space/K/←/→/M/F keep working.
+      frameRef.current?.focus({ preventScroll: true });
       video.muted = false;
       setMuted(false);
       video.currentTime = 0;
@@ -140,6 +144,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
       className={cn('group relative isolate overflow-hidden rounded-3xl bg-stage shadow-window', className)}
       style={{ aspectRatio: aspect }}
       onKeyDown={onKeyDown}
+      tabIndex={-1}
     >
       <video
         ref={videoRef}
@@ -156,6 +161,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         onEnded={() => setPlaying(false)}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        onDurationChange={(event) => Number.isFinite(event.currentTarget.duration) && setDuration(event.currentTarget.duration)}
         // `src` on the element itself: a failed <source> child fires its error on the child, which the video never sees.
         src={url}
         onError={() => setFailed(true)}
