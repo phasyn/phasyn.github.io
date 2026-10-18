@@ -36,7 +36,8 @@ export function TourHero({ t }: { t: TourCopy }) {
   return (
     <section aria-labelledby="tour-title" className="relative isolate overflow-hidden">
       <NebulaField position="absolute" intensity={1.2} particles={160} className="-z-20 [mask-image:linear-gradient(180deg,#000_62%,transparent)]" />
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(60%_42%_at_50%_30%,rgb(7_11_20_/_0.66),rgb(7_11_20_/_0)_100%)]" />
+      {/* Legibility scrim under the copy: the nebula band can run bright behind it (copy ≥ AA on the composited background). */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(72%_48%_at_50%_30%,rgb(7_11_20_/_0.86),rgb(7_11_20_/_0.58)_58%,rgb(7_11_20_/_0)_100%)]" />
 
       <div className="site-container grid justify-items-center gap-6 pt-[calc(var(--site-header-h)+4.5rem)] pb-10 text-center md:pt-[calc(var(--site-header-h)+6rem)]">
         <p aria-hidden lang="en" className="tour-hero-in eyebrow flex items-center gap-3 text-brand-cyan" style={at(0)}>
@@ -74,7 +75,10 @@ export function TourHero({ t }: { t: TourCopy }) {
             {t.hero.agent}
           </a>
         </div>
-        <SourceSoon className="tour-hero-in" />
+        {/* Solid backing: the chip's tint alone falls below AA over the bright nebula. */}
+        <span className="tour-hero-in inline-flex rounded-full bg-canvas">
+          <SourceSoon />
+        </span>
       </div>
 
       <figure className="site-container tour-hero-in grid justify-items-center gap-4 pb-20 md:pb-28" style={at(500)}>
@@ -84,7 +88,7 @@ export function TourHero({ t }: { t: TourCopy }) {
             <ScreenViewer capture="image-studio-takes" alt={t.hero.capture} eager drift pending={{ title: t.screens.pendingTitle, body: t.screens.pendingBody }} />
           </HudFrame>
         </div>
-        <figcaption className="text-caption text-fg-tertiary">{t.hero.capture}</figcaption>
+        <figcaption className="rounded-full bg-[rgb(7_11_20_/_0.82)] px-3 py-1 text-data text-fg-secondary">{t.hero.capture}</figcaption>
       </figure>
     </section>
   );
