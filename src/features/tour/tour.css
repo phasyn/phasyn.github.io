@@ -1,0 +1,262 @@
+/*
+ * Tour page layer: the few effects utilities cannot express. Everything is progressive: content is complete in the prerendered
+ * HTML, scroll-driven effects run only where scroll timelines exist, and the global reduced-motion rule in tokens.css cancels
+ * every animation and transition here (each element then shows its static, complete state).
+ */
+
+/* Exact English UI label inside running copy: a quiet chip that wraps with the line. */
+.tour-ui-label {
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  background-color: rgb(18 26 45 / 0.85);
+  padding: 0 0.3em;
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--color-fg);
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+.tour-code {
+  border-radius: 5px;
+  background-color: var(--color-sunken);
+  box-shadow: inset 0 0 0 1px var(--color-line-subtle);
+  padding: 0 0.3em;
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  color: var(--color-action-fg);
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+}
+
+/* Real-screen camera: one writer (transform), interruptible, duration set per move by the viewer. */
+.tour-camera {
+  transition-property: transform;
+  will-change: transform;
+}
+
+/* Neutral "real capture pending" well: a faint blueprint grid, no fake UI. */
+.tour-pending-grid {
+  background-image:
+    linear-gradient(rgb(114 125 255 / 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(114 125 255 / 0.07) 1px, transparent 1px),
+    radial-gradient(70% 60% at 50% 45%, rgb(62 137 255 / 0.1), transparent 70%);
+  background-size:
+    28px 28px,
+    28px 28px,
+    100% 100%;
+  -webkit-mask-image: radial-gradient(85% 80% at 50% 50%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(85% 80% at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* Index rail: reading progress through the current chapter (linear, written by the rail on scroll). */
+.tour-rail-progress {
+  transform-origin: left center;
+  transform: scaleX(var(--tour-progress, 0));
+}
+
+/* A step of "What you'll see" while the video plays it. */
+.tour-step {
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard);
+}
+
+/* Section seam: a hairline that opens from the centre and a light that sweeps along it (mirrors Home's seam). */
+.tour-seam {
+  position: relative;
+  height: 1px;
+  overflow: visible;
+}
+
+.tour-seam-line {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgb(73 207 255 / 0.45) 18%, rgb(114 125 255 / 0.45) 62%, rgb(171 123 255 / 0.35) 82%, transparent);
+}
+
+.tour-seam-light {
+  position: absolute;
+  top: -5px;
+  left: 0;
+  width: 22%;
+  height: 11px;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, rgb(238 243 255 / 0.95), rgb(73 207 255 / 0.55) 45%, transparent);
+  opacity: 0;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .tour-seam-line {
+      animation: tour-seam-open linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+
+    .tour-seam-light {
+      animation: tour-seam-sweep linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 60%;
+    }
+
+    /* Chapter header line draws in as the chapter arrives. */
+    .tour-heading .tour-eyebrow-line {
+      animation: tour-line-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 32%;
+    }
+  }
+}
+
+@keyframes tour-seam-open {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes tour-seam-sweep {
+  0% {
+    transform: translateX(-30%);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(450%);
+    opacity: 0;
+  }
+}
+
+/* No `display` here: unlayered rules would beat Tailwind's layered `hidden`/`inline-block` utilities. */
+.tour-eyebrow-line {
+  height: 1px;
+  flex: none;
+  background: var(--gradient-brand);
+  box-shadow: 0 0 10px rgb(73 207 255 / 0.55);
+  transform-origin: left center;
+}
+
+@keyframes tour-line-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Hero entrances after the first-visit splash (the FX kit's --fx-intro-delay, 0 when skipped). */
+@keyframes tour-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tour-hero-in {
+    animation: tour-in 900ms var(--ease-enter) both;
+    animation-delay: calc(var(--fx-intro-delay, 0ms) + var(--tour-in, 0ms));
+  }
+}
+
+/*
+ * Primary CTA energy (mirrors Home's CTA): a conic light orbits the pill on hover/focus and pressing fires a short flash.
+ * Uses the FX kit's registered --fx-angle and fx-spin keyframes. No isolation: the halo paints behind the button.
+ */
+.tour-cta {
+  position: relative;
+}
+
+.tour-cta::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: -1;
+  border-radius: inherit;
+  padding: 2px;
+  background: conic-gradient(from var(--fx-angle), transparent 0deg, var(--color-brand-cyan) 60deg, var(--color-brand-violet) 130deg, transparent 200deg, transparent 360deg);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+  pointer-events: none;
+}
+
+.tour-cta::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  z-index: -2;
+  border-radius: inherit;
+  background: radial-gradient(closest-side, rgb(62 137 255 / 0.55), rgb(171 123 255 / 0.25) 55%, transparent 75%);
+  opacity: 0;
+  transform: scale(0.9);
+  transition:
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-spring-snappy) var(--ease-spring-snappy);
+  pointer-events: none;
+}
+
+.tour-cta:hover::before,
+.tour-cta:focus-visible::before {
+  opacity: 1;
+}
+
+.tour-cta:hover::after,
+.tour-cta:focus-visible::after {
+  opacity: 0.9;
+  transform: none;
+}
+
+.tour-cta:active::after {
+  opacity: 1;
+  transform: scale(1.12);
+  transition-duration: 90ms;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tour-cta:hover::before,
+  .tour-cta:focus-visible::before {
+    animation: fx-spin 2.4s linear infinite;
+  }
+}
+
+/* Real-screen lightbox. */
+.tour-dialog[open] {
+  animation: dialog-in var(--duration-spring-smooth) var(--ease-spring-smooth) both;
+}
+
+.tour-dialog::backdrop {
+  background: rgb(2 4 10 / 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tour-camera {
+    will-change: auto;
+  }
+}
