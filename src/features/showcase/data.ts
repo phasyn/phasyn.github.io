@@ -32,13 +32,16 @@ export const MACHINE_ORDER: readonly MachineKey[] = ['gb10', 'rtx5080', 'rtx3060
 /** Which machine is in which box (the author's setup: two machines, three GPUs). */
 export const MACHINE_HOST: Record<Exclude<MachineKey, 'unknown'>, 'dgx' | 'pc'> = { gb10: 'dgx', rtx5080: 'pc', rtx3060: 'pc', cpu: 'pc' };
 
-export const CATEGORY_ORDER: readonly ShowcaseCategory[] = ['image', 'video', 'character', 'multishot'];
+export const CATEGORY_ORDER: readonly ShowcaseCategory[] = ['film', 'image', 'video', 'character', 'multishot'];
+
+/** Finished long pieces (the owner's #1 asset): their own featured row at the top of the gallery. */
+export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'film');
 
 export function itemBySlug(slug: string): ShowcaseItem | undefined {
   return ITEMS.find((item) => item.slug === slug);
 }
 
-/** Hero-graded results, in data order (the importer keeps the curated seed order first). */
+/** Hero-graded results for the hero theatre, films first, in data order (the importer keeps the curated seed order). */
 export const FEATURED: readonly ShowcaseItem[] = ITEMS.filter((item) => item.grade === 'hero');
 
 export function isClip(item: ShowcaseItem): boolean {

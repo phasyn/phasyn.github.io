@@ -96,7 +96,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-ocean.mp4",
-      "audioGainDb": 26.1
+      "rawLufs": -50.6
     }
   },
   // ref2va-rooftop: studio/gen/clips/ref2va-rooftop; one reference image (the character sheet).
@@ -201,7 +201,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/ref2va-rooftop.mp4",
-      "audioGainDb": 10.7
+      "rawLufs": -36.1
     }
   },
   // fl2va-rain: studio/gen/clips/fl2va-rain; run record captured in work/real-ui/records-run-steps (created 15:35:41, elapsed 57.156 s).
@@ -297,7 +297,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-rain.mp4",
-      "audioGainDb": 15.6
+      "rawLufs": -39.2
     }
   },
   // ref2va-meadow: studio/gen/clips/ref2va-meadow; one reference image (the character sheet).
@@ -402,7 +402,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/ref2va-meadow.mp4",
-      "audioGainDb": 21.2
+      "rawLufs": -45.7
     }
   },
   // fl2va-cliff: studio/gen/clips/fl2va-cliff; first FL2VA run of the session.
@@ -498,7 +498,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-cliff.mp4",
-      "audioGainDb": 21.1
+      "rawLufs": -44.9
     }
   },
   // fl2va-portrait: studio/gen/clips/fl2va-portrait.
@@ -594,7 +594,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-portrait.mp4",
-      "audioGainDb": 24.1
+      "rawLufs": -47.3
     }
   },
   // still-cliff: studio/gen/stills/cliff; step times are the session's rounded readings, shared by all four stills.

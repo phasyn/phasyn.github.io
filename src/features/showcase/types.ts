@@ -8,11 +8,12 @@
 
 import type { Locale } from '../../site/config.ts';
 
-export type ShowcaseKind = 'still' | 'fl2va' | 'ref2va' | 'multishot' | 'roundtrip';
+/** `film` = a finished 30–60 s piece (studio/out/final/films/<slug>/: film.mp4, poster.jpg, item.json). */
+export type ShowcaseKind = 'film' | 'still' | 'fl2va' | 'ref2va' | 'multishot' | 'roundtrip';
 export type ShowcaseGrade = 'hero' | 'usable';
 
-/** Gallery filter groups (Image / Video / Character / Multi-shot). Derived from `kind` unless an item overrides it. */
-export type ShowcaseCategory = 'image' | 'video' | 'character' | 'multishot';
+/** Gallery groups (Films / Image / Video / Character / Multi-shot). Derived from `kind` unless an item overrides it. */
+export type ShowcaseCategory = 'film' | 'image' | 'video' | 'character' | 'multishot';
 
 /** Machines of the author's setup; `unknown` is shown as "placement not recorded" (never guessed). */
 export type MachineKey = 'gb10' | 'rtx5080' | 'rtx3060' | 'cpu' | 'unknown';
@@ -87,8 +88,8 @@ export interface ShowcaseMedia {
   clip?: string;
   /** Frame contact sheet, if the item folder had one. */
   contact?: ShowcaseImage;
-  /** Constant gain applied to the clip's sound for web playback (dB); 0 when unchanged. */
-  audioGainDb?: number;
+  /** Loudness of the raw output before the web copy was normalised (LUFS, integrated), when it had sound. */
+  rawLufs?: number;
 }
 
 export interface ShowcaseReference {

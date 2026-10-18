@@ -3,9 +3,10 @@
 //   node scripts/import-showcase.ts [--source <dir>] [--seed <file>] [--no-seed] [--force] [--dry-run]
 //
 // Reads the seed entries (scripts/showcase-seed.json, item.json-equivalent records of the 2026-10-18 studio/gen runs), then
-// every <source>/{farm-*,rec-*}/item.json (default source: <project>/studio/out/final/showcase). A folder holds item.json plus
-// still.png and/or clip.mp4, prompt.txt and optionally contact.jpg. A folder item replaces a seed with the same slug.
-// Items not graded "hero" or "usable" are skipped, as is anything that fails validation or the privacy check.
+// every <source>/{farm-*,rec-*}/item.json (default source: <project>/studio/out/final/showcase) and every
+// <films>/<slug>/item.json (default: <project>/studio/out/final/films; kind "film", with film.mp4 and poster.jpg). A folder
+// holds item.json plus still.png and/or clip.mp4, prompt.txt and optionally contact.jpg. A folder item replaces a seed with
+// the same slug. Items not graded "hero" or "usable" are skipped, as is anything that fails validation or the privacy check.
 //
 // Output (this script owns these paths and removes stale files in them):
 //   public/images/showcase/items/<slug>-<w>.webp           stills: native width (max 1152), 768, 384 — never upscaled
@@ -13,7 +14,9 @@
 //   public/media/showcase/<slug>.mp4                       H.264 + AAC, +faststart (review media: git-ignored; production
 //                                                          serves it from VITE_MEDIA_BASE). Video is stream-copied when it
 //                                                          already is H.264/yuv420p, else re-encoded at CRF 20 (native size).
-//                                                          Sound gets one constant gain towards -24 LUFS (ceiling -1.5 dBTP).
+//                                                          Sound is loudness-normalised for the web (lead rule): two-pass
+//                                                          loudnorm I=-16 TP=-1.5 LRA=11, 48 kHz, AAC 192k. Originals are
+//                                                          never touched.
 //   src/features/showcase/items.gen.ts                     typed SHOWCASE_ITEMS (do not edit by hand)
 
 import { spawnSync } from 'node:child_process';
@@ -42,6 +45,7 @@ function projectRoot(): string {
 
 const ROOT = projectRoot();
 const SOURCE = resolve(option('--source') ?? join(ROOT, 'studio/out/final/showcase'));
+const FILMS = resolve(option('--films') ?? join(ROOT, 'studio/out/final/films'));
 const SEED = resolve(option('--seed') ?? join(SITE, 'scripts/showcase-seed.json'));
 const DRY = flag('--dry-run');
 const FORCE = flag('--force');
@@ -55,13 +59,12 @@ const FFPROBE = process.env.FFPROBE ?? (existsSync('/opt/homebrew/bin/ffprobe') 
 const CWEBP = process.env.CWEBP ?? (existsSync('/opt/homebrew/bin/cwebp') ? '/opt/homebrew/bin/cwebp' : 'cwebp');
 const TEMP = mkdtempSync(join(tmpdir(), 'import-showcase-'));
 
-const KINDS: readonly ShowcaseKind[] = ['still', 'fl2va', 'ref2va', 'multishot', 'roundtrip'];
-const CATEGORIES: readonly ShowcaseCategory[] = ['image', 'video', 'character', 'multishot'];
+const KINDS: readonly ShowcaseKind[] = ['film', 'still', 'fl2va', 'ref2va', 'multishot', 'roundtrip'];
+const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'image', 'video', 'character', 'multishot'];
 const LOCALE_KEYS = ['zh-hant', 'ja', 'en'] as const;
 const STILL_WIDTHS = [1152, 768, 384];
 const POSTER_WIDTHS = [768, 384];
-const LOUDNESS_TARGET = -24;
-const TRUE_PEAK_CEILING = -1.5;
+const LOUDNORM = 'I=-16:TP=-1.5:LRA=11';
 
 /** Public text must never carry LAN addresses, absolute paths or account names (BRIEF §5). */
 const PRIVATE = [/\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6-9]|2\d|3[01]))\.\d{1,3}\.\d{1,3}\b/, /\/(?:home|mnt|Users)\//, /dennysora-(?:pc|dgx)/i, /DennySORA-DGX/];
@@ -75,12 +78,21 @@ interface Candidate {
   origin: string;
   still?: string;
   clip?: string;
+  /** A supplied poster (films: poster.jpg); otherwise a frame is taken from the clip. */
+  poster?: string;
   prompt?: string;
   contact?: string;
   referenceFile?: string;
 }
 
-type Cache = Record<string, { source: string; size: number; mtimeMs: number; params: string }>;
+interface CacheEntry {
+  source: string;
+  size: number;
+  mtimeMs: number;
+  params: string;
+  rawLufs?: number;
+}
+type Cache = Record<string, CacheEntry>;
 
 const problems: string[] = [];
 const skipped: string[] = [];
@@ -151,43 +163,41 @@ function webpSet(source: string, stem: string, widths: readonly number[], seekSe
   };
 }
 
-/** Integrated loudness and true peak (EBU R128). */
-function loudness(file: string): { integrated: number; truePeak: number } | undefined {
-  const log = run(FFMPEG, ['-hide_banner', '-nostats', '-i', file, '-map', '0:a:0', '-af', 'ebur128=peak=true', '-f', 'null', '-']);
-  const summary = log.slice(log.lastIndexOf('Summary:'));
-  const integrated = Number(/I:\s+(-?[\d.]+) LUFS/.exec(summary)?.[1]);
-  const truePeak = Number(/Peak:\s+(-?[\d.]+) dBFS/.exec(summary)?.[1]);
-  return Number.isFinite(integrated) && Number.isFinite(truePeak) ? { integrated, truePeak } : undefined;
+/** First loudnorm pass: the raw clip's measured loudness (EBU R128), used for the linear second pass. */
+function measure(file: string): Record<string, string> | undefined {
+  const log = run(FFMPEG, ['-hide_banner', '-nostats', '-i', file, '-map', '0:a:0', '-af', `loudnorm=${LOUDNORM}:print_format=json`, '-f', 'null', '-']);
+  const json = /\{[^{}]*"input_i"[^{}]*\}/.exec(log)?.[0];
+  return json ? (JSON.parse(json) as Record<string, string>) : undefined;
 }
 
-/** Web copy of a clip: H.264 + AAC with the index up front; native size, never upscaled. Returns the applied gain. */
-function webClip(source: string, slug: string): { path: string; gain: number } {
+/**
+ * Web copy of a clip: H.264 + AAC with the index up front; native size, never upscaled. Sound is loudness-normalised
+ * (two-pass loudnorm to -16 LUFS, -1.5 dBTP, 48 kHz AAC 192k). Returns the raw integrated loudness.
+ */
+function webClip(source: string, slug: string): { path: string; rawLufs?: number } {
   const info = probe(source);
   const video = info.streams.find((s) => s.codec_type === 'video');
   const audio = info.streams.find((s) => s.codec_type === 'audio');
   if (!video) throw new Error(`${source} has no video stream`);
   const videoOk = video.codec_name === 'h264' && video.pix_fmt === 'yuv420p';
-  const level = audio ? loudness(source) : undefined;
-  let gain = 0;
-  if (level && level.integrated > -70) {
-    gain = Math.min(LOUDNESS_TARGET - level.integrated, TRUE_PEAK_CEILING - level.truePeak);
-    if (Math.abs(gain) < 0.5) gain = 0;
-    gain = Math.round(gain * 10) / 10;
-  }
   const output = join(MEDIA, `${slug}.mp4`);
-  const params = `v${videoOk ? 'copy' : 'crf20'};g${gain}`;
+  const params = `v${videoOk ? 'copy' : 'crf20'};a${audio ? LOUDNORM : 'none'}`;
   produced.add(output);
+  const cached = cache[output];
+  let rawLufs = cached?.rawLufs;
   if (!DRY && !fresh(output, source, params)) {
+    const level = audio ? measure(source) : undefined;
+    rawLufs = level ? Number(level.input_i) : undefined;
     const videoArgs = videoOk ? ['-c:v', 'copy'] : ['-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p', '-profile:v', 'high'];
-    const audioArgs = !audio
-      ? ['-an']
-      : gain === 0 && audio.codec_name === 'aac'
-        ? ['-c:a', 'copy']
-        : ['-af', `volume=${gain}dB`, '-c:a', 'aac', '-b:a', '160k'];
+    const second = level
+      ? `loudnorm=${LOUDNORM}:measured_I=${level.input_i}:measured_TP=${level.input_tp}:measured_LRA=${level.input_lra}:measured_thresh=${level.input_thresh}:offset=${level.target_offset}:linear=true`
+      : `loudnorm=${LOUDNORM}`;
+    const audioArgs = audio ? ['-af', `${second},aresample=48000`, '-c:a', 'aac', '-b:a', '192k'] : ['-an'];
     run(FFMPEG, ['-y', '-v', 'error', '-i', source, '-map', '0:v:0', ...(audio ? ['-map', '0:a:0'] : []), ...videoArgs, ...audioArgs, '-movflags', '+faststart', output]);
     remember(output, source, params);
+    if (rawLufs !== undefined && Number.isFinite(rawLufs)) (cache[output] as CacheEntry).rawLufs = rawLufs;
   }
-  return { path: `showcase/${slug}.mp4`, gain };
+  return { path: `showcase/${slug}.mp4`, ...(rawLufs !== undefined && Number.isFinite(rawLufs) ? { rawLufs: Math.round(rawLufs * 10) / 10 } : {}) };
 }
 
 function machines(text: string): MachineKey[] {
@@ -209,6 +219,7 @@ function num(value: unknown): number | null {
 
 function categoryOf(json: ShowcaseItemJson, hasClip: boolean): ShowcaseCategory {
   if (json.category && CATEGORIES.includes(json.category)) return json.category;
+  if (json.kind === 'film') return 'film';
   if (json.kind === 'still') return 'image';
   if (json.kind === 'fl2va') return 'video';
   if (json.kind === 'ref2va') return 'character';
@@ -267,6 +278,31 @@ function loadCandidates(): Candidate[] {
   } else {
     console.log(`import-showcase: no item folders yet (${SOURCE})`);
   }
+  if (existsSync(FILMS)) {
+    for (const name of readdirSync(FILMS).sort()) {
+      const folder = join(FILMS, name);
+      if (!existsSync(join(folder, 'item.json'))) continue;
+      let json: ShowcaseItemJson;
+      try {
+        json = JSON.parse(readFileSync(join(folder, 'item.json'), 'utf8')) as ShowcaseItemJson;
+      } catch (error) {
+        skipped.push(`films/${name}: item.json is not valid JSON (${(error as Error).message})`);
+        continue;
+      }
+      const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
+      const candidate: Candidate = { json: { ...json, kind: json.kind ?? 'film' }, origin: `films/${name}` };
+      const clip = file('film.mp4') ?? file('clip.mp4');
+      const poster = file('poster.jpg') ?? file('poster.png') ?? file('poster.webp');
+      const prompt = file('prompt.txt');
+      const contact = file('contact.jpg');
+      if (clip) candidate.clip = clip;
+      if (poster) candidate.poster = poster;
+      if (prompt) candidate.prompt = prompt;
+      if (contact) candidate.contact = contact;
+      if (bySlug.has(json.slug)) console.log(`import-showcase: films/${name} replaces "${json.slug}"`);
+      bySlug.set(json.slug, candidate);
+    }
+  }
   return [...bySlug.values()];
 }
 
@@ -285,8 +321,9 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
   if (!Number.isInteger(json.seed)) return fail('seed must be an integer');
   if (!num(json.width) || !num(json.height)) return fail('missing width/height');
   if (!Array.isArray(json.steps)) return fail('steps must be an array');
-  if (!candidate.prompt) return fail('no prompt.txt (every card shows its prompt)');
-  if (!candidate.still && !candidate.clip) return fail('no still.png or clip.mp4');
+  // A film is cut from many runs: its prompt file (the shot prompts) is optional; every other card shows its prompt.
+  if (!candidate.prompt && json.kind !== 'film') return fail('no prompt.txt (every card shows its prompt)');
+  if (!candidate.still && !candidate.clip) return fail(json.kind === 'film' ? 'no film.mp4' : 'no still.png or clip.mp4');
 
   const title = {} as Record<(typeof LOCALE_KEYS)[number], string>;
   for (const locale of LOCALE_KEYS) {
@@ -297,8 +334,8 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
       problems.push(`${origin}: title.${locale} missing, using the English title`);
     } else return fail('missing title');
   }
-  const prompt = readFileSync(candidate.prompt, 'utf8').trim();
-  if (!prompt) return fail('prompt.txt is empty');
+  const prompt = candidate.prompt ? readFileSync(candidate.prompt, 'utf8').trim() : '';
+  if (!prompt && json.kind !== 'film') return fail('prompt.txt is empty');
   for (const text of [prompt, ...Object.values(title), json.pipeline, json.ditEngine, json.model]) {
     if (isPrivate(text)) return fail('private data (LAN address, absolute path or account name) in public text');
   }
@@ -315,12 +352,13 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
 
   try {
     let image: ShowcaseImage;
-    let clip: { path: string; gain: number } | undefined;
+    let clip: { path: string; rawLufs?: number } | undefined;
     if (candidate.clip) {
       clip = webClip(candidate.clip, json.slug);
       const length = num(json.seconds) ?? Number(probe(candidate.clip).format.duration);
       const at = num(json.posterAt) ?? Math.max(0, length * 0.4);
-      image = webpSet(candidate.clip, `${json.slug}-poster`, POSTER_WIDTHS, at);
+      const posterWidths = json.kind === 'film' ? [1920, 1280, 768] : POSTER_WIDTHS;
+      image = candidate.poster ? webpSet(candidate.poster, `${json.slug}-poster`, posterWidths) : webpSet(candidate.clip, `${json.slug}-poster`, posterWidths, at);
     } else {
       image = webpSet(candidate.still as string, json.slug, STILL_WIDTHS);
     }
@@ -366,7 +404,7 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
       prompt,
       media: {
         image,
-        ...(clip ? { clip: clip.path, audioGainDb: clip.gain } : {}),
+        ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined ? { rawLufs: clip.rawLufs } : {}) } : {}),
         ...(contact ? { contact } : {}),
       },
     };
@@ -406,7 +444,7 @@ for (const candidate of candidates) {
   const item = build(candidate, slugs);
   if (item) {
     items.push(item);
-    console.log(`import-showcase: ${item.slug} (${item.kind}, ${item.grade}${item.media.audioGainDb ? `, sound ${item.media.audioGainDb > 0 ? '+' : ''}${item.media.audioGainDb} dB` : ''})`);
+    console.log(`import-showcase: ${item.slug} (${item.kind}, ${item.grade}${item.media.rawLufs !== undefined ? `, raw ${item.media.rawLufs} LUFS → -16` : ''})`);
   }
 }
 // A reference must point at a published item.
@@ -418,7 +456,8 @@ const seeded = items.filter((item) => candidates.find((c) => c.json.slug === ite
 const farmed = items
   .filter((item) => !seeded.includes(item))
   .sort((a, b) => (a.grade === b.grade ? b.createdAt.localeCompare(a.createdAt) : a.grade === 'hero' ? -1 : 1));
-const ordered = [...seeded, ...farmed];
+// Films lead (the owner's #1 asset), then the curated seeds, then new results.
+const ordered = [...farmed.filter((item) => item.kind === 'film'), ...seeded, ...farmed.filter((item) => item.kind !== 'film')];
 
 const notes = new Map(candidates.map((c) => [c.json.slug, c.json.notes && !isPrivate(c.json.notes) ? c.json.notes : '']));
 const body = ordered
