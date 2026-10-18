@@ -137,3 +137,33 @@ export function range(items: readonly ShowcaseItem[], pipeline: string): { min: 
 export function formatSeconds(seconds: number): string {
   return seconds >= 100 || Number.isInteger(seconds) ? String(Math.round(seconds)) : seconds.toFixed(1);
 }
+
+/**
+ * The breakdown pair: the rain still (t2i-pc run 0e2463b8) became the first frame of the rain clip (fl2va-pc run cfa759df).
+ * `starts` (seconds from run start) come from that run's Step Timeline and activity log in Records (real capture:
+ * public/images/showcase/page/records-run-cfa759df.webp): te from 0, venc 1.38, DiT 2.48, video and audio decode side by
+ * side from 34.44 on two GPUs, mux 56.80; elapsed 57.156 s. Durations are the item's own step times.
+ */
+export const BREAKDOWN = {
+  still: 'still-rain',
+  clip: 'fl2va-rain',
+  starts: { te: 0, venc: 1.38, dit: 2.48, video: 34.44, audio: 34.44, mux: 56.8 } as Record<string, number>,
+  capture: { src: '/images/showcase/page/records-run-cfa759df.webp', src2x: '/images/showcase/page/records-run-cfa759df@2x.webp', width: 1920, height: 1080 },
+} as const;
+
+/** The character sheet and its two unpicked candidates (t2i-pc, ~30 s each; studio/gen/RUNS.md). */
+export const CHARACTER = {
+  sheet: 'char-courier',
+  candidates: [
+    { seed: 7, runId: '67cec92f', src: '/images/showcase/page/char-seed-7-384.webp' },
+    { seed: 42, runId: 'c6404b02', src: '/images/showcase/page/char-seed-42-384.webp' },
+    { seed: 2026, runId: 'd8ca891e', src: '/images/showcase/page/char-seed-2026-384.webp', picked: true },
+  ],
+} as const;
+
+/** Short run id for display (item.json may carry a full UUID). */
+export function shortRun(id: string): string {
+  return id.slice(0, 8);
+}
+
+export const MACHINE_HOST_LABEL: Record<'dgx' | 'pc', string> = { dgx: 'DGX Spark', pc: 'PC' };

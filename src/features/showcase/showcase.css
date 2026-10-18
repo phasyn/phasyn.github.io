@@ -108,3 +108,86 @@
     transform: none;
   }
 }
+
+/* Breakdown arrow: a light pulse travels through it (decorative). */
+@media (prefers-reduced-motion: no-preference) {
+  .sc-flow-arrow {
+    animation: sc-arrow 2.4s var(--ease-standard) infinite;
+  }
+}
+
+@keyframes sc-arrow {
+  0%,
+  100% {
+    transform: translateX(0);
+    box-shadow: 0 0 0 rgb(73 207 255 / 0);
+  }
+  50% {
+    transform: translateX(4px);
+    box-shadow: 0 0 22px rgb(73 207 255 / 0.45);
+  }
+}
+
+/*
+ * Machine timeline. Static and complete by default (server, no JavaScript, reduced motion). `armed` hides the bars until
+ * the chart is on screen; `play` fills each bar as the linear playhead passes it (--sc-d start, --sc-len length, both
+ * scaled from the real seconds), then shows its label. The playhead crosses the track in --sc-total.
+ */
+.sc-track {
+  container-type: inline-size;
+}
+
+.sc-playhead {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sc-timeline[data-state="armed"] .sc-bar {
+    transform: scaleX(0);
+  }
+
+  .sc-timeline[data-state="armed"] .sc-bar-label {
+    opacity: 0;
+  }
+
+  .sc-timeline[data-state="play"] .sc-bar {
+    transform-origin: left center;
+    animation: sc-fill var(--sc-len) linear var(--sc-d) both;
+  }
+
+  .sc-timeline[data-state="play"] .sc-bar-label {
+    animation: sc-fade 360ms var(--ease-enter) calc(var(--sc-d) + var(--sc-len)) both;
+  }
+
+  .sc-timeline[data-state="play"] .sc-playhead {
+    display: block;
+    animation: sc-playhead var(--sc-total) linear both;
+  }
+}
+
+@keyframes sc-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes sc-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes sc-playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(100cqw - 2px));
+  }
+}

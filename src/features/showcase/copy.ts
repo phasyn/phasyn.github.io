@@ -108,7 +108,8 @@ export interface ShowcaseCopy {
     candidates: string;
     picked: string;
     subject: string;
-    judge: string;
+    scenes: (n: number) => string;
+    scenesLead: string;
   };
   workflows: {
     eyebrow: string;
@@ -118,7 +119,7 @@ export interface ShowcaseCopy {
     items: Record<WorkflowId, Workflow>;
   };
   notes: { title: string; items: readonly string[]; loudness: (loudest: string, quietest: string, rates: string) => string; glyphs: string };
-  closing: { title: string; lead: string; tour: string; benchmarks: string };
+  closing: { title: string; lead: string; tour: string; benchmarks: string; film: string };
 }
 
 const STEP_NAME_ZH = { te: '文字編碼', venc: '影片 VAE 編碼', aenc: '音訊 VAE 編碼', dit: 'DiT 去噪', video: '影片 VAE 解碼', audio: '音訊 VAE 解碼', mux: '封裝（Mux）', vae: 'VAE 解碼＋合成', compose: '合成' };
@@ -198,14 +199,15 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipPrompt: '影片的 Prompt（動作與聲音）',
     },
     character: {
-      eyebrow: 'CHARACTER · ONE REFERENCE · TWO SCENES',
+      eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: '同一個角色，換一個場景。',
-      lead: '先用 t2i-pc 生成白底的角色設定圖，再把它當成 ref2va-pc 唯一的參考圖。Prompt 用 <Subject 1> 指名她，並要求 H3 保留 <Picture 1> 裡的樣子。兩個場景、兩個種子，請自己比較。',
+      lead: '先用 t2i-pc 生成白底的角色設定圖，再把它當成 ref2va-pc 唯一的參考圖。Prompt 用 <Subject 1> 指名她，並要求 H3 保留 <Picture 1> 裡的樣子。請自己比較每一段。',
       sheet: '參考圖',
       candidates: '三個候選種子，各約 30 秒',
       picked: '選用',
       subject: 'Prompt 裡的角色定義',
-      judge: '同一張參考圖，兩個不同的場景',
+      scenes: (n) => `同一張參考圖，${n} 個場景`,
+      scenesLead: '每一段都只用這張圖當參考；場景、動作與鏡頭全由 Prompt 決定。',
     },
     workflows: {
       eyebrow: 'WORKFLOWS · FROM ONE IMAGE TO A DAILY TOOL',
@@ -288,6 +290,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       lead: '操作導覽一步步走過真實的 App 畫面；數據分析寫明每一步跑在哪張卡。',
       tour: '看操作導覽',
       benchmarks: '看數據分析',
+      film: '看介紹影片',
     },
   },
 
@@ -363,14 +366,15 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipPrompt: '映像の Prompt（動きと音）',
     },
     character: {
-      eyebrow: 'CHARACTER · ONE REFERENCE · TWO SCENES',
+      eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: '同じキャラクターを、別のシーンへ。',
-      lead: 't2i-pc で白背景のキャラクターシートを生成し、ref2va-pc の唯一の参照画像にしました。Prompt では彼女を <Subject 1> と定義し、<Picture 1> の見た目を保つよう H3 に指示しています。2 つのシーンと 2 つのシードを、ご自身で見比べてください。',
+      lead: 't2i-pc で白背景のキャラクターシートを生成し、ref2va-pc の唯一の参照画像にしました。Prompt では彼女を <Subject 1> と定義し、<Picture 1> の見た目を保つよう H3 に指示しています。どのシーンも、ご自身で見比べてください。',
       sheet: '参照画像',
       candidates: '3 つの候補シード（各約 30 秒）',
       picked: '採用',
       subject: 'Prompt でのキャラクター定義',
-      judge: '同じ参照画像から、別々の 2 シーン',
+      scenes: (n) => `同じ参照画像から ${n} つのシーン`,
+      scenesLead: 'どの映像も参照はこの 1 枚だけで、場面・動き・カメラはすべて Prompt で指定しています。',
     },
     workflows: {
       eyebrow: 'WORKFLOWS · FROM ONE IMAGE TO A DAILY TOOL',
@@ -453,6 +457,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       lead: '操作ガイドでは実際のアプリ画面を順にたどり、ベンチマークでは各ステップをどの GPU で処理したかを明記しています。',
       tour: '操作ガイドを見る',
       benchmarks: 'ベンチマークを見る',
+      film: '紹介映像を見る',
     },
   },
 
@@ -528,14 +533,15 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipPrompt: 'Prompt for the clip (motion and sound)',
     },
     character: {
-      eyebrow: 'CHARACTER · ONE REFERENCE · TWO SCENES',
+      eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: 'Same Character, New Scene.',
-      lead: 't2i-pc made a character sheet on white; it became the only reference image for ref2va-pc. The prompt defines her as <Subject 1> and asks H3 to keep her exact appearance from <Picture 1>. Two scenes, two seeds — compare them yourself.',
+      lead: 't2i-pc made a character sheet on white; it became the only reference image for ref2va-pc. The prompt defines her as <Subject 1> and asks H3 to keep her exact appearance from <Picture 1>. Compare the scenes yourself.',
       sheet: 'Reference image',
       candidates: 'Three candidate seeds, ~30 s each',
       picked: 'Picked',
       subject: 'How the prompt defines her',
-      judge: 'One reference image, two different scenes',
+      scenes: (n) => `One reference image, ${n} scenes`,
+      scenesLead: 'Each clip uses only this image as its reference; the setting, action and camera all come from the prompt.',
     },
     workflows: {
       eyebrow: 'WORKFLOWS · FROM ONE IMAGE TO A DAILY TOOL',
@@ -618,6 +624,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       lead: 'The Tour walks through the real app, screen by screen. Benchmarks names the card behind every step.',
       tour: 'Take the Tour',
       benchmarks: 'See Benchmarks',
+      film: 'Watch the Film',
     },
   },
 };
