@@ -189,7 +189,9 @@
 .home-seam {
   position: relative;
   height: 1px;
-  overflow: visible;
+  /* The sweep travels past the right edge: clip it horizontally so it never widens the page (Android layout viewport). */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 .home-seam-line {
@@ -1110,6 +1112,7 @@
 /* Re-roll slot and queue (03). */
 .home-slot {
   display: inline-flex;
+  overflow: clip;
   align-items: center;
   gap: 0.12em;
   font-size: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);

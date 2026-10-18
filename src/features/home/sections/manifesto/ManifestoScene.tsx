@@ -207,7 +207,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
                     {...(index === beat - 1 ? { 'data-latest': '' } : {})}
                     {...(index >= beat - 2 ? { 'data-recent': '' } : {})}
                   >
-                    <span className={cn('machine text-[11px]', TONE_TEXT[meta.tone])}>{`0${index + 1}`}</span>
+                    <span className={cn('machine min-w-[2ch] text-[11px] whitespace-nowrap', TONE_TEXT[meta.tone])}>{`0${index + 1}`}</span>
                     <X className={cn('size-3 shrink-0', TONE_TEXT[meta.tone])} />
                     <span className="min-w-0 truncate">{line.text}</span>
                   </li>

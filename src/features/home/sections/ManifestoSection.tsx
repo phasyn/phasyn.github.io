@@ -5,32 +5,32 @@ import { HOME } from '../copy.ts';
 import { ManifestoGrid } from './manifesto/ManifestoGrid.tsx';
 import { ManifestoScene } from './manifesto/ManifestoScene.tsx';
 
-const TALL = '(min-height: 560px)';
+/** The pinned scene needs a tablet-sized or larger, tall enough viewport; phones get the still composition. */
+const STAGE = '(min-width: 768px) and (min-height: 560px)';
 
-function subscribeTall(onChange: () => void) {
-  const query = window.matchMedia(TALL);
+function subscribeStage(onChange: () => void) {
+  const query = window.matchMedia(STAGE);
   query.addEventListener('change', onChange);
   return () => query.removeEventListener('change', onChange);
 }
 
-/** Pinned scenes need room: on short viewports (landscape phones) the still composition reads better. */
-function useTallViewport(): boolean {
+function useStageViewport(): boolean {
   return useSyncExternalStore(
-    subscribeTall,
-    () => window.matchMedia(TALL).matches,
+    subscribeStage,
+    () => window.matchMedia(STAGE).matches,
     () => false,
   );
 }
 
 /**
  * Why Phasyn exists, in the author's words: five pain points, then the turn. With motion allowed on a tall enough viewport it is
- * a pinned, game-like scene (ManifestoScene); the prerendered HTML, reduced motion and short viewports get the still grid of pain
- * cards and the final statement (ManifestoGrid). Both carry the same text in the same order.
+ * a pinned, game-like scene (ManifestoScene); the prerendered HTML, reduced motion, phones and short viewports get the still
+ * composition (ManifestoGrid: a single-column log on phones, pain cards from md up, then the final statement). Both carry the same text in the same order.
  */
 export function ManifestoSection() {
   const t = useCopy(HOME).manifesto;
   const hydrated = useHydrated();
   const reducedMotion = useReducedMotion();
-  const tall = useTallViewport();
-  return hydrated && !reducedMotion && tall ? <ManifestoScene t={t} /> : <ManifestoGrid t={t} />;
+  const stage = useStageViewport();
+  return hydrated && !reducedMotion && stage ? <ManifestoScene t={t} /> : <ManifestoGrid t={t} />;
 }
