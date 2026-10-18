@@ -1,11 +1,13 @@
 import type { ReactNode } from 'react';
-import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from 'react-router';
-import { HTML_LANG, localeFromPath } from './site/config.ts';
+import { Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation, useMatches } from 'react-router';
+import { HTML_LANG, STATIC_404_ROUTE_ID, localeFromPath } from './site/config.ts';
 import './styles/app.css';
 
 // First paint is already the brand canvas colour; there is no light theme (DESIGN_GUIDE §3.1).
 export function Layout({ children }: { children: ReactNode }) {
   const locale = localeFromPath(useLocation().pathname);
+  // The prerendered 404 page is plain HTML and CSS (FE-22): no hydration, no route modules, no scroll script.
+  const staticPage = useMatches().some((match) => match.id === STATIC_404_ROUTE_ID);
   return (
     // suppressHydrationWarning: IntroSplash's pre-paint script may add `fx-intro-skip` to <html> before hydration.
     <html lang={locale ? HTML_LANG[locale] : 'en'} data-theme="noir" style={{ backgroundColor: '#070b14', colorScheme: 'dark' }} suppressHydrationWarning>
@@ -24,8 +26,12 @@ export function Layout({ children }: { children: ReactNode }) {
       </head>
       <body>
         {children}
-        <ScrollRestoration />
-        <Scripts />
+        {staticPage ? null : (
+          <>
+            <ScrollRestoration />
+            <Scripts />
+          </>
+        )}
       </body>
     </html>
   );

@@ -63,6 +63,12 @@ export function localeFromPath(pathname: string): Locale | undefined {
   return isLocale(first) ? first : undefined;
 }
 
+/**
+ * Route id of the prerendered /404 (GitHub Pages' 404.html). That page is static HTML without client scripts (FE-22);
+ * root.tsx leaves the scripts out when this route matches.
+ */
+export const STATIC_404_ROUTE_ID = 'routes/not-found-static';
+
 export function prerenderPaths(): string[] {
   const paths = ['/', '/404'];
   for (const locale of LOCALES) for (const page of PAGES) paths.push(pagePath(locale, page));
