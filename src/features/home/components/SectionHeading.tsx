@@ -35,7 +35,7 @@ export function SectionHeading({ id, eyebrow, title, lead, align = 'start', size
         on="view"
         className={cn('max-w-[22ch] text-balance-cjk tracking-display text-fg', size === 'display' ? 'text-display' : 'text-headline', centered && 'mx-auto')}
       />
-      {lead ? <p className={cn('reveal max-w-[46ch] text-lead text-fg-secondary', centered && 'mx-auto')}>{lead}</p> : null}
+      {lead ? <p className={cn('reveal text-on-fx max-w-[46ch] text-lead text-fg-secondary', centered && 'mx-auto')}>{lead}</p> : null}
       {children}
     </header>
   );

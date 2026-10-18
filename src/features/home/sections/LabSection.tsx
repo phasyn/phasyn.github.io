@@ -54,7 +54,7 @@ export function LabSection({ className }: { className?: string }) {
           })}
         </ul>
         <div className="reveal mt-6 flex flex-wrap items-center justify-between gap-4">
-          <p className="text-caption text-fg-tertiary">{t.note}</p>
+          <p className="text-on-fx text-caption text-fg-secondary">{t.note}</p>
           <a href="#follow" className="group inline-flex min-h-10 items-center gap-1.5 rounded-md text-body font-medium text-action-fg no-underline hover:text-fg">
             {t.cta}
             <ArrowDown className="size-4 transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover:translate-y-0.5" aria-hidden />

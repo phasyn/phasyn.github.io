@@ -2,6 +2,7 @@ import { ArrowRight, Pause, Play } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { HudFrame, SpotlightCard } from '../../../components/fx/index.ts';
 import { FilmPlayer } from '../../../components/media/FilmPlayer.tsx';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
 import { ButtonLink } from '../../../components/ui/Button.tsx';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { mediaUrl } from '../../../lib/media.ts';
@@ -70,8 +71,11 @@ function ClipCard({ clip, t, playing, onPlay }: ClipCardProps) {
                 {playing ? <Pause className="size-5" aria-hidden /> : <Play className="size-5 translate-x-px fill-current" aria-hidden />}
               </span>
             </button>
-            <span aria-hidden lang="en" className="material-hud machine pointer-events-none absolute top-2 left-2 inline-flex h-6 items-center rounded-full px-2 text-[11px] text-fg">
+            <span aria-hidden lang="en" className="material-hud machine pointer-events-none absolute top-2 right-2 inline-flex h-6 items-center rounded-full px-2 text-[11px] text-fg">
               run {clip.run}
+            </span>
+            <span className="pointer-events-none absolute bottom-2 left-2 max-w-[calc(100%-1rem)]">
+              <AiBadge variant="h3" />
             </span>
           </div>
           <figcaption className="grid gap-1 px-1.5 pb-1">
@@ -110,9 +114,10 @@ export function MadeWithSection() {
               captions={{ 'zh-hant': '/captions/films/intro.zh-hant.vtt', ja: '/captions/films/intro.ja.vtt', en: '/captions/films/intro.en.vtt' }}
               poster={`/images/home/film-poster-${locale}.webp`}
               title={t.videoTitle}
+              badge="mixed"
             />
           </HudFrame>
-          <figcaption className="text-data text-fg-secondary">{t.filmNote}</figcaption>
+          <figcaption className="text-on-fx text-data text-fg-secondary">{t.filmNote}</figcaption>
         </figure>
 
         <div className="grid gap-6">
@@ -123,7 +128,7 @@ export function MadeWithSection() {
             ))}
           </ul>
           <div className="reveal flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
-            <p className="max-w-[80ch] text-caption leading-relaxed text-fg-secondary">{t.footnote}</p>
+            <p className="text-on-fx max-w-[80ch] text-caption leading-relaxed text-fg-secondary">{t.footnote}</p>
             <ButtonLink to={pagePath(locale, 'showcase')} variant="secondary" icon={null} className="shrink-0">
               {t.seeAll}
               <ArrowRight aria-hidden />

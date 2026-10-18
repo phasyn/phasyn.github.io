@@ -25,7 +25,7 @@ export function ClosingSection() {
           <BrandMark size={120} glow loading="lazy" className="relative" />
         </div>
         <RevealText as="h2" id="closing-title" text={t.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
-        <p className="reveal max-w-[48ch] text-lead text-fg-secondary">{t.lead}</p>
+        <p className="reveal text-on-fx max-w-[48ch] text-lead text-fg-secondary">{t.lead}</p>
         <SourceSoon className="reveal" />
         <div className="reveal flex flex-wrap justify-center gap-3">
           <ButtonLink href={LINKS.github} variant="primary" size="lg" icon={<GitHubMark className="size-4" />} className="home-cta">
