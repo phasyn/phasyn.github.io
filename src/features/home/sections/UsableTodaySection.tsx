@@ -8,12 +8,12 @@ const ICONS = [Download, Cpu, Wallet, Scale, Bell] as const;
  * "Can I use it today?": the plain answer people look for before anything else — download, hardware (RTX 50 / RTX 30 / GB10
  * only; no RTX 40, no Mac), cost, licences and how to hear first. One card, no FX behind the text.
  */
-export function UsableTodaySection() {
+export function UsableTodaySection({ className }: { className?: string }) {
   const t = useCopy(HOME).usable;
   return (
-    <section aria-labelledby="usable-title" className="home-section home-section-flush relative">
-      <div className="site-container">
-        <div className="reveal rounded-3xl border border-line bg-surface p-6 shadow-edge sm:p-10">
+    <section aria-labelledby="usable-title" className={className}>
+      <div>
+        <div className="reveal rounded-3xl border border-line bg-surface p-6 shadow-edge sm:p-8">
           <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-brand-cyan">
             <span className="home-eyebrow-line w-10" />
             {t.eyebrow}
@@ -21,7 +21,7 @@ export function UsableTodaySection() {
           <h2 id="usable-title" className="mt-4 text-headline tracking-display text-balance-cjk text-fg">
             {t.title}
           </h2>
-          <dl className="mt-8 grid gap-x-10 gap-y-6 md:grid-cols-2">
+          <dl className="mt-6 grid gap-x-8 gap-y-5 md:grid-cols-2 lg:grid-cols-1">
             {t.items.map((item, index) => {
               const Icon = ICONS[index] ?? Bell;
               return (

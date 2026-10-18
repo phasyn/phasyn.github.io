@@ -55,8 +55,8 @@ export function FeaturesSection() {
   return (
     <section aria-labelledby="features-title" className="home-section relative">
       <div className="site-container">
-        <SectionHeading id="features-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
-        <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
+        <SectionHeading id="features-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} size="headline" />
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
           {FEATURES.map((feature) => {
             const card = t.cards[feature.key];
             const captured = SCREENS[feature.screen].capture !== undefined;

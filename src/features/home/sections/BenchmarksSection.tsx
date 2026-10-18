@@ -16,8 +16,8 @@ export function BenchmarksSection() {
   return (
     <section aria-labelledby="benchmarks-title" className="home-section relative">
       <div className="site-container">
-        <SectionHeading id="benchmarks-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
-        <dl className="mt-14 grid gap-4 md:grid-cols-3 lg:gap-5">
+        <SectionHeading id="benchmarks-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} size="headline" />
+        <dl className="mt-10 grid gap-4 md:grid-cols-3 lg:gap-5">
           {t.stats.map((stat) => (
             <div
               key={stat.label}

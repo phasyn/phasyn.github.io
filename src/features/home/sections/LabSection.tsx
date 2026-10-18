@@ -18,20 +18,20 @@ const STATUS: Record<LabStatus, { tone: ChipTone; Icon: typeof FlaskConical }> =
  * "In the lab": everything that has not shipped, one line each, every line with its status (in testing, implemented but not
  * verified, coming, design goal, in development, planned). Replaces the roadmap cards so the page ends on what exists.
  */
-export function LabSection() {
+export function LabSection({ className }: { className?: string }) {
   const locale = useLocale();
   const t = useCopy(HOME).lab;
   const common = commonCopy(locale);
   const label = (status: LabStatus) => (status === 'unverified' ? t.unverified : common[status]);
   return (
-    <section aria-labelledby="lab-title" className="home-section relative">
-      <div className="site-container">
+    <section aria-labelledby="lab-title" className={className}>
+      <div>
         <SectionHeading id="lab-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} size="headline" />
-        <ul className="reveal mt-10 divide-y divide-line-subtle overflow-hidden rounded-3xl border border-line-subtle bg-surface">
+        <ul className="reveal mt-8 divide-y divide-line-subtle overflow-hidden rounded-3xl border border-line-subtle bg-surface">
           {t.items.map((item) => {
             const { tone, Icon } = STATUS[item.status];
             return (
-              <li key={item.title} className="grid gap-2 px-5 py-4 sm:px-7 md:grid-cols-[12rem_minmax(0,1fr)] md:items-baseline md:gap-6">
+              <li key={item.title} className="grid gap-2 px-5 py-4 sm:px-6 md:grid-cols-[10.5rem_minmax(0,1fr)] md:items-baseline md:gap-5">
                 <span>
                   <Chip tone={tone} icon={<Icon aria-hidden />}>
                     {label(item.status)}

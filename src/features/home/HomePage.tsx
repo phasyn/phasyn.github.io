@@ -34,8 +34,13 @@ export function HomePage() {
       <UnderTheHoodSection />
       <SectionSeam />
       <BenchmarksSection />
-      <LabSection />
-      <UsableTodaySection />
+      {/* What is not shipped yet, beside the plain answer to "can I use it today?". */}
+      <div className="home-section relative">
+        <div className="site-container grid gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)] lg:items-start lg:gap-12">
+          <LabSection className="min-w-0" />
+          <UsableTodaySection className="min-w-0 lg:sticky lg:top-[calc(var(--site-header-h)+1.5rem)]" />
+        </div>
+      </div>
       <ClosingSection />
     </>
   );

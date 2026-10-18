@@ -49,7 +49,7 @@
      */
     @media (min-height: 560px) {
       .home-hero {
-        height: 185vh;
+        height: 130vh;
       }
 
       .home-hero-pin {
@@ -570,7 +570,7 @@
  * ---------------------------------------------------------------------------------------------------------------- */
 .home-mf {
   /* Scroll budget per beat; ManifestoScene sets --mf-units (pain beats + the turn). */
-  --home-mf-unit: 46vh;
+  --home-mf-unit: 27vh;
   height: calc(100svh + var(--mf-units, 3.3) * var(--home-mf-unit));
 }
 
@@ -1223,13 +1223,9 @@
 
 /* Home chapters breathe less than the site default, so the page stays near 10–12 screens at 1440. */
 .home-section {
-  padding-block: clamp(4rem, 2rem + 6vw, 8rem);
+  padding-block: clamp(3rem, 1rem + 4.5vw, 5.5rem);
 }
 
-/* A section that continues the one before it (no top padding). */
-.home-section-flush {
-  padding-top: 0;
-}
 
 /* Enlarge hint on real screens: on hover or keyboard focus with a fine pointer, always on touch screens. */
 .home-enlarge {

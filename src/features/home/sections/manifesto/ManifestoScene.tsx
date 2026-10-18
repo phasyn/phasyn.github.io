@@ -7,7 +7,7 @@ import { BEATS, BeatText, FinalStatement, TONE_TEXT, type ManifestoCopy } from '
 
 /** Scroll budget per beat in units of `--home-mf-unit` (home.css): the pain beats, then the longer turn. */
 const PAIN = BEATS.length;
-const FINAL_UNITS = 1.3;
+const FINAL_UNITS = 1;
 const TOTAL = PAIN + FINAL_UNITS;
 /** A beat's visual finishes at this share of its scroll, so the end state holds for a moment before the next beat. */
 const HOLD = 0.82;

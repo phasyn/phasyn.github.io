@@ -67,6 +67,10 @@ function EngineeringDetails({ t }: { t: HomeCopy['hood'] }) {
           <RealScreen screen="records-run-steps" crop="main" pan="22rem" hotspots={['run.elapsed', 'run.slowest', 'run.timeline']} hud={`RECORDS · RUN ${RUN.id}`} displayWidth="min(72rem, 90vw)" />
           <figcaption className="max-w-[90ch] text-data leading-relaxed text-fg-secondary">{t.runCaption}</figcaption>
         </figure>
+        <figure className="grid max-w-[30rem] gap-3">
+          <RealScreen screen="component-inspector-precision" crop="inspector" hud="INSPECTOR" displayWidth="min(30rem, 90vw)" />
+          <figcaption className="text-data leading-relaxed text-fg-secondary">{t.inspectorCaption}</figcaption>
+        </figure>
       </div>
     </details>
   );
@@ -85,7 +89,7 @@ export function UnderTheHoodSection() {
       <div className="site-container">
         <SectionHeading id="hood-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
-        <figure className="reveal mt-12 grid gap-3">
+        <figure className="reveal mt-10 grid gap-3">
           <RealScreen
             screen="records-run-steps"
             crop="timeline"
@@ -98,15 +102,9 @@ export function UnderTheHoodSection() {
           <figcaption className="max-w-[90ch] text-data leading-relaxed text-fg-secondary">{t.caption}</figcaption>
         </figure>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2 lg:gap-5">
+        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:gap-5">
           <Card icon={<ArtImage art="nodes" size={44} fallback={Boxes} className="size-11" />} title={t.process.title}>
-            <div className="grid gap-5 sm:grid-cols-[minmax(0,1fr)_minmax(0,13rem)] sm:items-start">
-              <p className="text-reading text-fg-secondary">{t.process.body}</p>
-              <figure className="grid gap-2">
-                <RealScreen screen="component-inspector-precision" crop="inspector" hud="INSPECTOR" displayWidth="13rem" />
-                <figcaption className="text-caption leading-relaxed text-fg-secondary">{t.inspectorCaption}</figcaption>
-              </figure>
-            </div>
+            <p className="text-reading text-fg-secondary">{t.process.body}</p>
           </Card>
           <Card icon={<span aria-hidden className={ICON}><Network className="size-5" /></span>} title={t.direct.title}>
             <p className="text-reading text-fg-secondary">{t.direct.body}</p>
@@ -128,19 +126,17 @@ export function UnderTheHoodSection() {
           </Card>
         </div>
 
-        <div className="reveal mt-12 grid gap-4 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)] lg:gap-8">
-          <div className="grid content-start gap-4">
-            <h3 className="text-[1.25rem] font-semibold text-fg">{t.differs.title}</h3>
-            <ul className="grid gap-3">
-              {t.differs.items.map((item) => (
-                <li key={item} className="flex items-start gap-3 text-reading text-fg-secondary">
-                  <span aria-hidden className="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-cyan shadow-[0_0_8px_rgb(73_207_255_/_0.7)]" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="grid content-start gap-3">
+        <div className="reveal mt-12 grid gap-4">
+          <h3 className="text-[1.25rem] font-semibold text-fg">{t.differs.title}</h3>
+          <ul className="grid gap-x-8 gap-y-4 lg:grid-cols-3">
+            {t.differs.items.map((item) => (
+              <li key={item} className="flex items-start gap-3 text-body leading-relaxed text-fg-secondary">
+                <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-brand-cyan shadow-[0_0_8px_rgb(73_207_255_/_0.7)]" />
+                {item}
+              </li>
+            ))}
+          </ul>
+          <div className="mt-2 grid gap-3 md:grid-cols-2">
             <p className="flex items-start gap-2.5 rounded-2xl border border-line-subtle bg-surface px-4 py-3 text-body text-fg-secondary">
               <Cpu className="mt-0.5 size-4 shrink-0 text-action-fg" aria-hidden />
               {t.runtimes}
@@ -152,9 +148,9 @@ export function UnderTheHoodSection() {
           </div>
         </div>
 
-        <div className="mt-10 grid gap-6">
+        <div className="mt-8 grid gap-4">
           <EngineeringDetails t={t} />
-          <ButtonLink to={pagePath(locale, 'tour')} variant="secondary" icon={null} className="justify-self-start">
+          <ButtonLink to={pagePath(locale, 'tour')} variant="quiet" icon={null} className="justify-self-start">
             {t.tour}
             <ArrowRight aria-hidden />
           </ButtonLink>

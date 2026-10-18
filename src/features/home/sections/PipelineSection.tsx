@@ -126,7 +126,7 @@ export function PipelineSection() {
                   }}
                   data-step={index}
                   {...(index === activeStep ? {} : { 'data-dim': '' })}
-                  className="home-step md:flex md:min-h-[64vh] md:flex-col md:justify-center"
+                  className="home-step md:flex md:min-h-[40vh] md:flex-col md:justify-center"
                 >
                   <div className="reveal grid justify-items-start gap-4">
                     <span className="inline-flex items-center gap-2 text-data font-semibold text-brand-cyan">

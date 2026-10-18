@@ -98,11 +98,11 @@ export function MadeWithSection() {
   const [playing, setPlaying] = useState<ClipKey | null>(null);
 
   return (
-    <section aria-labelledby="made-title" className="home-section relative">
+    <section aria-labelledby="made-title" className="home-section relative overflow-x-clip">
       <div className="site-container grid gap-10 md:gap-14">
         <SectionHeading id="made-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
-        <figure id="film" tabIndex={-1} className="reveal relative mx-auto grid w-full max-w-[70rem] gap-3 outline-none">
+        <figure id="film" tabIndex={-1} className="reveal relative mx-auto grid w-full max-w-[54rem] gap-3 outline-none">
           <div aria-hidden className="glow-backdrop pointer-events-none absolute -inset-x-[8%] -inset-y-[14%] -z-10 opacity-50" />
           <HudFrame label="INTRO FILM" orbit innerClassName="rounded-[1.4rem]">
             <FilmPlayer

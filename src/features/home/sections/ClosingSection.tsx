@@ -2,7 +2,6 @@ import { ArrowRight, Mail } from 'lucide-react';
 import { Link } from 'react-router';
 import { BrandMark } from '../../../components/brand/BrandMark.tsx';
 import { GitHubMark } from '../../../components/brand/ExternalMarks.tsx';
-import { Wordmark } from '../../../components/brand/Wordmark.tsx';
 import { RevealText } from '../../../components/fx/index.ts';
 import { ButtonLink } from '../../../components/ui/Button.tsx';
 import { SourceSoon } from '../../../components/ui/SourceSoon.tsx';
@@ -21,11 +20,10 @@ export function ClosingSection() {
     <section id="follow" aria-labelledby="closing-title" className="relative isolate overflow-hidden">
       <div className="site-container home-section relative grid justify-items-center gap-8 text-center">
         <div className="reveal relative grid place-items-center">
-          <span aria-hidden className="glow-backdrop absolute size-[26rem] max-w-[90vw] rounded-full opacity-90" />
-          <span aria-hidden className="home-mark-halo absolute size-[15rem] rounded-full" />
-          <BrandMark size={176} glow loading="lazy" className="relative" />
+          <span aria-hidden className="glow-backdrop absolute size-[22rem] max-w-[90vw] rounded-full opacity-80" />
+          <span aria-hidden className="home-mark-halo absolute size-[12rem] rounded-full" />
+          <BrandMark size={120} glow loading="lazy" className="relative" />
         </div>
-        <Wordmark width={248} gradient tagline decorative className="reveal justify-items-center" />
         <RevealText as="h2" id="closing-title" text={t.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
         <p className="reveal max-w-[48ch] text-lead text-fg-secondary">{t.lead}</p>
         <SourceSoon className="reveal" />
