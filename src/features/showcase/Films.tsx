@@ -6,7 +6,7 @@ import { useHydrated } from '../../lib/hooks.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { SHOWCASE } from './copy.ts';
 import { formatSeconds, shortRun, type ShowcaseItem } from './data.ts';
-import { AiBadge, PipelineChip } from './parts.tsx';
+import { PipelineChip, badgeFor } from './parts.tsx';
 
 /** Films shown before "Show more films" once hydrated (the prerendered HTML lists all of them). */
 const FILM_PAGE = 6;
@@ -119,17 +119,14 @@ export function FilmCard({ item, frame, className }: { item: ShowcaseItem; frame
     <article id={`film-${item.slug}`} aria-label={title} className={cn('grid content-start gap-3 scroll-mt-[calc(var(--site-header-h)+1rem)]', className)}>
       <div className="relative">
         {item.media.clip ? (
-          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={aspect} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={aspect} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
         ) : null}
-        <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <AiBadge />
-          <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
-            {copy.card.kind[item.kind]}
-          </span>
-        </div>
       </div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-        <h4 className="text-section font-semibold text-balance-cjk text-fg">{title}</h4>
+        <h4 className="flex flex-wrap items-baseline gap-x-2.5 text-section font-semibold text-balance-cjk text-fg">
+          {title}
+          <span className="text-caption font-medium text-fg-tertiary">{copy.card.kind[item.kind]}</span>
+        </h4>
         <p className="machine text-caption text-fg-secondary tabular-nums">
           {item.seconds !== null ? `${formatSeconds(item.seconds)} ${copy.card.seconds}` : ''}
           {item.shots.length ? ` · ${copy.gallery.shots(item.shots.length)}` : ''}
@@ -211,9 +208,8 @@ export function SocialRow({ items }: { items: readonly ShowcaseItem[] }) {
             <article aria-label={item.title[locale]} className="grid gap-2">
               <div className="relative">
                 {item.media.clip ? (
-                  <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} ambient aspect={`${item.width} / ${item.height}`} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+                  <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} ambient aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
                 ) : null}
-                <AiBadge className="pointer-events-none absolute top-3 left-3" />
               </div>
               <p className="text-body font-semibold text-balance-cjk text-fg">{item.title[locale]}</p>
               <p className="machine text-caption text-fg-tertiary">
@@ -239,14 +235,8 @@ export function MakingOf({ item, className }: { item: ShowcaseItem; className?: 
     <article aria-labelledby={`making-of-${item.slug}`} className={cn('grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-8', className)}>
       <div className="relative">
         {item.media.clip ? (
-          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
         ) : null}
-        <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <AiBadge />
-          <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
-            {copy.card.kind[item.kind]}
-          </span>
-        </div>
       </div>
       <div className="grid content-start gap-3">
         <h3 id={`making-of-${item.slug}`} className="grid gap-1">

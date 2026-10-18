@@ -1,5 +1,5 @@
-import { Sparkles } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { AiBadge, type AiBadgeVariant } from '../../components/ui/AiBadge.tsx';
 import { DecodeText, RevealText } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
@@ -30,13 +30,21 @@ export function MachineDot({ machine, className }: { machine: MachineKey; classN
   return <span aria-hidden className={cn('inline-block size-2 shrink-0 rounded-full', MACHINE_DOT[machine], className)} />;
 }
 
-/** "AI-generated" disclosure badge, on every result. */
-export function AiBadge({ className }: { className?: string }) {
-  const copy = SHOWCASE[useLocale()].card;
+/**
+ * Which licence disclosure a result carries (shared `AiBadge`): `qwen` for Qwen-Image 2.1 stills, `h3` for anything that
+ * plays (every clip, film, trailer and vertical cut is MiniMax H3 output), `mixed` for the making-of (Qwen stills and H3
+ * clips in one piece).
+ */
+export function badgeFor(item: ShowcaseItem): AiBadgeVariant {
+  if (item.kind === 'making-of') return 'mixed';
+  return item.media.clip ? 'h3' : 'qwen';
+}
+
+/** The shared disclosure badge pinned over a result's media (always visible, never hover-only). */
+export function MediaBadge({ item, className }: { item: ShowcaseItem; className?: string }) {
   return (
-    <span className={cn('inline-flex min-h-6 items-center gap-1.5 rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg backdrop-blur-sm', className)}>
-      <Sparkles aria-hidden className="size-3 text-brand-cyan" />
-      {copy.ai}
+    <span className={cn('pointer-events-none absolute top-3 left-3 z-10 max-w-[calc(100%-1.5rem)]', className)}>
+      <AiBadge variant={badgeFor(item)} />
     </span>
   );
 }
