@@ -5,10 +5,10 @@ import { FilmPlayer } from '../../../components/media/FilmPlayer.tsx';
 import { ButtonLink } from '../../../components/ui/Button.tsx';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { mediaUrl } from '../../../lib/media.ts';
+import { pagePath } from '../../../site/config.ts';
 import { SectionHeading } from '../components/SectionHeading.tsx';
 import { HOME, type HomeCopy } from '../copy.ts';
 import { CLIPS, type ClipKey, type ClipReceipt } from '../data.ts';
-import { showcasePath } from '../links.ts';
 
 const fill = (template: string, values: Record<string, string>) => template.replace(/\{(\w+)\}/g, (_, key: string) => values[key] ?? '');
 
@@ -124,7 +124,7 @@ export function MadeWithSection() {
           </ul>
           <div className="reveal flex flex-col gap-4 md:flex-row md:items-center md:justify-between md:gap-8">
             <p className="max-w-[80ch] text-caption leading-relaxed text-fg-secondary">{t.footnote}</p>
-            <ButtonLink to={showcasePath(locale)} variant="secondary" icon={null} className="shrink-0">
+            <ButtonLink to={pagePath(locale, 'showcase')} variant="secondary" icon={null} className="shrink-0">
               {t.seeAll}
               <ArrowRight aria-hidden />
             </ButtonLink>

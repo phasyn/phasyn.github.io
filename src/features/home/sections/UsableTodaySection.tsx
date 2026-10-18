@@ -1,8 +1,14 @@
-import { Bell, Cpu, Download, Scale, Wallet } from 'lucide-react';
+import { ArrowUpRight, Bell, Boxes, Cpu, Download, Scale, Wallet } from 'lucide-react';
 import { useCopy } from '../../../i18n/locale.tsx';
 import { HOME } from '../copy.ts';
 
 const ICONS = [Download, Cpu, Wallet, Scale, Bell] as const;
+
+/** Verified licence texts of the two model families the outputs on this site come from. */
+const LICENSES = [
+  { name: 'MiniMax H3 Community License', href: 'https://huggingface.co/MiniMaxAI/MiniMax-H3/blob/main/LICENSE' },
+  { name: 'Qwen Research License', href: 'https://huggingface.co/Qwen/Qwen-Image-2.1/blob/main/LICENSE' },
+] as const;
 
 /**
  * "Can I use it today?": the plain answer people look for before anything else — download, hardware (RTX 50 / RTX 30 / GB10
@@ -37,6 +43,28 @@ export function UsableTodaySection({ className }: { className?: string }) {
               );
             })}
           </dl>
+          <div className="mt-7 grid gap-3 border-t border-line-subtle pt-5">
+            <p className="flex items-start gap-2.5 text-body leading-relaxed text-fg-secondary">
+              <Boxes className="mt-0.5 size-4 shrink-0 text-action-fg" aria-hidden />
+              {t.framework}
+            </p>
+            <p className="flex flex-wrap items-center gap-x-4 gap-y-2 text-body">
+              <span className="text-fg-tertiary">{t.licenses}</span>
+              {LICENSES.map((license) => (
+                <a
+                  key={license.href}
+                  href={license.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  lang="en"
+                  className="group inline-flex min-h-10 items-center gap-1 rounded-md font-medium text-action-fg no-underline hover:text-fg"
+                >
+                  {license.name}
+                  <ArrowUpRight className="size-3.5 transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover:translate-x-0.5 group-hover:-translate-y-0.5" aria-hidden />
+                </a>
+              ))}
+            </p>
+          </div>
         </div>
       </div>
     </section>

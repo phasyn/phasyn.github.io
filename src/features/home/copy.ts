@@ -159,6 +159,10 @@ export interface HomeCopy {
     eyebrow: string;
     title: string;
     items: { label: string; body: string }[];
+    /** Phasyn Studio is a framework: it bundles no model weights. */
+    framework: string;
+    /** Label before the two licence links. */
+    licenses: string;
   };
   closing: {
     title: string;
@@ -212,7 +216,7 @@ export const HOME: Copy<HomeCopy> = {
       videoTitle: 'Phasyn Studio 介紹影片',
       filmNote: '介紹影片：從文字到圖片，再到有聲影片，約 1 分鐘。',
       wallTitle: '四張靜態圖，四段有聲影片。',
-      clips: { rain: '霓虹雨夜', ocean: '極光之海', portrait: '人像特寫', cliff: '黎明斷崖' },
+      clips: { rain: '雨夜的巷子', ocean: '極光下的海', portrait: '在微光中醒來', cliff: '黎明的懸崖' },
       receipt: 'fl2va · seed {seed} · 端對端 {s} 秒',
       machines: '文字 GB10 · DiT 與影片 RTX 5080 · 音訊 RTX 3060',
       play: '播放',
@@ -309,9 +313,9 @@ export const HOME: Copy<HomeCopy> = {
       differs: {
         title: '和其他工具哪裡不一樣',
         items: [
-          'ComfyUI 在一個 Python 程序裡執行整張工作流程圖；Phasyn Studio 讓每個模型元件（文字編碼、DiT、VAE、封裝）各自是一支獨立程式，所以當掉不會擴散，一次渲染也能橫跨多台機器。',
-          '像 SwarmUI 這類多後端前端，是把整個工作分派到不同機器；Phasyn Studio 拆的是同一次渲染：文字編碼在 DGX Spark，DiT 在 RTX 5080，音訊在 RTX 3060。',
-          'Runway、Kling 這類雲端服務目前解析度更高；Phasyn Studio 跑在你自己的硬體上，不用點數，而且記下每一秒花在哪裡。',
+          '節點式工作流程工具通常在一個程序裡執行整張圖；Phasyn Studio 讓每個模型元件（文字編碼、DiT、VAE、封裝）各自是一支獨立程式，所以當掉不會擴散，一次渲染也能橫跨多台機器。',
+          '多後端的前端是把整個工作分派到不同機器；Phasyn Studio 拆的是同一次渲染：文字編碼在 DGX Spark，DiT 在 RTX 5080，音訊在 RTX 3060。',
+          '雲端服務目前解析度更高；Phasyn Studio 跑在你自己的硬體上，不用點數，而且記下每一秒花在哪裡。',
         ],
       },
       runtimes: '目前的執行環境：RTX 50 系列、RTX 30 系列、DGX Spark（GB10）；RTX 40 系列（例如 4090）還沒有對應的執行環境。',
@@ -377,6 +381,8 @@ export const HOME: Copy<HomeCopy> = {
         { label: '能不能商用', body: 'Qwen‑Image 2.1 只能用於研究與非商業用途；MiniMax H3 有地區與使用規範。有營利的頻道、業配或接案，請先確認授權。' },
         { label: '想第一時間知道', body: '在 GitHub 或 Hugging Face 追蹤 phasyn，或寫信到 phasyn@phasyn.dev。' },
       ],
+      framework: 'Phasyn Studio 是一個框架：不隨附、也不散布任何模型權重；你自備模型，並依各自的授權使用。',
+      licenses: '授權原文',
     },
     closing: {
       title: '讓你的想法動起來。',
@@ -461,7 +467,7 @@ export const HOME: Copy<HomeCopy> = {
       videoTitle: 'Phasyn Studio 紹介映像',
       filmNote: 'テキストから画像、そして音声付きの映像になるまでを、約 1 分の映像で紹介します。',
       wallTitle: '4 枚の静止画から、音付きの動画を 4 本。',
-      clips: { rain: 'ネオンの雨', ocean: 'オーロラの海', portrait: 'ポートレート', cliff: '夜明けの断崖' },
+      clips: { rain: '雨の夜の路地', ocean: 'オーロラの海', portrait: '光の粒の中で目覚める', cliff: '夜明けの崖' },
       receipt: 'fl2va · seed {seed} · エンドツーエンド {s} 秒',
       machines: 'テキスト GB10 · DiT と映像 RTX 5080 · 音声 RTX 3060',
       play: '再生',
@@ -558,9 +564,9 @@ export const HOME: Copy<HomeCopy> = {
       differs: {
         title: 'ほかのツールとの違い',
         items: [
-          'ComfyUI はワークフローのグラフをひとつの Python プロセスで実行します。Phasyn Studio はテキストエンコーダー、DiT、VAE、mux といったモデルのコンポーネントをそれぞれ独立したプロセスで動かすため、クラッシュが広がらず、1 回のレンダリングを複数のマシンにまたがらせることもできます。',
-          'SwarmUI のようなマルチバックエンドのフロントエンドは、ジョブ全体を別々のマシンに振り分けます。Phasyn Studio が分けるのは 1 回のレンダリングそのものです。テキストエンコードは DGX Spark、DiT は RTX 5080、音声は RTX 3060 で動きます。',
-          'Runway や Kling のようなクラウドサービスは、現時点ではより高い解像度に対応しています。Phasyn Studio は自分のハードウェアで動き、クレジットは不要で、1 秒ごとの使い道を記録します。',
+          'ノードベースのワークフローツールは、多くの場合グラフ全体をひとつのプロセスで実行します。Phasyn Studio はモデルのコンポーネント（テキストエンコーダー、DiT、VAE、mux）をそれぞれ独立したプロセスで動かすため、クラッシュが広がらず、1 回のレンダリングを複数のマシンにまたがらせることもできます。',
+          'マルチバックエンドのフロントエンドは、ジョブ全体を別々のマシンに振り分けます。Phasyn Studio が分けるのは 1 回のレンダリングそのものです。テキストエンコードは DGX Spark、DiT は RTX 5080、音声は RTX 3060 で動きます。',
+          'クラウドサービスは、現時点ではより高い解像度に対応しています。Phasyn Studio は自分のハードウェアで動き、クレジットは不要で、1 秒ごとの使い道を記録します。',
         ],
       },
       runtimes: '現在の実行環境：RTX 50 シリーズ、RTX 30 シリーズ、DGX Spark（GB10）。RTX 40 シリーズ（4090 など）にはまだ対応していません。',
@@ -626,6 +632,8 @@ export const HOME: Copy<HomeCopy> = {
         { label: '商用利用', body: 'Qwen‑Image 2.1 は研究・非商用の用途に限られ、MiniMax H3 には地域の制限と利用規定があります。収益化したチャンネル、タイアップ、受託制作に使う前に、ライセンスを確認してください。' },
         { label: '最新情報', body: 'GitHub か Hugging Face で phasyn をフォローするか、phasyn@phasyn.dev までメールをお送りください。' },
       ],
+      framework: 'Phasyn Studio はフレームワークです。モデルの重みを同梱・配布することはありません。モデルは各自で用意し、それぞれのライセンスに従って使ってください。',
+      licenses: 'ライセンス原文',
     },
     closing: {
       title: 'あなたのアイデアを、動く映像に。',
@@ -710,7 +718,7 @@ export const HOME: Copy<HomeCopy> = {
       videoTitle: 'Phasyn Studio introduction film',
       filmNote: 'The intro film: from text to image to video with sound, in about a minute.',
       wallTitle: 'Four Stills. Four Clips with Sound.',
-      clips: { rain: 'Neon Rain', ocean: 'Aurora Sea', portrait: 'Portrait', cliff: 'Cliff at Dawn' },
+      clips: { rain: 'Rainy Night Alley', ocean: 'Aurora Over the Sea', portrait: 'Waking in Light', cliff: 'Cliff at Dawn' },
       receipt: 'fl2va · seed {seed} · {s} s end to end',
       machines: 'text on GB10 · DiT and video on RTX 5080 · audio on RTX 3060',
       play: 'Play',
@@ -807,9 +815,9 @@ export const HOME: Copy<HomeCopy> = {
       differs: {
         title: 'How It Differs',
         items: [
-          'ComfyUI runs a workflow graph inside one Python process. Phasyn Studio runs each model component — text encoder, DiT, VAEs, mux — as its own process, so a crash stays contained and one render can span several machines.',
-          'Multi-backend front ends such as SwarmUI send whole jobs to different machines. Phasyn Studio splits a single render: text encoding on a DGX Spark, the DiT on an RTX 5080, audio on an RTX 3060.',
-          'Hosted services such as Runway and Kling offer higher resolution today. Phasyn Studio runs on hardware you own, with no credits, and records where every second goes.',
+          'Node-based workflow tools usually run the whole graph in one process. Phasyn Studio runs each model component — text encoder, DiT, VAEs, mux — as its own process, so a crash stays contained and one render can span several machines.',
+          'Multi-backend front ends send whole jobs to different machines. Phasyn Studio splits a single render: text encoding on a DGX Spark, the DiT on an RTX 5080, audio on an RTX 3060.',
+          'Hosted services offer higher resolution today. Phasyn Studio runs on hardware you own, with no credits, and records where every second goes.',
         ],
       },
       runtimes: 'Runtimes today: RTX 50 series, RTX 30 series and DGX Spark (GB10). No RTX 40 series runtime yet.',
@@ -875,6 +883,8 @@ export const HOME: Copy<HomeCopy> = {
         { label: 'Commercial use', body: 'Qwen‑Image 2.1 is for research and non-commercial use only; MiniMax H3 has regional restrictions and a usage policy. Check the licenses before using it for a monetized channel, sponsored content or client work.' },
         { label: 'Stay posted', body: 'Follow phasyn on GitHub or Hugging Face, or write to phasyn@phasyn.dev.' },
       ],
+      framework: 'Phasyn Studio is a framework: it doesn’t bundle or distribute any model weights. You bring your own models and use them under their licenses.',
+      licenses: 'License texts',
     },
     closing: {
       title: 'Your Ideas, in Motion.',
