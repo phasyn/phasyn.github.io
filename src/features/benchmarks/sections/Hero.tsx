@@ -153,7 +153,8 @@ export function BenchHero() {
             <DecodeText text={copy.hero.eyebrow} afterIntro duration={700} />
           </p>
           {/* `on="load"` waits for the first-visit splash by itself (the kit's --fx-intro-delay). */}
-          <RevealText as="h1" on="load" text={copy.hero.title} className="text-hero tracking-display text-balance-cjk text-fg" />
+          {/* Phones: one size down so the longest unbreakable CJK phrase (「うやむやにしない。」, nine characters) fits 358 px. */}
+          <RevealText as="h1" on="load" text={copy.hero.title} className="text-hero tracking-display text-balance-cjk text-fg max-sm:text-[2.375rem]" />
           <p className="max-w-[48rem] text-lead text-pretty text-fg-secondary">{copy.hero.lead}</p>
         </div>
         <ul className={cn('grid gap-6 md:grid-cols-3')}>

@@ -309,15 +309,20 @@ function TableScroller({ label, wide, children }: { label: string; wide: boolean
   const copy = useBenchCopy();
   const [ref, more] = useScrollEdge<HTMLDivElement>();
   return (
-    <div className={cn('relative', wide && 'left-1/2 w-[min(calc(100vw-8rem),150rem)] -translate-x-1/2')}>
+    // min-w-0 keeps the table's own width out of the grid track (the filters above stay at the container width); on very
+    // wide screens negative margins widen the scroller past the container, centred, without widening the track.
+    <div className={cn('relative min-w-0', wide && 'mx-[calc((100%-min(100vw-8rem,150rem))/2)]')}>
       <div ref={ref} role="region" aria-label={label} tabIndex={0} className="max-w-full overflow-x-auto rounded-xl border border-line bg-surface shadow-edge">
         {children}
       </div>
       {more ? (
-        <div aria-hidden className="pointer-events-none absolute inset-y-px right-px flex w-28 items-start justify-end rounded-r-xl bg-[linear-gradient(90deg,transparent,var(--color-surface)_65%)] pt-2.5 pr-2.5">
-          <span className="material-hud inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption text-fg [&_svg]:size-3.5">
-            {copy.speed.scrollCue}
-            <ArrowRight />
+        <div aria-hidden className="pointer-events-none absolute inset-y-px right-px w-28 rounded-r-xl bg-[linear-gradient(90deg,transparent,var(--color-surface)_65%)]">
+          {/* The label follows the reader down a long table (below the header and the jump chips). */}
+          <span className="sticky top-[calc(var(--site-header-h)+4.25rem)] flex justify-end pt-2.5 pr-2.5">
+            <span className="material-hud inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption whitespace-nowrap text-fg [&_svg]:size-3.5">
+              {copy.speed.scrollCue}
+              <ArrowRight />
+            </span>
           </span>
         </div>
       ) : null}
