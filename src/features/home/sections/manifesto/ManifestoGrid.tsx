@@ -36,7 +36,7 @@ export function ManifestoGrid({ t }: { t: ManifestoCopy }) {
                   <div aria-hidden className="rounded-2xl border border-line-subtle bg-sunken/70 p-4 sm:p-5">
                     <meta.Visual still />
                   </div>
-                  <p className="text-[1.1875rem] leading-snug font-semibold text-balance-cjk text-fg">
+                  <p className="home-beat-text text-[1.1875rem] leading-snug font-semibold text-balance-cjk text-fg">
                     <BeatText text={beat.text} hot={beat.hot} tone={meta.tone} />
                   </p>
                 </article>

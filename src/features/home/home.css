@@ -1474,3 +1474,13 @@
     rotate: 0deg;
   }
 }
+
+/*
+ * Manifesto lines carry their own break opportunities (<wbr> between phrases, BeatText): CJK keeps words whole and never falls
+ * back to breaking anywhere, which text-wrap: balance would otherwise use mid-word.
+ */
+:root:lang(zh-Hant) .home-beat-text,
+:root:lang(ja) .home-beat-text {
+  word-break: keep-all;
+  overflow-wrap: normal;
+}

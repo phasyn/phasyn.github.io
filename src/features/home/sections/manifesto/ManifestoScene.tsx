@@ -170,7 +170,7 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
                       <span className="h-px w-6 bg-line-strong" />
                       <span className="truncate text-fg-tertiary">{meta.tag}</span>
                     </span>
-                    <p className="mt-4 max-w-[19em] text-headline font-semibold tracking-display text-balance-cjk text-fg">
+                    <p className="home-beat-text mt-4 max-w-[19em] text-headline font-semibold tracking-display text-balance-cjk text-fg">
                       <BeatText text={line.text} hot={line.hot} tone={meta.tone} />
                     </p>
                   </li>
