@@ -103,6 +103,16 @@
   text-transform: uppercase;
 }
 
+/*
+ * Copy over the nebula or other FX (FE-02): a soft canvas-coloured halo that is invisible on dark areas and keeps text
+ * readable when a bright aurora band passes behind it. For solid-colour text only (it would darken gradient-clipped text).
+ */
+@utility text-on-fx {
+  text-shadow:
+    0 1px 2px rgb(7 11 20 / 0.85),
+    0 0 24px rgb(7 11 20 / 0.7);
+}
+
 /* Soft brand glow behind hero objects (brand moment only). */
 @utility glow-backdrop {
   background:

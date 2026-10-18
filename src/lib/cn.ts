@@ -10,6 +10,7 @@ type PhasynClassGroup =
   | 'pressable'
   | 'stagger'
   | 'text-balance-cjk'
+  | 'text-on-fx'
   | 'site-layout'
   | 'eyebrow'
   | 'reveal'
@@ -65,6 +66,7 @@ const twMerge = extendTailwindMerge<PhasynClassGroup>({
       pressable: ['pressable'],
       stagger: ['stagger'],
       'text-balance-cjk': ['text-balance-cjk'],
+      'text-on-fx': ['text-on-fx'],
       'site-layout': ['site-container', 'site-section'],
       eyebrow: ['eyebrow'],
       reveal: ['reveal'],
