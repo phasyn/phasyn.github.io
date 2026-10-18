@@ -76,6 +76,7 @@ export interface BenchCopy {
     soundPrefix: string;
     /** Shown wherever a clip carries sound: the web copies are loudness-normalized. */
     loudness: string;
+    loudnessShort: string;
     runId: string;
     seed: string;
     date: string;
@@ -105,6 +106,7 @@ export interface BenchCopy {
       reset: string;
       empty: string;
     };
+    downloads: { label: string; runs: string; steps: string; json: string; note: string };
     cols: { run: string; pipeline: string; variant: string; steps: string; dit: string; compute: string; total: string; vram: string; status: string };
     colHints: { dit: string; compute: string; total: string; vram: string };
     /** Header sub-label for the DiT column's main number (its secondary line is labelled with cols.compute). */
@@ -131,7 +133,13 @@ export interface BenchCopy {
     dumbbell: ChartText & { memNote: (alloc768: string, alloc448: string, seq768: string, seq448: string) => string; ref768: string; ref448: string; metrics: Record<Ref448Key, string> };
     noMedia: string;
   };
-  method: SectionHead & { defs: { term: string; body: string }[]; caveats: string[]; exclusions: string };
+  method: SectionHead & {
+    defs: { term: string; body: string }[];
+    caveats: string[];
+    exclusions: string;
+    glossary: { title: string; lead: string; items: { term: string; body: string }[]; source: string };
+    env: { title: string; lead: string; groups: { title: string; rows: { term: string; value: string }[] }[] };
+  };
   experiments: SectionHead & { rows: (n: number) => string; findings: string; caveats: string; items: Record<ExpNum, ExperimentCopy> };
 }
 

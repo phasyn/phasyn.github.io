@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, ArrowUpDown, Ban, ChevronDown, CircleCheck, CircleX, LoaderCircle, RotateCcw } from 'lucide-react';
+import { ArrowDown, ArrowUp, ArrowUpDown, Ban, ChevronDown, CircleCheck, CircleX, Download, LoaderCircle, RotateCcw } from 'lucide-react';
 import { Fragment, useId, useMemo, useState, type ReactNode } from 'react';
 import { cn } from '../../../lib/cn.ts';
 import type { Copy } from '../../../i18n/locale.tsx';
@@ -686,7 +686,42 @@ export function SpeedSection() {
         <SpeedTable kind="image" all={all} retry={retry} />
       </div>
       <Failures />
+      <Downloads />
     </Section>
+  );
+}
+
+const DATA_BASE = `${import.meta.env.BASE_URL.replace(/\/$/, '')}/data/benchmarks`;
+const DOWNLOADS = [
+  { key: 'runs', file: 'phasyn-benchmarks-runs.csv', size: '38 KB' },
+  { key: 'steps', file: 'phasyn-benchmarks-steps.csv', size: '49 KB' },
+  { key: 'json', file: 'phasyn-benchmarks.json', size: '199 KB' },
+] as const;
+
+/** Sanitized exports of every row (built from rows.json; no hostnames or paths). */
+function Downloads() {
+  const copy = useBenchCopy();
+  const d = copy.speed.downloads;
+  return (
+    <div className="panel grid gap-3 p-5 sm:p-6">
+      <h3 className="text-section font-semibold text-fg">{d.label}</h3>
+      <ul className="flex flex-wrap gap-2">
+        {DOWNLOADS.map((item) => (
+          <li key={item.key}>
+            <a
+              href={`${DATA_BASE}/${item.file}`}
+              download={item.file}
+              className="pressable inline-flex min-h-9 items-center gap-2 rounded-md border border-line-strong bg-raised px-3 text-data text-fg no-underline hover:border-action/50 [&_svg]:size-4"
+            >
+              <Download aria-hidden className="text-fg-tertiary" />
+              {d[item.key]}
+              <span className="machine text-[12px] text-fg-tertiary">{item.size}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+      <p className="text-caption text-pretty text-fg-tertiary">{d.note}</p>
+    </div>
   );
 }
 

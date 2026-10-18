@@ -94,6 +94,7 @@ export function WipeCompare({ left, right, hud }: { left: Side; right: Side; hud
     );
 
   return (
+    // TODO(lead): add the shared AiBadge (variant 'h3') to this frame once it lands — both clips are MiniMax H3 outputs.
     <HudFrame label={hud}>
       <div
         ref={frameRef}

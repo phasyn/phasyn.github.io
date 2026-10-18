@@ -20,7 +20,9 @@ function ClipCard({ row }: { row: SpeedRow }) {
   const captionId = `today-sound-${row.id}`;
   return (
     <article className="panel grid min-w-0 content-start gap-4 p-3 sm:p-4">
-      <HudFrame label={`${row.pipeline.toUpperCase()} · ${row.runId ?? ''}`}>
+      {/* The HUD tag is upper-cased by the kit, so it carries the date; the lowercase run ID is in the line below. */}
+      <HudFrame label={`MEASURED · ${row.date}`}>
+        {/* TODO(lead): pass the licence badge once the shared FilmPlayer `badge` prop lands — badge="h3" (MiniMax H3 clip). */}
         <FilmPlayer src={clip.video} poster={clip.poster} title={copy.today.clipAria(scene)} aspect="768 / 448" className="rounded-xl shadow-none" />
       </HudFrame>
       <div className="grid gap-3 px-1 pb-1">
@@ -33,6 +35,7 @@ function ClipCard({ row }: { row: SpeedRow }) {
         </header>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-fg-tertiary">
           <code className="machine rounded bg-sunken px-1.5 py-0.5 text-[12px] text-fg">{row.pipeline}</code>
+          {row.runId ? <code className="machine text-[12px] text-fg-secondary">run {row.runId}</code> : null}
           <code className="machine text-[12px]">{row.component}</code>
           <span className="machine text-[12px]">
             {copy.common.seed} {row.seed}
@@ -70,6 +73,7 @@ export function TodaySection() {
       <p className="-mt-6 inline-flex flex-wrap items-center gap-2 text-caption text-fg-secondary">
         <span className="rounded-full border border-brand-cyan/40 bg-brand-soft px-2.5 py-0.5 font-medium text-fg">{copy.common.measuredToday}</span>
         <span>{copy.common.singleRun}</span>
+        <span>{copy.common.loudness}</span>
       </p>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {clips.map((row) => (

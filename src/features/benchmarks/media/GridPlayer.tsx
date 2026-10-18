@@ -70,6 +70,7 @@ export function GridPlayer() {
       <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${grid.key}`} className="grid min-w-0 gap-4">
         <HudFrame label={grid.hud}>
           <div className="relative">
+            {/* TODO(lead): pass the licence badge once the shared FilmPlayer `badge` prop lands — badge="h3" (MiniMax H3 outputs). */}
             <FilmPlayer key={grid.key} src={video(`${grid.file}.mp4`)} poster={img(`${grid.file}.webp`)} title={copy.dit.media.tabs[grid.key]} aspect="1540 / 900" className="rounded-xl shadow-none" />
             <ol aria-hidden className="pointer-events-none absolute inset-0 z-10">
               {grid.tiles.map((tile, index) => {
@@ -100,7 +101,9 @@ export function GridPlayer() {
             );
           })}
         </ol>
-        <p className="text-caption text-fg-tertiary">{copy.dit.media.audioNote}</p>
+        <p className="text-caption text-fg-tertiary">
+          {copy.dit.media.audioNote} {copy.common.loudnessShort}
+        </p>
       </div>
     </div>
   );

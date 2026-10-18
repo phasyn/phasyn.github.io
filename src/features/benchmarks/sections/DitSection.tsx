@@ -152,7 +152,7 @@ export function DitSection() {
       <MediaPanel title={copy.dit.media.title} desc={copy.dit.media.desc}>
         <GridPlayer />
       </MediaPanel>
-      <MediaPanel title={copy.dit.wipe.title} desc={copy.dit.wipe.desc}>
+      <MediaPanel title={copy.dit.wipe.title} desc={`${copy.dit.wipe.desc} ${copy.common.loudnessShort}`}>
         <WipeCompare
           hud="WIPE · T2VA · RTX 5080"
           left={{ video: video('t2va-fp8-pai8.mp4'), poster: img('t2va-fp8-pai8.webp'), label: `${copy.dit.wipe.left}${pai8?.dit != null ? ` · ${fmtSeconds(locale, pai8.dit)}` : ''}` }}
