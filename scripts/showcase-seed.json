@@ -37,7 +37,7 @@
       "kind": "ref2va",
       "pipeline": "ref2va-pc",
       "runId": "f083d166",
-      "outputId": "cf8166e3",
+      "outputId": "07d37d0a",
       "seed": 505,
       "model": "MiniMax H3",
       "ditEngine": "dit5080-ref2va-fp8-pai8",
@@ -51,7 +51,7 @@
         { "id": "te", "label": "Text encoder", "machine": "DGX Spark GB10", "seconds": 8.5 },
         { "id": "venc", "label": "Video VAE encode", "machine": "RTX 5080", "seconds": 5.7 },
         { "id": "aenc", "label": "Audio VAE encode", "machine": "RTX 3060", "seconds": 1.7 },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 70 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 70.7 },
         { "id": "video", "label": "Video VAE decode", "machine": "RTX 5080", "seconds": 22.8 },
         { "id": "audio", "label": "Audio VAE decode", "machine": "RTX 3060", "seconds": 1.0 },
         { "id": "mux", "label": "Mux", "machine": "CPU", "seconds": 0.5 }
@@ -99,7 +99,7 @@
       "kind": "ref2va",
       "pipeline": "ref2va-pc",
       "runId": "5adf4237",
-      "outputId": "5e9c47e0",
+      "outputId": "9651459d",
       "seed": 606,
       "model": "MiniMax H3",
       "ditEngine": "dit5080-ref2va-fp8-pai8",
@@ -113,7 +113,7 @@
         { "id": "te", "label": "Text encoder", "machine": "DGX Spark GB10", "seconds": 8.3 },
         { "id": "venc", "label": "Video VAE encode", "machine": "RTX 5080", "seconds": 5.5 },
         { "id": "aenc", "label": "Audio VAE encode", "machine": "RTX 3060", "seconds": 1.5 },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 68 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 68.5 },
         { "id": "video", "label": "Video VAE decode", "machine": "RTX 5080", "seconds": 22.5 },
         { "id": "audio", "label": "Audio VAE decode", "machine": "RTX 3060", "seconds": 0.9 },
         { "id": "mux", "label": "Mux", "machine": "CPU", "seconds": 0.3 }
@@ -196,11 +196,11 @@
       "ditEngine": "qimg-dit-bf16-5080-stream",
       "width": 1152,
       "height": 672,
-      "endToEndSeconds": 27.1,
+      "endToEndSeconds": 26.0,
       "steps": [
-        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 1.0 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23.5 },
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 1.3 }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/cliff; step times are the session's rounded readings, shared by all four stills.",
@@ -220,9 +220,9 @@
       "height": 672,
       "endToEndSeconds": 26.9,
       "steps": [
-        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 1.0 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23.5 },
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 1.9 }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/rain; first frame of the rain clip.",
@@ -240,11 +240,11 @@
       "ditEngine": "qimg-dit-bf16-5080-stream",
       "width": 1152,
       "height": 672,
-      "endToEndSeconds": 27.9,
+      "endToEndSeconds": 25.9,
       "steps": [
-        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 1.0 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23.5 },
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 1.3 }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/ocean.",
@@ -262,11 +262,11 @@
       "ditEngine": "qimg-dit-bf16-5080-stream",
       "width": 1152,
       "height": 672,
-      "endToEndSeconds": 26.5,
+      "endToEndSeconds": 25.8,
       "steps": [
-        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 1.0 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23.5 },
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 1.2 }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/portrait.",
@@ -285,13 +285,12 @@
       "ditEngine": "qimg-dit-bf16-5080-stream",
       "width": 768,
       "height": 1024,
-      "endToEndSeconds": 30,
-      "endToEndApprox": true,
+      "endToEndSeconds": 26.0,
       "steps": [
-        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": null },
-        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": null },
-        { "id": "vae", "label": "VAE decode", "machine": "RTX 5080", "seconds": null },
-        { "id": "compose", "label": "Compose", "machine": "CPU", "seconds": null }
+        { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 1.0 },
+        { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23.6 },
+        { "id": "vae", "label": "VAE decode", "machine": "RTX 5080", "seconds": 0.7 },
+        { "id": "compose", "label": "Compose", "machine": "CPU", "seconds": 0.6 }
       ],
       "grade": "usable",
       "notes": "studio/gen/char/courier-ref-768x1024.png; picked from seeds 7 (67cec92f), 42 (c6404b02) and 2026 (d8ca891e), each ~30 s. Step times not recorded in RUNS.md.",

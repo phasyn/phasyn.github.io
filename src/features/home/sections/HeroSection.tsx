@@ -3,6 +3,7 @@ import { useCallback, useRef, useState, type CSSProperties, type MouseEvent } fr
 import { Link } from 'react-router';
 import { RevealText } from '../../../components/fx/index.ts';
 import { buttonClass, ButtonLink } from '../../../components/ui/Button.tsx';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
 import { Chip } from '../../../components/ui/Chip.tsx';
 import { SourceSoon } from '../../../components/ui/SourceSoon.tsx';
 import { commonCopy } from '../../../i18n/common.ts';
@@ -51,7 +52,7 @@ export function HeroSection() {
 
         <div className="site-container relative flex flex-1 flex-col justify-center pt-[calc(var(--site-header-h)+2.5rem)] pb-20 [@media(max-aspect-ratio:1/1)]:justify-end [@media(max-aspect-ratio:1/1)]:pb-14">
           <div className="home-hero-copy grid max-w-[40rem] justify-items-start gap-6 [@media(max-aspect-ratio:1/1)]:max-w-[34rem]">
-            <p className="home-hero-in flex items-center gap-3 text-[0.9375rem] font-medium text-fg-secondary" style={{ '--home-in': '0ms' } as CSSProperties}>
+            <p className="home-hero-in text-on-fx flex items-center gap-3 text-[0.9375rem] font-medium text-fg-secondary" style={{ '--home-in': '0ms' } as CSSProperties}>
               <span aria-hidden className="home-eyebrow-line w-10" />
               {t.brand}
             </p>
@@ -60,14 +61,14 @@ export function HeroSection() {
               id="hero-title"
               text={t.title}
               on="load"
-              delay={150}
+              delay={80}
               className="text-[clamp(2.4rem,1.4rem+3.4vw,4.5rem)] leading-[1.06] font-[650] tracking-display text-balance-cjk text-fg"
             />
-            <p className="home-hero-in max-w-[30em] text-lead text-fg-secondary" style={{ '--home-in': '700ms' } as CSSProperties}>
+            <p className="home-hero-in text-on-fx max-w-[30em] text-lead text-fg-secondary" style={{ '--home-in': '150ms' } as CSSProperties}>
               <span className="block">{t.lead[0]}</span>
               <span className="block text-balance-cjk">{t.lead[1]}</span>
             </p>
-            <div className="home-hero-in mt-2 flex flex-wrap items-center gap-x-3 gap-y-3" style={{ '--home-in': '900ms' } as CSSProperties}>
+            <div className="home-hero-in mt-2 flex flex-wrap items-center gap-x-3 gap-y-3" style={{ '--home-in': '250ms' } as CSSProperties}>
               <a href="#film" onClick={onWatch} className={buttonClass('primary', 'lg', 'home-cta')}>
                 <Play className="fill-current" aria-hidden />
                 {t.watch}
@@ -85,7 +86,7 @@ export function HeroSection() {
                 <ArrowRight className="size-4 transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover:translate-x-0.5" aria-hidden />
               </Link>
             </div>
-            <div className="home-hero-in flex flex-wrap items-center gap-2" style={{ '--home-in': '1100ms' } as CSSProperties}>
+            <div className="home-hero-in flex flex-wrap items-center gap-2" style={{ '--home-in': '300ms' } as CSSProperties}>
               <Chip icon={<UserRound aria-hidden />}>{common.personalProject}</Chip>
               <SourceSoon />
             </div>
@@ -94,9 +95,10 @@ export function HeroSection() {
 
         {/* Only where the live scene can reach its film strip of real stills. */}
         {live ? (
-          <p aria-hidden className="home-hero-strip pointer-events-none absolute inset-x-0 bottom-7 z-10 px-(--site-gutter) text-center text-caption text-fg-secondary">
+          <p className="home-hero-strip pointer-events-none absolute inset-x-0 bottom-7 z-10 flex flex-wrap items-center justify-center gap-2 px-(--site-gutter) text-center text-caption text-fg-secondary">
+            <AiBadge variant="qwen" />
             <span className="material-hud inline-flex min-h-7 items-center gap-2 rounded-full px-3">
-              <span className="size-1.5 rounded-full bg-success" />
+              <span aria-hidden className="size-1.5 rounded-full bg-success" />
               {t.strip}
             </span>
           </p>

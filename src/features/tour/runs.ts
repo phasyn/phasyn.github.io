@@ -23,7 +23,7 @@ export const DEVICE_DOT: Record<DeviceKey, string> = {
 /** Ranges and single values from today's runs (studio/gen/RUNS.md). */
 export const TODAY = {
   /** Four Qwen-Image 2.1 stills, 1152×672, t2i-pc: TE, DiT and VAE on the RTX 5080, compose on the CPU. */
-  still: { min: 26.5, max: 27.9 },
+  still: { min: 25.8, max: 26.9 },
   /** Four FL2VA clips (dit-5080 FP8 PAI 8, 124 frames, with audio), end to end: TE on GB10, encode/DiT/VAE on RTX 5080, audio on RTX 3060. */
   fl2va: { min: 57.2, max: 76 },
   /** Two Ref2VA clips (dit5080-ref2va-fp8-pai8, one reference image), end to end, same placement. */

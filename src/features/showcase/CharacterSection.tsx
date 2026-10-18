@@ -5,7 +5,7 @@ import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
 import { CHARACTER, RESULTS, itemBySlug, shortRun } from './data.ts';
-import { AiBadge, SectionHeading, useSecondsText } from './parts.tsx';
+import { MediaBadge, SectionHeading, useSecondsText } from './parts.tsx';
 
 /** The prompt's `subject_definitions` block (H3 Ref2VA six-section format), or nothing. */
 function subjectDefinition(prompt: string): string | undefined {
@@ -44,7 +44,7 @@ export function CharacterSection() {
               decoding="async"
               className="mx-auto block h-auto w-full max-w-[24rem]"
             />
-            <AiBadge className="absolute top-3 left-3" />
+            <MediaBadge item={sheet} />
           </HudFrame>
           <figcaption className="grid gap-1 text-caption">
             <span className="font-semibold text-fg">
@@ -90,7 +90,7 @@ export function CharacterSection() {
                 <SpotlightCard tilt={0} className="h-full">
                   <div className="relative">
                     <ClipPlayer item={scene} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="rounded-t-2xl" />
-                    <AiBadge className="pointer-events-none absolute top-3 left-3" />
+                    <MediaBadge item={scene} />
                   </div>
                   <div className="grid gap-1 p-4">
                     <p className="text-body font-semibold text-balance-cjk text-fg">{scene.title[locale]}</p>

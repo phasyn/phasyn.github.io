@@ -67,7 +67,9 @@ export const CHAPTERS: readonly ChapterSpec[] = [
     number: 1,
     media: '01-text-image-video',
     poster: '/images/tour/v1.webp',
-    length: 115,
+    // Final master studio/out/final/tour/01-text-image-video.mp4: 61.3 s, 1920×1080, 30 fps (ffprobe).
+    length: 61.3,
+    recorded: true,
     steps: [
       { anchor: 'Describe it once. Pick a size and seed.' },
       { anchor: 'Wake only the models this image needs.', badge: { devices: ['rtx5080'], measure: single(TODAY.start.imageDit, 1) } },

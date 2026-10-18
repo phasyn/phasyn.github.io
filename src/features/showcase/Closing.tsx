@@ -61,7 +61,8 @@ export function Closing() {
         <RevealText as="h2" id="closing-title" text={copy.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
         <p className="reveal max-w-[44ch] text-lead text-balance-cjk text-fg-secondary">{copy.lead}</p>
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
-          <ButtonLink to={pagePath(locale, 'tour')} variant="primary" size="lg" className="fx-orbit-border">
+          <ButtonLink to={pagePath(locale, 'tour')} variant="primary" size="lg" className="relative isolate">
+            <span aria-hidden className="fx-orbit" />
             {copy.tour}
             <ArrowRight aria-hidden />
           </ButtonLink>

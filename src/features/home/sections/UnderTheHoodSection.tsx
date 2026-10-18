@@ -99,7 +99,7 @@ export function UnderTheHoodSection() {
             displayWidth="min(76rem, 94vw)"
             pan="15rem"
           />
-          <figcaption className="max-w-[90ch] text-data leading-relaxed text-fg-secondary">{t.caption}</figcaption>
+          <figcaption className="text-on-fx max-w-[90ch] text-data leading-relaxed text-fg-secondary">{t.caption}</figcaption>
         </figure>
 
         <div className="mt-10 grid gap-4 md:grid-cols-2 lg:gap-5">
@@ -130,7 +130,7 @@ export function UnderTheHoodSection() {
           <h3 className="text-[1.25rem] font-semibold text-fg">{t.differs.title}</h3>
           <ul className="grid gap-x-8 gap-y-4 lg:grid-cols-3">
             {t.differs.items.map((item) => (
-              <li key={item} className="flex items-start gap-3 text-body leading-relaxed text-fg-secondary">
+              <li key={item} className="text-on-fx flex items-start gap-3 text-body leading-relaxed text-fg-secondary">
                 <span aria-hidden className="mt-2 size-1.5 shrink-0 rounded-full bg-brand-cyan shadow-[0_0_8px_rgb(73_207_255_/_0.7)]" />
                 {item}
               </li>

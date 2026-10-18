@@ -1,0 +1,56 @@
+WEBVTT
+Language: en
+
+p1-v1-1
+00:00:00.016 --> 00:00:04.252
+Start with a single image.
+
+p1-v1-2
+00:00:04.425 --> 00:00:10.473
+Describe it once. Pick a size and seed.
+
+p1-v1-3
+00:00:10.630 --> 00:00:16.814
+Wake only the models this image needs.
+
+p1-v1-4
+00:00:16.974 --> 00:00:23.083
+Watch it take shape while it renders.
+
+p1-v1-5
+00:00:23.203 --> 00:00:25.862
+Every result is a take you can compare.
+
+p1-v1-6
+00:00:26.025 --> 00:00:30.097
+Save a white-background copy
+in the project library.
+
+p2-v2-1
+00:00:30.297 --> 00:00:33.905
+Turn the image into an opening frame.
+
+p2-v2-2
+00:00:34.078 --> 00:00:38.950
+One click adds a new video shot.
+
+p2-v2-3
+00:00:39.113 --> 00:00:42.553
+Describe what happens next.
+
+p3-v2-4
+00:00:42.797 --> 00:00:48.606
+One render, three GPUs on two machines:
+text on DGX Spark, video on RTX 5080.
+
+p3-v2-6
+00:00:48.772 --> 00:00:53.529
+Live DiT progress, step by step.
+
+p3-v2-7
+00:00:53.707 --> 00:00:56.458
+Every stage reports its measured time.
+
+p3-v2-8
+00:00:56.624 --> 00:01:01.265
+The shot opens on your image.
