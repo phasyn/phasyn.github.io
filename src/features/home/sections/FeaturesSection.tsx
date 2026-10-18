@@ -1,16 +1,15 @@
-import { FlaskConical, Languages, Lightbulb, ScanSearch, Sparkles, UsersRound, Wand2 } from 'lucide-react';
+import { FlaskConical, ScanSearch, ShieldCheck, Sparkles, UsersRound, Wand2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { SpotlightCard } from '../../../components/fx/index.ts';
-import { AppWindow, IllustrativeBadge, MockChip, TimelineStrip, useMockPlayback } from '../../../components/mock/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
 import { commonCopy } from '../../../i18n/common.ts';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
-import { HTML_LANG, LOCALES } from '../../../site/config.ts';
 import { REAL } from '../art.ts';
 import { ArtImage } from '../components/ArtImage.tsx';
+import { RealScreen } from '../components/RealScreen.tsx';
 import { SectionHeading } from '../components/SectionHeading.tsx';
-import { HOME, LANG_NAMES, MOCK_UI } from '../copy.ts';
+import { HOME } from '../copy.ts';
 
 /**
  * Feature tile: the FX kit's SpotlightCard (pointer light, glare, gentle tilt) inside a wrapper that owns the scroll reveal,
@@ -39,34 +38,13 @@ function TileHeading({ title, children }: { title: string; children?: ReactNode 
 
 const STILL_ORDER = ['ocean', 'cliff', 'rain', 'portrait'] as const;
 
-function ReverseMock({ label }: { label: string }) {
-  return (
-    <AppWindow title="Inference Studio · Image to Prompt" label={label} className="mt-7">
-      <div className="grid gap-4 p-4 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="relative overflow-hidden rounded-lg border border-line-subtle bg-stage" style={{ aspectRatio: '1152 / 672' }}>
-          <img src={REAL.stills.rain.small} alt="" width={384} height={224} loading="lazy" decoding="async" className="absolute inset-0 size-full object-cover" />
-          <span className="absolute top-2 left-2 rounded-full bg-sunken/80 px-2 py-0.5 text-[10px] text-fg-secondary">Source Image</span>
-        </div>
-        <div className="grid content-start gap-2">
-          <span className="text-[11px] font-semibold text-fg-secondary">{MOCK_UI.sceneCandidates}</span>
-          <ul className="grid grid-cols-2 gap-x-3 gap-y-2">
-            {MOCK_UI.sections.map((section, index) => (
-              <li key={section} className="grid gap-1">
-                <span className="truncate text-[11px] text-fg-tertiary">{section}</span>
-                <span className="block h-1.5 rounded-full bg-raised" style={{ width: `${92 - ((index * 17) % 40)}%` }} />
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-    </AppWindow>
-  );
-}
+/** The swap wizard's real step names, exactly as the English UI writes them (decorative; the body text says them in the locale). */
+const SWAP_STEPS = ['Source video', 'Characters', 'Scene-Cut Detection', 'Segment Plan', 'Output & Create'] as const;
 
 function SwapSteps() {
   return (
     <ol lang="en" aria-hidden className="mt-6 grid gap-2.5">
-      {MOCK_UI.swapSteps.map((step, index) => (
+      {SWAP_STEPS.map((step, index) => (
         <li key={step} className="flex items-center gap-3 text-data text-fg-secondary">
           <span className="machine grid size-6 shrink-0 place-items-center rounded-full border border-line-strong text-[11px] text-fg-tertiary">{index + 1}</span>
           {step}
@@ -76,85 +54,10 @@ function SwapSteps() {
   );
 }
 
-function AdvisorMock() {
-  return (
-    <div lang="en" className="mt-6 grid gap-3 rounded-xl border border-line-subtle bg-sunken p-3.5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="truncate text-[11px] font-semibold text-fg-secondary">{MOCK_UI.advisorTitle}</span>
-        <IllustrativeBadge />
-      </div>
-      <div className="grid gap-2 rounded-lg border border-line bg-surface p-3">
-        <span className="flex items-start gap-2 text-data text-fg">
-          <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-info" aria-hidden />
-          {MOCK_UI.advisorFinding}
-        </span>
-        <span className="flex items-center gap-2">
-          <MockChip tone="info">{MOCK_UI.official}</MockChip>
-          <span className="ml-auto inline-flex h-6 items-center rounded-md border border-line-strong bg-raised px-2 text-[11px] text-fg">{MOCK_UI.applyFix}</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
-function TimelineMock({ label }: { label: string }) {
-  const play = useMockPlayback<HTMLDivElement>({ threshold: 0.5 });
-  const clips = STILL_ORDER.map((key, index) => ({
-    id: key,
-    start: index * 5.17,
-    end: (index + 1) * 5.17,
-    index: index + 1,
-    title: MOCK_UI.clipTitles[index] ?? '',
-    thumb: REAL.stills[key].small,
-  }));
-  return (
-    <div ref={play.ref} className="mt-7">
-      <AppWindow title={MOCK_UI.videoEdit} label={label}>
-        <div className="grid gap-3 p-4">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {MOCK_UI.effects.map((effect) => (
-              <span key={effect} className="rounded-full border border-line-subtle bg-sunken px-2 py-0.5 text-[11px] text-fg-secondary">
-                {effect}
-              </span>
-            ))}
-            <span className="ml-auto inline-flex h-7 items-center rounded-md border border-line-strong bg-raised px-2.5 text-[11px] text-fg">{MOCK_UI.exportSequence}</span>
-          </div>
-          <TimelineStrip
-            duration={20.68}
-            tickEvery={4}
-            video={clips}
-            audio={[{ id: 'a', start: 0, end: 20.68, seed: 5 }]}
-            playing={play.armed && play.seen}
-            paused={!play.visible}
-            staticAt={0.32}
-          />
-        </div>
-      </AppWindow>
-    </div>
-  );
-}
-
-function LanguagesVisual() {
-  const locale = useLocale();
-  return (
-    <div className="mt-7 grid gap-1.5">
-      {LOCALES.map((code, index) => (
-        <span
-          key={code}
-          lang={HTML_LANG[code]}
-          className={cn(
-            'text-[clamp(1.75rem,1.2rem+1.6vw,2.6rem)] leading-[1.15] font-semibold',
-            code === locale ? 'text-brand-gradient' : 'text-fg-tertiary/70',
-          )}
-        >
-          {LANG_NAMES[index]}
-        </span>
-      ))}
-    </div>
-  );
-}
-
-/** Feature bento: six tiles with real output and labelled illustrative UI. */
+/**
+ * Feature bento: five tiles. Every UI in them is a real Phasyn Studio screen (RealScreen; "real capture pending" until the capture
+ * exists) and every image is real output.
+ */
 export function FeaturesSection() {
   const t = useCopy(HOME).features;
   const common = commonCopy(useLocale());
@@ -175,7 +78,7 @@ export function FeaturesSection() {
               </div>
               <ArtImage art="reverse" size={132} fallback={ScanSearch} className="-mt-3 -mr-3 hidden sm:block" />
             </div>
-            <ReverseMock label={t.mockLabels.reverse} />
+            <RealScreen screen="image-to-prompt-result" className="mt-7" displayWidth="min(46rem, 88vw)" />
           </Tile>
 
           <Tile className="lg:col-span-2" stagger={1}>
@@ -189,6 +92,10 @@ export function FeaturesSection() {
               <p className="text-reading text-fg-secondary">{t.swap.body}</p>
             </div>
             <SwapSteps />
+            <p className="mt-6 flex items-start gap-2 rounded-xl border border-line-subtle bg-sunken/60 px-3.5 py-3 text-caption leading-relaxed text-fg-secondary">
+              <ShieldCheck className="mt-0.5 size-4 shrink-0 text-brand-cyan" aria-hidden />
+              {t.swap.note}
+            </p>
           </Tile>
 
           <Tile className="lg:col-span-2">
@@ -201,7 +108,7 @@ export function FeaturesSection() {
                 {t.advisor.sources}
               </p>
             </div>
-            <AdvisorMock />
+            <RealScreen screen="prompt-advisor" crop="panel" className="mt-6" displayWidth="min(24rem, 88vw)" />
           </Tile>
 
           <Tile className="md:col-span-2 lg:col-span-4" tilt={2.5} stagger={1}>
@@ -212,60 +119,49 @@ export function FeaturesSection() {
               </div>
               <ArtImage art="timeline" size={124} fallback={Sparkles} className="-mt-3 -mr-3 hidden sm:block" />
             </div>
-            <TimelineMock label={t.mockLabels.timeline} />
+            <RealScreen screen="timeline-effects" className="mt-7" displayWidth="min(46rem, 88vw)" />
           </Tile>
 
-          <Tile className="lg:col-span-3">
-            <div className="flex items-start justify-between gap-4">
-              <div className="grid gap-3">
-                <TileHeading title={t.imageStudio.title} />
-                <p className="text-reading text-fg-secondary">{t.imageStudio.body}</p>
+          <Tile className="md:col-span-2 lg:col-span-6" tilt={2}>
+            <div className="grid gap-8 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-12">
+              <div className="grid content-start gap-3">
+                <div className="flex items-start justify-between gap-4">
+                  <TileHeading title={t.imageStudio.title} />
+                  <ArtImage art="imageStudio" size={96} fallback={Sparkles} className="-mt-2 -mr-2 hidden sm:block lg:hidden" />
+                </div>
+                <p className="max-w-[44ch] text-reading text-fg-secondary">{t.imageStudio.body}</p>
+                <ul className="mt-2 flex flex-wrap gap-2">
+                  {t.imageStudio.chips.map((chip) => (
+                    <li key={chip}>
+                      <Chip>{chip}</Chip>
+                    </li>
+                  ))}
+                  <li>
+                    <Chip tone="info">
+                      {t.imageStudio.removeBackground} · {common.coming}
+                    </Chip>
+                  </li>
+                </ul>
               </div>
-              <ArtImage art="imageStudio" size={96} fallback={Sparkles} className="-mt-2 -mr-2 hidden sm:block" />
+              <figure className="grid gap-3">
+                <div className="grid grid-cols-2 gap-2">
+                  {STILL_ORDER.map((key) => (
+                    <img
+                      key={key}
+                      src={REAL.stills[key].src}
+                      alt=""
+                      width={REAL.stills[key].width}
+                      height={REAL.stills[key].height}
+                      loading="lazy"
+                      decoding="async"
+                      sizes="(min-width: 80rem) 330px, (min-width: 52.5rem) 45vw, 90vw"
+                      className="aspect-[12/7] w-full rounded-xl border border-line-subtle bg-stage object-cover"
+                    />
+                  ))}
+                </div>
+                <figcaption className="text-caption leading-relaxed text-fg-tertiary">{t.imageStudio.caption}</figcaption>
+              </figure>
             </div>
-            <ul className="mt-5 flex flex-wrap gap-2">
-              {t.imageStudio.chips.map((chip) => (
-                <li key={chip}>
-                  <Chip>{chip}</Chip>
-                </li>
-              ))}
-              <li>
-                <Chip tone="info">
-                  {t.imageStudio.removeBackground} · {common.coming}
-                </Chip>
-              </li>
-            </ul>
-            <figure className="mt-6 grid gap-3">
-              <div className="grid grid-cols-2 gap-2">
-                {STILL_ORDER.map((key) => (
-                  <img
-                    key={key}
-                    src={REAL.stills[key].src}
-                    alt=""
-                    width={REAL.stills[key].width}
-                    height={REAL.stills[key].height}
-                    loading="lazy"
-                    decoding="async"
-                    sizes="(min-width: 80rem) 280px, (min-width: 52.5rem) 45vw, 90vw"
-                    className="aspect-[12/7] w-full rounded-xl border border-line-subtle bg-stage object-cover"
-                  />
-                ))}
-              </div>
-              <figcaption className="text-caption text-fg-tertiary">{t.imageStudio.caption}</figcaption>
-            </figure>
-          </Tile>
-
-          <Tile className="lg:col-span-3" stagger={1}>
-            <div className="flex items-start justify-between gap-4">
-              <div className="grid gap-3">
-                <TileHeading title={t.languages.title} />
-                <p className="text-reading text-fg-secondary">{t.languages.body}</p>
-              </div>
-              <span aria-hidden className="grid size-12 shrink-0 place-items-center rounded-2xl border border-action/25 bg-brand-gradient-soft text-brand-cyan">
-                <Languages className="size-5" />
-              </span>
-            </div>
-            <LanguagesVisual />
           </Tile>
         </div>
       </div>

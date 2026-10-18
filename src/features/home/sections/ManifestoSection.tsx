@@ -13,7 +13,8 @@ import { HOME } from '../copy.ts';
 export function ManifestoSection() {
   const locale = useLocale();
   const t = useCopy(HOME).manifesto;
-  const last = t.lines.length - 1;
+  const lines = [...t.beats.map((beat) => beat.text), t.final.text];
+  const last = lines.length - 1;
   return (
     <section aria-labelledby="manifesto-title" className="site-section relative">
       <div className="site-container">
@@ -26,7 +27,7 @@ export function ManifestoSection() {
             {t.heading}
           </h2>
           <div className="mt-10 grid gap-[0.6em] text-[clamp(1.75rem,0.95rem+2.7vw,3.6rem)] leading-[1.16] font-semibold tracking-display text-fg md:mt-14">
-            {t.lines.map((line, index) => (
+            {lines.map((line, index) => (
               <p
                 key={index}
                 className={cn(
