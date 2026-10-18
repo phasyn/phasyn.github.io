@@ -64,9 +64,13 @@ export function SiteFooter() {
           <LanguageSwitcher full className="mt-3 justify-self-start" />
         </div>
       </div>
-      <div className="site-container flex flex-wrap items-center justify-between gap-3 border-t border-line-subtle py-6 text-caption text-fg-tertiary">
-        <p className="text-balance-cjk">{copy.footerCredits}</p>
-        <p>© 2026 DennySORA · {copy.personalProject}</p>
+      <div className="site-container grid gap-2 border-t border-line-subtle py-6 text-caption text-fg-tertiary">
+        <p className="max-w-[110ch]">{copy.footerLicense}</p>
+        <p className="max-w-[110ch]">{copy.footerModels}</p>
+        <p className="max-w-[110ch]">{copy.footerCredits}</p>
+        <p className="mt-2 font-medium text-fg-secondary">
+          © 2026 DennySORA · {copy.personalProject}
+        </p>
       </div>
     </footer>
   );
