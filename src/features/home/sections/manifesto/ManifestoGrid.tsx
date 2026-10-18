@@ -8,7 +8,7 @@ import { BEATS, BeatText, FinalStatement, TONE_TEXT, type ManifestoCopy } from '
  */
 export function ManifestoGrid({ t }: { t: ManifestoCopy }) {
   return (
-    <section aria-labelledby="manifesto-title" className="home-mf-still site-section relative overflow-hidden">
+    <section aria-labelledby="manifesto-title" className="home-mf-still home-section relative overflow-x-clip">
       <div className="site-container">
         <header className="home-heading grid gap-5">
           <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-brand-cyan">
@@ -46,12 +46,12 @@ export function ManifestoGrid({ t }: { t: ManifestoCopy }) {
           </ol>
         </div>
 
-        <ol className="mt-10 hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
+        <ol className="mt-10 hidden gap-4 md:grid md:grid-cols-2 lg:gap-5">
           {t.beats.map((beat, index) => {
             const meta = BEATS[index];
             if (!meta) return null;
             return (
-              <li key={index} className={cn('reveal min-w-0', index < 3 ? 'lg:col-span-2' : 'lg:col-span-3', index === 4 && 'md:col-span-2')}>
+              <li key={index} className="reveal min-w-0">
                 <article className="home-pain-card flex h-full flex-col gap-5 rounded-3xl border border-line-subtle bg-surface p-5 sm:p-6" data-tone={meta.tone}>
                   <div aria-hidden className="flex items-center justify-between gap-3">
                     <span className="machine truncate text-[11px] tracking-[0.18em] uppercase">

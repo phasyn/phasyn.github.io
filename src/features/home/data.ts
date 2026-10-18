@@ -66,3 +66,28 @@ export const COUNTS = {
 
 /** Cross-host FileRef measured on the live setup: DiT on the PC received 219–322 KB of conditioning from the DGX Spark in 30–34 ms. */
 export const FILEREF = { sizeKB: '219–322', millis: '30–34' } as const;
+
+export type ClipKey = 'rain' | 'ocean' | 'portrait' | 'cliff';
+
+export interface ClipReceipt {
+  key: ClipKey;
+  /** fl2va-pc run on 2026-10-18 (studio/gen/RUNS.md). */
+  run: string;
+  seed: number;
+  /** End to end as the controller recorded it, models already started. */
+  seconds: number;
+  /** The Qwen-Image 2.1 still used as the first frame (t2i-pc, 1152×672). */
+  still: { seed: number; seconds: number };
+}
+
+/**
+ * The four fl2va clips of The Courier, all on fl2va-pc (te on GB10 · venc, dit, video on RTX 5080 · audio on RTX 3060 · mux on CPU).
+ * Web copies in public/media/home/<key>.mp4 are two-pass loudness-normalised (−16 LUFS / −1.5 dBTP, AAC 48 kHz); posters are
+ * frame 0 of those files.
+ */
+export const CLIPS: readonly ClipReceipt[] = [
+  { key: 'rain', run: 'cfa759df', seed: 202, seconds: 57.2, still: { seed: 23, seconds: 26.9 } },
+  { key: 'ocean', run: '72341805', seed: 303, seconds: 57.4, still: { seed: 31, seconds: 27.9 } },
+  { key: 'portrait', run: '7d52714a', seed: 404, seconds: 58.6, still: { seed: 47, seconds: 26.5 } },
+  { key: 'cliff', run: '82d036a7', seed: 101, seconds: 76, still: { seed: 11, seconds: 27.1 } },
+];

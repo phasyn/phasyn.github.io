@@ -1,28 +1,29 @@
 import './home.css';
 import { SectionSeam } from './components/SectionHeading.tsx';
-import { ArchitectureSection } from './sections/ArchitectureSection.tsx';
 import { BenchmarksSection } from './sections/BenchmarksSection.tsx';
 import { ClosingSection } from './sections/ClosingSection.tsx';
-import { DiagnosticsSection } from './sections/DiagnosticsSection.tsx';
 import { FeaturesSection } from './sections/FeaturesSection.tsx';
-import { FilmSection } from './sections/FilmSection.tsx';
 import { HeroSection } from './sections/HeroSection.tsx';
+import { LabSection } from './sections/LabSection.tsx';
+import { MadeWithSection } from './sections/MadeWithSection.tsx';
 import { ManifestoSection } from './sections/ManifestoSection.tsx';
-import { MeasuredTicker } from './sections/MeasuredTicker.tsx';
 import { PipelineSection } from './sections/PipelineSection.tsx';
-import { RoadmapSection } from './sections/RoadmapSection.tsx';
+import { ProofStrip } from './sections/ProofStrip.tsx';
+import { UnderTheHoodSection } from './sections/UnderTheHoodSection.tsx';
+import { UsableTodaySection } from './sections/UsableTodaySection.tsx';
 
 /**
- * phasyn.dev Home: hero (three.js frame stack) → measured ticker → film → manifesto → pipeline story → features →
- * distributed architecture → diagnostics and agent → benchmarks → roadmap → closing. Every section renders complete in the
- * prerendered HTML; motion is layered on top and collapses to the same content under prefers-reduced-motion.
+ * phasyn.dev Home, in the order of the marketing review (desire → trust → action): hero → proof numbers → made with Phasyn
+ * Studio (film and real clips) → why (condensed) → pipeline → verified features → under the hood (architecture + diagnostics)
+ * → benchmarks → in the lab → can I use it today → follow. Every section renders complete in the prerendered HTML; motion is
+ * layered on top and collapses to the same content under prefers-reduced-motion.
  */
 export function HomePage() {
   return (
     <>
       <HeroSection />
-      <MeasuredTicker />
-      <FilmSection />
+      <ProofStrip />
+      <MadeWithSection />
       <SectionSeam />
       <ManifestoSection />
       <SectionSeam />
@@ -30,13 +31,11 @@ export function HomePage() {
       <SectionSeam />
       <FeaturesSection />
       <SectionSeam />
-      <ArchitectureSection />
-      <SectionSeam />
-      <DiagnosticsSection />
+      <UnderTheHoodSection />
       <SectionSeam />
       <BenchmarksSection />
-      <SectionSeam />
-      <RoadmapSection />
+      <LabSection />
+      <UsableTodaySection />
       <ClosingSection />
     </>
   );
