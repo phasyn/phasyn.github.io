@@ -1,12 +1,12 @@
 import { ChevronDown } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { FilmPlayer } from '../../components/media/FilmPlayer.tsx';
+import { useState } from 'react';
 import { cn } from '../../lib/cn.ts';
 import { useHydrated } from '../../lib/hooks.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { SHOWCASE } from './copy.ts';
-import { CATEGORY_ORDER, FILMS, ITEMS, type ShowcaseCategory } from './data.ts';
-import { AiBadge, PipelineChip, SectionHeading, useSecondsText } from './parts.tsx';
+import { CATEGORY_ORDER, FILMS, RESULTS, SOCIAL, type ShowcaseCategory } from './data.ts';
+import { FilmsRow, SocialRow } from './Films.tsx';
+import { SectionHeading } from './parts.tsx';
 import { ResultCard } from './ResultCard.tsx';
 
 /** Cards shown before "Show more" (after hydration; the prerendered HTML lists every result). */
@@ -22,10 +22,9 @@ export function Gallery() {
   const hydrated = useHydrated();
   const [filter, setFilter] = useState<ShowcaseCategory | 'all'>('all');
   const [limit, setLimit] = useState(PAGE);
-  const secondsText = useSecondsText();
 
-  const rest = useMemo(() => ITEMS.filter((item) => item.kind !== 'film'), []);
-  const groups = CATEGORY_ORDER.filter((category) => category !== 'film' && rest.some((item) => item.category === category));
+  const rest = RESULTS;
+  const groups = CATEGORY_ORDER.filter((category) => category !== 'film' && category !== 'social' && rest.some((item) => item.category === category));
   const filtered = filter === 'all' ? rest : rest.filter((item) => item.category === filter);
   const visible = hydrated ? filtered.slice(0, limit) : filtered;
   const hidden = filtered.length - visible.length;
@@ -35,38 +34,18 @@ export function Gallery() {
       <SectionHeading id="gallery-title" eyebrow={copy.gallery.eyebrow} title={copy.gallery.title} lead={copy.gallery.lead} />
 
       {FILMS.length ? (
-        <div className="mt-12 grid gap-5">
-          <div className="grid gap-1">
-            <h3 className="text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.films}</h3>
-            <p className="text-body text-fg-secondary">{copy.gallery.filmsLead}</p>
-          </div>
-          <ul className="grid gap-6 lg:grid-cols-2">
-            {FILMS.map((film, index) => (
-              <li key={film.slug} className={cn('grid gap-3', index === 0 && FILMS.length % 2 === 1 && 'lg:col-span-2')}>
-                <div className="relative">
-                  {film.media.clip ? (
-                    <FilmPlayer src={film.media.clip} poster={film.media.image.src} title={film.title[locale]} ambient aspect={`${film.width} / ${film.height}`} />
-                  ) : null}
-                  <AiBadge className="pointer-events-none absolute top-3 left-3" />
-                </div>
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="flex flex-wrap items-center gap-2">
-                    <span className="text-section font-semibold text-fg">{film.title[locale]}</span>
-                    <PipelineChip pipeline={film.pipeline} />
-                  </p>
-                  <p className="machine text-caption text-fg-tertiary">
-                    {film.seconds ? `${film.seconds.toFixed(1)} ${copy.card.seconds} · ` : ''}
-                    {film.width}×{film.height}
-                    {film.endToEndSeconds !== null ? ` · ${copy.card.endToEnd} ${secondsText(film.endToEndSeconds, film.endToEndApprox)}` : ''}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
+        <div className="mt-12">
+          <FilmsRow items={FILMS} />
+        </div>
+      ) : null}
+      {SOCIAL.length ? (
+        <div className="mt-16">
+          <SocialRow items={SOCIAL} />
         </div>
       ) : null}
 
-      <div className="mt-12 flex flex-wrap items-center justify-between gap-4">
+      {FILMS.length || SOCIAL.length ? <h3 className="mt-16 text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.singles}</h3> : null}
+      <div className={cn('flex flex-wrap items-center justify-between gap-4', FILMS.length || SOCIAL.length ? 'mt-6' : 'mt-12')}>
         <div role="group" aria-label={copy.gallery.filterLabel} className="flex flex-wrap gap-2">
           {(['all', ...groups] as const).map((key) => {
             const count = key === 'all' ? rest.length : rest.filter((item) => item.category === key).length;

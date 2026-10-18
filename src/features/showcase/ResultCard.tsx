@@ -57,7 +57,7 @@ export function ResultCard({ item, size = 'regular', className }: { item: Showca
           <dl className="grid grid-cols-3 gap-3 text-caption">
             <Fact label={copy.endToEnd} value={secondsText(item.endToEndSeconds, item.endToEndApprox)} strong />
             <Fact label={copy.resolution} value={`${item.width}×${item.height}`} />
-            <Fact label={copy.seed} value={String(item.seed)} />
+            <Fact label={copy.seed} value={item.seed === null ? '–' : String(item.seed)} />
           </dl>
 
           <StepLanes item={item} className="sc-lanes-grow" />

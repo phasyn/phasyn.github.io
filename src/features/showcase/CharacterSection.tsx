@@ -4,7 +4,7 @@ import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { CHARACTER, ITEMS, itemBySlug, shortRun } from './data.ts';
+import { CHARACTER, RESULTS, itemBySlug, shortRun } from './data.ts';
 import { AiBadge, SectionHeading, useSecondsText } from './parts.tsx';
 
 /** The prompt's `subject_definitions` block (H3 Ref2VA six-section format), or nothing. */
@@ -22,7 +22,7 @@ export function CharacterSection() {
   const copy = SHOWCASE[locale];
   const secondsText = useSecondsText();
   const sheet = itemBySlug(CHARACTER.sheet);
-  const scenes = ITEMS.filter((item) => item.reference?.slug === CHARACTER.sheet && item.media.clip);
+  const scenes = RESULTS.filter((item) => item.reference?.slug === CHARACTER.sheet && item.media.clip);
   if (!sheet || !scenes.length) return null;
   const subject = scenes.map((scene) => subjectDefinition(scene.prompt)).find(Boolean);
 
@@ -95,7 +95,7 @@ export function CharacterSection() {
                   <div className="grid gap-1 p-4">
                     <p className="text-body font-semibold text-balance-cjk text-fg">{scene.title[locale]}</p>
                     <p lang="en" className="machine text-caption text-fg-tertiary">
-                      {copy.card.seed} {scene.seed} · {scene.frames ?? '–'} f · {copy.card.endToEnd} {secondsText(scene.endToEndSeconds, scene.endToEndApprox)}
+                      {copy.card.seed} {scene.seed ?? '–'} · {scene.frames ?? '–'} f · {copy.card.endToEnd} {secondsText(scene.endToEndSeconds, scene.endToEndApprox)}
                     </p>
                   </div>
                 </SpotlightCard>

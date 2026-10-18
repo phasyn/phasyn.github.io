@@ -33,7 +33,7 @@ export interface ShowcaseCopy {
   hero: {
     title: readonly string[];
     lead: string;
-    stats: { results: string; video: string; render: string; gpus: (hosts: number) => string };
+    stats: { results: string; video: string; render: string; gpus: (hosts: number) => string; films: (minutes: string) => string };
     minutes: string;
     featured: string;
     jump: string;
@@ -79,6 +79,14 @@ export interface ShowcaseCopy {
     lead: string;
     films: string;
     filmsLead: string;
+    shots: (n: number) => string;
+    music: string;
+    shotList: string;
+    shotHeaders: { shot: string; run: string; seed: string; length: string };
+    moreFilms: (n: number) => string;
+    social: string;
+    socialLead: string;
+    singles: string;
     filterLabel: string;
     all: string;
     category: Record<ShowcaseCategory, string>;
@@ -119,7 +127,7 @@ export interface ShowcaseCopy {
     tour: string;
     items: Record<WorkflowId, Workflow>;
   };
-  notes: { title: string; items: readonly string[]; loudness: (loudest: string, quietest: string, rates: string) => string; glyphs: string };
+  notes: { title: string; items: readonly string[]; loudness: (loudest: string, quietest: string, rates: string) => string; glyphs: string; films: (mix: string) => string };
   closing: { title: string; lead: string; tour: string; benchmarks: string; film: string };
 }
 
@@ -136,8 +144,8 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
   'zh-hant': {
     hero: {
       title: ['這一頁的每一個畫面，', '都在作者家裡生成。'],
-      lead: '這裡的圖片與影片，全部由 Phasyn Studio 透過控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的兩台機器、三顆 GPU 上生成。每張卡片都附上 Prompt、管線、每一步跑在哪台機器，以及實測時間。',
-      stats: { results: '個生成結果', video: '秒有聲影片', render: '端到端生成時間合計', gpus: (hosts) => `顆 GPU，分在 ${hosts} 台機器` },
+      lead: '這裡的圖片與影片，全部由 Phasyn Studio 透過控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的兩台機器、三顆 GPU 上生成。每個單次生成的結果都附上 Prompt、管線、每一步跑在哪台機器，以及實測時間；短片則列出它剪進的每一個鏡頭。',
+      stats: { results: '個生成結果', video: '秒有聲影片', render: '端到端生成時間合計', gpus: (hosts) => `顆 GPU，分在 ${hosts} 台機器`, films: (minutes) => `支短片，共 ${minutes} 分鐘` },
       minutes: '分鐘',
       featured: '精選',
       jump: '看全部結果',
@@ -153,7 +161,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     card: {
       ai: 'AI 生成',
-      kind: { film: '短片', still: '圖片', fl2va: '首幀 → 影片', ref2va: '參考圖 → 影片', multishot: '多鏡頭', roundtrip: '往返' },
+      kind: { film: '短片', trailer: '預告', social: '直式短片', 'making-of': '幕後', still: '圖片', fl2va: '首幀 → 影片', ref2va: '參考圖 → 影片', multishot: '多鏡頭', roundtrip: '往返' },
       seed: '種子',
       resolution: '解析度',
       endToEnd: '端到端',
@@ -182,10 +190,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: '每一個結果，都附上每一步。',
       lead: '圖片用 Qwen‑Image 2.1（t2i‑pc），影片用 MiniMax H3（fl2va‑pc、ref2va‑pc）。影片以原生 768×448 播放，沒有放大；進入畫面時靜音循環，按下聲音才會聽到 H3 一起生成的聲音。',
       films: '短片',
-      filmsLead: '把多個鏡頭剪成一支的完整短片，按下播放就有聲音。',
+      filmsLead: '把多個生成鏡頭剪成一支的短片。進入畫面時靜音預覽，按下播放就會從頭連聲音一起播。',
+      shots: (n) => `${n} 個鏡頭`,
+      music: '配樂：Suno',
+      shotList: '看鏡頭清單',
+      shotHeaders: { shot: '鏡頭', run: '執行', seed: '種子', length: '長度' },
+      moreFilms: (n) => `顯示更多短片（還有 ${n} 支）`,
+      social: '直式短片',
+      socialLead: '為手機裁成 9:16 的版本。',
+      singles: '單次生成的結果',
       filterLabel: '依類型篩選',
       all: '全部',
-      category: { film: '短片', image: '圖片', video: '影片', character: '角色', multishot: '多鏡頭' },
+      category: { film: '短片', social: '直式短片', image: '圖片', video: '影片', character: '角色', multishot: '多鏡頭' },
       count: (n) => `${n} 個結果`,
       more: (n) => `顯示更多（還有 ${n} 個）`,
       empty: '這個類型還沒有結果。',
@@ -284,6 +300,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: '關於這些結果',
       loudness: (loudest, quietest, rates) => `網頁版已做響度正規化；原始輸出約 ${loudest}～${quietest} LUFS、AAC ${rates}。`,
       glyphs: '部分畫面裡的招牌文字，是模型生成的偽文字，不是真實的店名或品牌。',
+      films: (mix) => `短片由多個生成鏡頭剪接而成；標示「配樂：Suno」的短片，在 H3 自己的聲音之上墊了 Suno 生成的配樂（Music generated with Suno）。短片的混音已完成母帶處理（約 ${mix} LUFS），網頁版照原樣使用。`,
       items: [
         '全部是 AI 生成：圖片來自 Qwen‑Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的機器上生成。「The Courier」是原創角色。',
         '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen‑Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
@@ -304,8 +321,8 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
   ja: {
     hero: {
       title: ['このページの映像は、', 'すべて自宅で生成しました。'],
-      lead: 'ここにある画像と映像は、すべて Phasyn Studio がコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて、作者の 2 台のマシン・3 基の GPU で生成したものです。各カードに Prompt、パイプライン、各ステップを処理したマシン、実測時間を載せています。',
-      stats: { results: '件の生成結果', video: '秒の音付き映像', render: 'エンドツーエンドの生成時間（合計）', gpus: (hosts) => `基の GPU（${hosts} 台のマシン）` },
+      lead: 'ここにある画像と映像は、すべて Phasyn Studio がコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて、作者の 2 台のマシン・3 基の GPU で生成したものです。1 回の生成で得た結果には Prompt、パイプライン、各ステップを処理したマシン、実測時間を、ショートフィルムには使ったショットの一覧を載せています。',
+      stats: { results: '件の生成結果', video: '秒の音付き映像', render: 'エンドツーエンドの生成時間（合計）', gpus: (hosts) => `基の GPU（${hosts} 台のマシン）`, films: (minutes) => `本のショートフィルム（計 ${minutes} 分）` },
       minutes: '分',
       featured: 'ピックアップ',
       jump: 'すべての結果を見る',
@@ -321,7 +338,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     card: {
       ai: 'AI 生成',
-      kind: { film: 'ショートフィルム', still: '画像', fl2va: '先頭フレーム → 映像', ref2va: '参照画像 → 映像', multishot: 'マルチショット', roundtrip: 'ラウンドトリップ' },
+      kind: { film: 'ショートフィルム', trailer: 'トレーラー', social: '縦型ショート', 'making-of': 'メイキング', still: '画像', fl2va: '先頭フレーム → 映像', ref2va: '参照画像 → 映像', multishot: 'マルチショット', roundtrip: 'ラウンドトリップ' },
       seed: 'シード',
       resolution: '解像度',
       endToEnd: 'エンドツーエンド',
@@ -350,10 +367,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'すべての結果に、すべてのステップを。',
       lead: '画像は Qwen‑Image 2.1（t2i‑pc）、映像は MiniMax H3（fl2va‑pc・ref2va‑pc）で生成しています。映像はネイティブの 768×448 のまま拡大せずに表示し、画面内では無音でループします。音声ボタンを押すと、H3 が映像と一緒に生成した音を再生します。',
       films: 'ショートフィルム',
-      filmsLead: '複数のショットを 1 本に編集した短編です。再生すると音も流れます。',
+      filmsLead: '生成した複数のショットを 1 本に編集した短編です。画面内では無音でプレビューし、再生すると最初から音付きで流れます。',
+      shots: (n) => `${n} ショット`,
+      music: '音楽：Suno',
+      shotList: 'ショット一覧を見る',
+      shotHeaders: { shot: 'ショット', run: '実行', seed: 'シード', length: '長さ' },
+      moreFilms: (n) => `さらに表示（残り ${n} 本）`,
+      social: '縦型ショート',
+      socialLead: 'スマートフォン向けに 9:16 で切り出した版です。',
+      singles: '1 回の生成で得た結果',
       filterLabel: '種類で絞り込む',
       all: 'すべて',
-      category: { film: 'ショートフィルム', image: '画像', video: '映像', character: 'キャラクター', multishot: 'マルチショット' },
+      category: { film: 'ショートフィルム', social: '縦型ショート', image: '画像', video: '映像', character: 'キャラクター', multishot: 'マルチショット' },
       count: (n) => `${n} 件`,
       more: (n) => `さらに表示（残り ${n} 件）`,
       empty: 'この種類の結果はまだありません。',
@@ -452,6 +477,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'この作例について',
       loudness: (loudest, quietest, rates) => `Web 版はラウドネスを正規化しています（元の出力は約 ${loudest}〜${quietest} LUFS、AAC ${rates}）。`,
       glyphs: '一部の映像に映る看板の文字は、モデルが生成した疑似的な文字で、実在の店名やブランドではありません。',
+      films: (mix) => `ショートフィルムは生成した複数のショットを編集したものです。「音楽：Suno」と表示した作品では、H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷いています。ミックスはマスタリング済み（約 ${mix} LUFS）で、Web 版もそのまま使っています。`,
       items: [
         'すべて AI による生成物です。画像は Qwen‑Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
         'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen‑Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
@@ -472,8 +498,8 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
   en: {
     hero: {
       title: ['Every Frame Here', 'Was Generated at Home.'],
-      lead: 'Every image and clip here was generated by Phasyn Studio through its controller API (t2i‑pc, fl2va‑pc, ref2va‑pc) on the author’s two machines and three GPUs. Each card shows the prompt, the pipeline, the machine behind every step and the measured time.',
-      stats: { results: 'results', video: 's of video with sound', render: 'end-to-end render time, in total', gpus: (hosts) => `GPUs on ${hosts} machines` },
+      lead: 'Every image and clip here was generated by Phasyn Studio through its controller API (t2i‑pc, fl2va‑pc, ref2va‑pc) on the author’s two machines and three GPUs. Each single result shows its prompt, its pipeline, the machine behind every step and the measured time; each film lists the shots it was cut from.',
+      stats: { results: 'results', video: 's of video with sound', render: 'end-to-end render time, in total', gpus: (hosts) => `GPUs on ${hosts} machines`, films: (minutes) => `films, ${minutes} min in all` },
       minutes: 'min',
       featured: 'Featured',
       jump: 'See Every Result',
@@ -489,7 +515,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     card: {
       ai: 'AI-generated',
-      kind: { film: 'Film', still: 'Image', fl2va: 'First Frame → Video', ref2va: 'Reference → Video', multishot: 'Multi-Shot', roundtrip: 'Round Trip' },
+      kind: { film: 'Film', trailer: 'Trailer', social: 'Social Cut', 'making-of': 'Making Of', still: 'Image', fl2va: 'First Frame → Video', ref2va: 'Reference → Video', multishot: 'Multi-Shot', roundtrip: 'Round Trip' },
       seed: 'Seed',
       resolution: 'Resolution',
       endToEnd: 'End to end',
@@ -518,10 +544,18 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'Every Result, Every Step.',
       lead: 'Images come from Qwen‑Image 2.1 (t2i‑pc), clips from MiniMax H3 (fl2va‑pc, ref2va‑pc). Clips play at their native 768×448, never upscaled. They loop muted while on screen; the sound button plays the sound H3 generated with them.',
       films: 'Films',
-      filmsLead: 'Finished pieces cut from many shots. Press play for sound.',
+      filmsLead: 'Short films cut from generated shots. They preview muted on screen; press play to start over with sound.',
+      shots: (n) => `${n} ${n === 1 ? 'shot' : 'shots'}`,
+      music: 'Music: Suno',
+      shotList: 'Show Shot List',
+      shotHeaders: { shot: 'Shot', run: 'Run', seed: 'Seed', length: 'Length' },
+      moreFilms: (n) => `Show More Films (${n} Left)`,
+      social: 'Social Cuts',
+      socialLead: 'Vertical 9:16 versions for phones.',
+      singles: 'Single Generations',
       filterLabel: 'Filter by type',
       all: 'All',
-      category: { film: 'Films', image: 'Images', video: 'Video', character: 'Character', multishot: 'Multi-Shot' },
+      category: { film: 'Films', social: 'Social Cuts', image: 'Images', video: 'Video', character: 'Character', multishot: 'Multi-Shot' },
       count: (n) => `${n} ${n === 1 ? 'result' : 'results'}`,
       more: (n) => `Show More (${n} Left)`,
       empty: 'No results of this type yet.',
@@ -620,6 +654,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'About These Results',
       loudness: (loudest, quietest, rates) => `Web copy is loudness-normalized; the raw output is about ${loudest} to ${quietest} LUFS, AAC ${rates}.`,
       glyphs: 'Signs in some shots carry pseudo-text made up by the model, not real shop names or brands.',
+      films: (mix) => `Films are cut from several generated shots. Those marked “Music: Suno” lay a Suno music bed (Music generated with Suno) under H3’s own sound. Film mixes arrive mastered (about ${mix} LUFS) and are used on the web as delivered.`,
       items: [
         'All AI-generated: images by Qwen‑Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i‑pc, fl2va‑pc, ref2va‑pc). “The Courier” is an original character.',
         'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen‑Image 2.1 is for research and non-commercial use. Model weights are not included.',

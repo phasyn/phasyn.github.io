@@ -6,7 +6,7 @@ import { SourceSoon } from '../../components/ui/SourceSoon.tsx';
 import { useLocale } from '../../i18n/locale.tsx';
 import { pagePath } from '../../site/config.ts';
 import { SHOWCASE } from './copy.ts';
-import { ITEMS, rawAudio } from './data.ts';
+import { FILMS, RESULTS, filmMix, rawAudio } from './data.ts';
 
 /** −28 style minus for loudness values (as the lead's note writes them). */
 function lufs(value: number): string {
@@ -17,9 +17,15 @@ function lufs(value: number): string {
 export function Notes() {
   const locale = useLocale();
   const copy = SHOWCASE[locale].notes;
-  const audio = rawAudio(ITEMS);
+  const audio = rawAudio(RESULTS);
   const rates = audio?.rates.map((rate) => `${rate / 1000} kHz`).join(' / ');
-  const items = [...copy.items, ...(audio ? [copy.loudness(lufs(audio.loudest), lufs(audio.quietest), rates ?? '')] : []), copy.glyphs];
+  const mix = filmMix(FILMS);
+  const items = [
+    ...copy.items,
+    ...(audio ? [copy.loudness(lufs(audio.loudest), lufs(audio.quietest), rates ?? '')] : []),
+    ...(FILMS.length && mix !== undefined ? [copy.films(lufs(mix))] : []),
+    copy.glyphs,
+  ];
   return (
     <section id="notes" aria-labelledby="notes-title" className="site-container pb-[clamp(3rem,2rem+4vw,6rem)]">
       <div className="grid gap-6 rounded-2xl border border-line bg-surface p-5 shadow-edge md:p-8">

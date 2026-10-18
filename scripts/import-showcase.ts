@@ -23,7 +23,8 @@ import { spawnSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
-import type { MachineKey, ShowcaseCategory, ShowcaseImage, ShowcaseItem, ShowcaseItemJson, ShowcaseKind, ShowcaseReference, ShowcaseStep } from '../src/features/showcase/types.ts';
+import { EDIT_KINDS } from '../src/features/showcase/types.ts';
+import type { MachineKey, ShowcaseCategory, ShowcaseImage, ShowcaseItem, ShowcaseItemJson, ShowcaseKind, ShowcaseReference, ShowcaseShot, ShowcaseStep } from '../src/features/showcase/types.ts';
 
 const SITE = process.cwd();
 const args = process.argv.slice(2);
@@ -59,8 +60,11 @@ const FFPROBE = process.env.FFPROBE ?? (existsSync('/opt/homebrew/bin/ffprobe') 
 const CWEBP = process.env.CWEBP ?? (existsSync('/opt/homebrew/bin/cwebp') ? '/opt/homebrew/bin/cwebp' : 'cwebp');
 const TEMP = mkdtempSync(join(tmpdir(), 'import-showcase-'));
 
-const KINDS: readonly ShowcaseKind[] = ['film', 'still', 'fl2va', 'ref2va', 'multishot', 'roundtrip'];
-const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'image', 'video', 'character', 'multishot'];
+const KINDS: readonly ShowcaseKind[] = ['film', 'trailer', 'social', 'making-of', 'still', 'fl2va', 'ref2va', 'multishot', 'roundtrip'];
+const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'social', 'image', 'video', 'character', 'multishot'];
+/** A delivered mix inside this window is already web-ready and is kept as is (remuxed only). */
+const MASTERED_LUFS = { min: -18, max: -12 };
+const isEdit = (kind: ShowcaseKind) => EDIT_KINDS.includes(kind);
 const LOCALE_KEYS = ['zh-hant', 'ja', 'en'] as const;
 const STILL_WIDTHS = [1152, 768, 384];
 const POSTER_WIDTHS = [768, 384];
@@ -78,6 +82,8 @@ interface Candidate {
   origin: string;
   /** The item folder (absent for seeds). */
   folder?: string;
+  /** Edited pieces: the edit record had a music track (edit.json is read for this flag only; it never ships). */
+  music?: boolean;
   still?: string;
   clip?: string;
   /** A loudness-normalised web copy made by the producer (web.mp4); used instead of normalising again. */
@@ -95,6 +101,7 @@ interface CacheEntry {
   mtimeMs: number;
   params: string;
   rawLufs?: number;
+  mixLufs?: number;
 }
 type Cache = Record<string, CacheEntry>;
 
@@ -240,6 +247,43 @@ function readyClip(raw: string, ready: string, slug: string): WebClip {
   return { path: `showcase/${slug}.mp4`, ...(rawLufs !== undefined && Number.isFinite(rawLufs) ? { rawLufs: Math.round(rawLufs * 10) / 10 } : {}), ...rawRate(raw) };
 }
 
+/** Integrated loudness and true peak of a file's first audio stream (one ebur128 pass). */
+function level(file: string): { integrated: number; truePeak: number } | undefined {
+  const log = run(FFMPEG, ['-hide_banner', '-nostats', '-i', file, '-map', '0:a:0', '-af', 'ebur128=peak=true', '-f', 'null', '-']);
+  const summary = log.slice(log.lastIndexOf('Summary:'));
+  const integrated = Number(/I:\s+(-?[\d.]+) LUFS/.exec(summary)?.[1]);
+  const truePeak = Number(/Peak:\s+(-?[\d.]+) dBFS/.exec(summary)?.[1]);
+  return Number.isFinite(integrated) && Number.isFinite(truePeak) ? { integrated, truePeak } : undefined;
+}
+
+/**
+ * Edited pieces arrive mixed and mastered (music bed + H3 sound). A mix already inside the web window (-18…-12 LUFS, AAC)
+ * is kept exactly as delivered (remux with +faststart); anything else gets the same normalisation as a clip.
+ */
+function webEdit(source: string, slug: string): WebClip & { mixLufs?: number } {
+  const info = probe(source);
+  const video = info.streams.find((s) => s.codec_type === 'video');
+  const audio = info.streams.find((s) => s.codec_type === 'audio');
+  const output = join(MEDIA, `${slug}.mp4`);
+  const params = 'delivered-mix';
+  const cached = cache[output];
+  if (video?.codec_name === 'h264' && video.pix_fmt === 'yuv420p' && audio?.codec_name === 'aac') {
+    const known = cached?.params === params && cached.mixLufs !== undefined ? cached.mixLufs : undefined;
+    const mix = known ?? level(source)?.integrated;
+    if (mix !== undefined && mix >= MASTERED_LUFS.min && mix <= MASTERED_LUFS.max) {
+      produced.add(output);
+      if (!DRY && !fresh(output, source, params)) {
+        run(FFMPEG, ['-y', '-v', 'error', '-i', source, '-map', '0', '-c', 'copy', '-movflags', '+faststart', output]);
+        remember(output, source, params);
+      }
+      (cache[output] as CacheEntry | undefined) && ((cache[output] as CacheEntry).mixLufs = mix);
+      return { path: `showcase/${slug}.mp4`, mixLufs: Math.round(mix * 10) / 10 };
+    }
+  }
+  const clip = webClip(source, slug);
+  return { ...clip, ...(audio ? { mixLufs: -16 } : {}) };
+}
+
 function machines(text: string): MachineKey[] {
   const keys = text
     .split(/\s*(?:\/|\+|,|&|\band\b)\s*/i)
@@ -259,7 +303,8 @@ function num(value: unknown): number | null {
 
 function categoryOf(json: ShowcaseItemJson, hasClip: boolean): ShowcaseCategory {
   if (json.category && CATEGORIES.includes(json.category)) return json.category;
-  if (json.kind === 'film') return 'film';
+  if (json.kind === 'social') return 'social';
+  if (isEdit(json.kind)) return 'film';
   if (json.kind === 'still') return 'image';
   if (json.kind === 'fl2va') return 'video';
   if (json.kind === 'ref2va') return 'character';
@@ -285,65 +330,60 @@ function loadCandidates(): Candidate[] {
       } as Candidate);
     }
   }
-  if (existsSync(SOURCE)) {
-    const folders = readdirSync(SOURCE)
-      .filter((name) => /^(farm|rec)-/.test(name) && existsSync(join(SOURCE, name, 'item.json')))
-      .sort();
-    for (const name of folders) {
-      const folder = join(SOURCE, name);
+  for (const [root, label] of [
+    [SOURCE, 'showcase'],
+    [FILMS, 'films'],
+  ] as const) {
+    if (!existsSync(root)) {
+      console.log(`import-showcase: no ${label} folder yet (${root})`);
+      continue;
+    }
+    for (const name of readdirSync(root).sort()) {
+      const folder = join(root, name);
+      if (name.startsWith('.') || name.startsWith('_') || !statSync(folder).isDirectory() || !existsSync(join(folder, 'item.json'))) continue;
+      const origin = `${label}/${name}`;
       let json: ShowcaseItemJson;
       try {
         json = JSON.parse(readFileSync(join(folder, 'item.json'), 'utf8')) as ShowcaseItemJson;
       } catch (error) {
-        skipped.push(`${name}: item.json is not valid JSON (${(error as Error).message})`);
+        skipped.push(`${origin}: item.json is not valid JSON (${(error as Error).message})`);
         continue;
       }
+      if (label === 'films' && !json.kind) json.kind = 'film';
       const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
       const ref = json.reference;
       const refName = typeof ref === 'string' ? ref : ref?.file;
-      const candidate: Candidate = { json, origin: name, folder };
+      const candidate: Candidate = { json, origin, folder };
+      const edit = KINDS.includes(json.kind) && isEdit(json.kind);
+      const mp4 = readdirSync(folder).filter((f) => f.endsWith('.mp4') && f !== 'web.mp4');
       const still = file('still.png');
-      const clip = file('clip.mp4');
+      const clip = edit ? (file('film.mp4') ?? file(`${json.kind}.mp4`) ?? file('clip.mp4') ?? (mp4[0] ? join(folder, mp4[0]) : undefined)) : file('clip.mp4');
       const web = file('web.mp4');
-      if (web) candidate.web = web;
+      const poster = file('poster.jpg') ?? file('poster.png') ?? file('poster.webp');
       const prompt = file('prompt.txt');
       const contact = file('contact.jpg');
       const referenceFile = refName ? (file(refName) ?? (existsSync(join(ROOT, refName)) ? join(ROOT, refName) : undefined)) : undefined;
       if (still) candidate.still = still;
       if (clip) candidate.clip = clip;
+      if (web) candidate.web = web;
+      if (poster && edit) candidate.poster = poster;
       if (prompt) candidate.prompt = prompt;
       if (contact) candidate.contact = contact;
       if (referenceFile) candidate.referenceFile = referenceFile;
-      if (bySlug.has(json.slug)) console.log(`import-showcase: ${name} replaces the seed entry "${json.slug}"`);
-      bySlug.set(json.slug, candidate);
-    }
-  } else {
-    console.log(`import-showcase: no item folders yet (${SOURCE})`);
-  }
-  if (existsSync(FILMS)) {
-    for (const name of readdirSync(FILMS).sort()) {
-      const folder = join(FILMS, name);
-      if (!existsSync(join(folder, 'item.json'))) continue;
-      let json: ShowcaseItemJson;
-      try {
-        json = JSON.parse(readFileSync(join(folder, 'item.json'), 'utf8')) as ShowcaseItemJson;
-      } catch (error) {
-        skipped.push(`films/${name}: item.json is not valid JSON (${(error as Error).message})`);
-        continue;
+      if (edit) {
+        const editRecord = file('edit.json');
+        let music = (json as { music?: unknown }).music === true;
+        if (!music && editRecord) {
+          try {
+            const record = JSON.parse(readFileSync(editRecord, 'utf8')) as { music?: unknown[] };
+            music = Array.isArray(record.music) && record.music.length > 0;
+          } catch {
+            problems.push(`${origin}: edit.json is not valid JSON (music flag left off)`);
+          }
+        }
+        candidate.music = music;
       }
-      const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
-      const candidate: Candidate = { json: { ...json, kind: json.kind ?? 'film' }, origin: `films/${name}`, folder };
-      const clip = file('film.mp4') ?? file('clip.mp4');
-      const web = file('web.mp4');
-      if (web) candidate.web = web;
-      const poster = file('poster.jpg') ?? file('poster.png') ?? file('poster.webp');
-      const prompt = file('prompt.txt');
-      const contact = file('contact.jpg');
-      if (clip) candidate.clip = clip;
-      if (poster) candidate.poster = poster;
-      if (prompt) candidate.prompt = prompt;
-      if (contact) candidate.contact = contact;
-      if (bySlug.has(json.slug)) console.log(`import-showcase: films/${name} replaces "${json.slug}"`);
+      if (bySlug.has(json.slug)) console.log(`import-showcase: ${origin} replaces "${json.slug}"`);
       bySlug.set(json.slug, candidate);
     }
   }
@@ -359,15 +399,17 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
   if (json.grade !== 'hero' && json.grade !== 'usable') return fail(`grade "${String(json.grade)}" (only hero/usable are published)`);
   if (typeof json.slug !== 'string' || !/^[a-z0-9][a-z0-9-]*$/.test(json.slug)) return fail('slug must be lower-case letters, digits and hyphens');
   if (!KINDS.includes(json.kind)) return fail(`unknown kind "${String(json.kind)}"`);
-  for (const key of ['pipeline', 'runId', 'model', 'ditEngine', 'createdAt'] as const) {
+  const edit = isEdit(json.kind);
+  // Single results name their run; edited pieces list their shots instead.
+  for (const key of edit ? (['pipeline'] as const) : (['pipeline', 'runId', 'model', 'ditEngine', 'createdAt'] as const)) {
     if (typeof json[key] !== 'string' || !json[key]) return fail(`missing ${key}`);
   }
-  if (!Number.isInteger(json.seed)) return fail('seed must be an integer');
+  if (!edit && !Number.isInteger(json.seed)) return fail('seed must be an integer');
   if (!num(json.width) || !num(json.height)) return fail('missing width/height');
-  if (!Array.isArray(json.steps)) return fail('steps must be an array');
-  // A film is cut from many runs: its prompt file (the shot prompts) is optional; every other card shows its prompt.
-  if (!candidate.prompt && json.kind !== 'film') return fail('no prompt.txt (every card shows its prompt)');
-  if (!candidate.still && !candidate.clip) return fail(json.kind === 'film' ? 'no film.mp4' : 'no still.png or clip.mp4');
+  if (!edit && !Array.isArray(json.steps)) return fail('steps must be an array');
+  // An edited piece is cut from many runs: its prompt file is optional; every single result shows its prompt.
+  if (!candidate.prompt && !edit) return fail('no prompt.txt (every card shows its prompt)');
+  if (!candidate.still && !candidate.clip) return fail(edit ? 'no film.mp4' : 'no still.png or clip.mp4');
 
   const title = {} as Record<(typeof LOCALE_KEYS)[number], string>;
   for (const locale of LOCALE_KEYS) {
@@ -379,13 +421,13 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
     } else return fail('missing title');
   }
   const prompt = candidate.prompt ? readFileSync(candidate.prompt, 'utf8').trim() : '';
-  if (!prompt && json.kind !== 'film') return fail('prompt.txt is empty');
-  for (const text of [prompt, ...Object.values(title), json.pipeline, json.ditEngine, json.model]) {
+  if (!prompt && !edit) return fail('prompt.txt is empty');
+  for (const text of [prompt, ...Object.values(title), json.pipeline, json.ditEngine ?? '', json.model ?? '']) {
     if (isPrivate(text)) return fail('private data (LAN address, absolute path or account name) in public text');
   }
   if (json.notes && isPrivate(json.notes)) problems.push(`${origin}: notes mention private data (kept out of the output)`);
 
-  const steps: ShowcaseStep[] = json.steps.map((step) => ({
+  const steps: ShowcaseStep[] = (json.steps ?? []).map((step) => ({
     id: String(step.id),
     label: String(step.label ?? step.id),
     machines: machines(String(step.machine ?? '')),
@@ -394,15 +436,19 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
     ...(typeof step.component === 'string' && step.component && !isPrivate(step.component) ? { component: step.component } : {}),
   }));
   for (const step of steps) if (step.machines.includes('unknown')) problems.push(`${origin}: step "${step.id}" has no recognised machine (shown as "placement not recorded")`);
+  const shots: ShowcaseShot[] = (json.shots ?? [])
+    .filter((shot) => typeof shot.runId === 'string' && shot.runId && !isPrivate(shot.runId))
+    .map((shot) => ({ runId: shot.runId as string, seed: Number.isInteger(shot.seed) ? (shot.seed as number) : null, seconds: num(shot.seconds) }));
 
   try {
     let image: ShowcaseImage;
-    let clip: WebClip | undefined;
+    let clip: (WebClip & { mixLufs?: number }) | undefined;
     if (candidate.clip) {
-      clip = webClip(candidate.clip, json.slug, candidate.web);
+      clip = edit ? webEdit(candidate.web ?? candidate.clip, json.slug) : webClip(candidate.clip, json.slug, candidate.web);
       const length = num(json.seconds) ?? Number(probe(candidate.clip).format.duration);
       const at = num(json.posterAt) ?? Math.max(0, length * 0.4);
-      const posterWidths = json.kind === 'film' ? [1920, 1280, 768] : POSTER_WIDTHS;
+      const portrait = json.height > json.width;
+      const posterWidths = portrait ? [720, 540, 360] : edit ? [1920, 1280, 768, 384] : POSTER_WIDTHS;
       image = candidate.poster ? webpSet(candidate.poster, `${json.slug}-poster`, posterWidths) : webpSet(candidate.clip, `${json.slug}-poster`, posterWidths, at);
     } else {
       image = webpSet(candidate.still as string, json.slug, STILL_WIDTHS);
@@ -433,11 +479,11 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       kind: json.kind,
       category: categoryOf(json, Boolean(candidate.clip)),
       pipeline: json.pipeline,
-      runId: json.runId,
+      runId: typeof json.runId === 'string' ? json.runId : '',
       outputId: typeof json.outputId === 'string' && json.outputId ? json.outputId : null,
-      seed: json.seed,
-      model: json.model,
-      ditEngine: json.ditEngine,
+      seed: Number.isInteger(json.seed) ? (json.seed as number) : null,
+      model: typeof json.model === 'string' ? json.model : '',
+      ditEngine: typeof json.ditEngine === 'string' ? json.ditEngine : '',
       width: json.width,
       height: json.height,
       frames: num(json.frames),
@@ -446,13 +492,15 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       endToEndSeconds: num(json.endToEndSeconds),
       endToEndApprox: Boolean(json.endToEndApprox),
       steps,
+      shots,
+      music: Boolean(candidate.music),
       reference,
       grade: json.grade,
-      createdAt: json.createdAt,
+      createdAt: typeof json.createdAt === 'string' && json.createdAt ? json.createdAt : new Date(statSync(candidate.clip ?? candidate.still ?? '').mtimeMs).toISOString(),
       prompt,
       media: {
         image,
-        ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined ? { rawLufs: clip.rawLufs } : {}), ...(clip.rawSampleRate ? { rawSampleRate: clip.rawSampleRate } : {}) } : {}),
+        ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined && !edit ? { rawLufs: clip.rawLufs } : {}), ...(clip.rawSampleRate && !edit ? { rawSampleRate: clip.rawSampleRate } : {}), ...(clip.mixLufs !== undefined ? { mixLufs: clip.mixLufs } : {}) } : {}),
         ...(contact ? { contact } : {}),
       },
     };
@@ -495,7 +543,8 @@ for (const candidate of candidates) {
   const item = build(candidate, slugs, sources);
   if (item) {
     items.push(item);
-    console.log(`import-showcase: ${item.slug} (${item.kind}, ${item.grade}${item.media.rawLufs !== undefined ? `, raw ${item.media.rawLufs} LUFS → -16` : ''})`);
+    const sound = item.media.rawLufs !== undefined ? `, raw ${item.media.rawLufs} LUFS → -16` : item.media.mixLufs !== undefined ? `, mix ${item.media.mixLufs} LUFS kept` : '';
+    console.log(`import-showcase: ${item.slug} (${item.kind}, ${item.grade}${sound}${item.music ? ', music' : ''})`);
   }
 }
 // A reference must point at a published item.
@@ -508,8 +557,11 @@ const seeded = items.filter((item) => candidates.find((c) => c.json.slug === ite
 const farmed = items
   .filter((item) => !seeded.includes(item))
   .sort((a, b) => (a.grade === b.grade ? a.createdAt.localeCompare(b.createdAt) : a.grade === 'hero' ? -1 : 1));
-// Films lead (the owner's #1 asset), then the curated seeds, then new results.
-const ordered = [...farmed.filter((item) => item.kind === 'film'), ...seeded, ...farmed.filter((item) => item.kind !== 'film')];
+// Edited pieces lead (the owner's #1 asset): hero first, then longest first. Then the curated seeds, then new results.
+const edits = farmed
+  .filter((item) => isEdit(item.kind))
+  .sort((a, b) => (a.grade === b.grade ? (b.seconds ?? 0) - (a.seconds ?? 0) : a.grade === 'hero' ? -1 : 1));
+const ordered = [...edits, ...seeded, ...farmed.filter((item) => !isEdit(item.kind))];
 
 const notes = new Map(candidates.map((c) => [c.json.slug, c.json.notes && !isPrivate(c.json.notes) ? c.json.notes : '']));
 const body = ordered

@@ -3,7 +3,7 @@
 // editing numbers here. Every total on the page is computed from the items, so it can never disagree with the cards.
 
 import { SHOWCASE_ITEMS } from './items.gen.ts';
-import type { MachineKey, ShowcaseCategory, ShowcaseItem, ShowcaseStep } from './types.ts';
+import { EDIT_KINDS, type MachineKey, type ShowcaseCategory, type ShowcaseItem, type ShowcaseStep } from './types.ts';
 
 export type * from './types.ts';
 
@@ -32,26 +32,40 @@ export const MACHINE_ORDER: readonly MachineKey[] = ['gb10', 'rtx5080', 'rtx3060
 /** Which machine is in which box (the author's setup: two machines, three GPUs). */
 export const MACHINE_HOST: Record<Exclude<MachineKey, 'unknown'>, 'dgx' | 'pc'> = { gb10: 'dgx', rtx5080: 'pc', rtx3060: 'pc', cpu: 'pc' };
 
-export const CATEGORY_ORDER: readonly ShowcaseCategory[] = ['film', 'image', 'video', 'character', 'multishot'];
+export const CATEGORY_ORDER: readonly ShowcaseCategory[] = ['film', 'social', 'image', 'video', 'character', 'multishot'];
 
-/** Finished long pieces (the owner's #1 asset): their own featured row at the top of the gallery. */
-export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'film');
+export function isEdit(item: ShowcaseItem): boolean {
+  return EDIT_KINDS.includes(item.kind);
+}
+
+/** Edited landscape pieces (films, trailers, making-of; the owner's #1 asset): their own row at the top of the gallery. */
+export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => isEdit(item) && item.kind !== 'social');
+
+/** Vertical 9:16 cuts: a narrow row of their own. */
+export const SOCIAL: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'social');
+
+/** Single generated results (one run each, with steps, seed and prompt): the filtered grid, the totals and the notes. */
+export const RESULTS: readonly ShowcaseItem[] = ITEMS.filter((item) => !isEdit(item));
 
 export function itemBySlug(slug: string): ShowcaseItem | undefined {
   return ITEMS.find((item) => item.slug === slug);
 }
 
+/** Theatre size: enough to choose from, small enough to scan. */
+const THEATRE = { films: 6, total: 8 };
+
 /**
- * The hero theatre: films, then hero-graded results with the longest pieces first (the owner ranks long video highest);
- * equal lengths keep data order (curated seeds, then production order).
+ * The hero theatre: hero-graded films first (the owner ranks long video highest; the importer orders them longest
+ * first), then hero-graded single results with their full run data, longest first; equal lengths keep data order.
  */
-export const FEATURED: readonly ShowcaseItem[] = [
-  ...ITEMS.filter((item) => item.kind === 'film'),
-  ...ITEMS.filter((item) => item.kind !== 'film' && item.grade === 'hero')
+export const FEATURED: readonly ShowcaseItem[] = (() => {
+  const films = FILMS.filter((item) => item.grade === 'hero').slice(0, THEATRE.films);
+  const results = RESULTS.filter((item) => item.grade === 'hero' && isClip(item))
     .map((item, index) => ({ item, index }))
     .sort((a, b) => (b.item.seconds ?? 0) - (a.item.seconds ?? 0) || a.index - b.index)
-    .map(({ item }) => item),
-];
+    .map(({ item }) => item);
+  return [...films, ...results].slice(0, THEATRE.total);
+})();
 
 export function isClip(item: ShowcaseItem): boolean {
   return Boolean(item.media.clip);
@@ -88,6 +102,9 @@ export function machinesOf(item: ShowcaseItem): MachineKey[] {
 }
 
 export interface Totals {
+  /** Edited films (kind `film`) and their combined length in seconds. */
+  films: number;
+  filmSeconds: number;
   results: number;
   clips: number;
   stills: number;
@@ -102,11 +119,16 @@ export interface Totals {
   hosts: number;
 }
 
-export function totals(items: readonly ShowcaseItem[] = ITEMS): Totals {
+/** Totals for the hero. Single results carry the run data; films are counted on their own. */
+export function totals(all: readonly ShowcaseItem[] = ITEMS): Totals {
+  const items = all.filter((item) => !isEdit(item));
+  const films = all.filter((item) => item.kind === 'film');
   const used = new Set(items.flatMap((item) => item.steps.flatMap((step) => step.machines)));
   const gpus = (['gb10', 'rtx5080', 'rtx3060'] as const).filter((key) => used.has(key)).length;
   const hosts = new Set([...used].filter((key): key is Exclude<MachineKey, 'unknown'> => key !== 'unknown').map((key) => MACHINE_HOST[key])).size;
   return {
+    films: films.length,
+    filmSeconds: films.reduce((sum, item) => sum + (item.seconds ?? 0), 0),
     results: items.length,
     clips: items.filter(isClip).length,
     stills: items.filter((item) => !isClip(item)).length,
@@ -117,6 +139,12 @@ export function totals(items: readonly ShowcaseItem[] = ITEMS): Totals {
     gpus,
     hosts,
   };
+}
+
+/** Typical (median) loudness of the delivered film mixes, for the films note. */
+export function filmMix(items: readonly ShowcaseItem[] = FILMS): number | undefined {
+  const values = items.map((item) => item.media.mixLufs).filter((value): value is number => typeof value === 'number').sort((a, b) => a - b);
+  return values.length ? values[Math.floor(values.length / 2)] : undefined;
 }
 
 /** Raw loudness range and sample rates of the published clips, for the loudness note (computed, never typed in). */

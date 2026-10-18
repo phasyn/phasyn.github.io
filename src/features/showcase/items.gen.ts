@@ -3,6 +3,850 @@
 import type { ShowcaseItem } from './types.ts';
 
 export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
+  // showreel: Bonus (not in the brief): a 31-second reel with the strongest moment of eleven of tonight's films, one bar per shot, every cut on a downbeat of a Suno track (launch-film-b from 20.0 s, a section no other film uses; credit: Music generated with Suno). It opens in the music's dip on the glass-sphere storm and the beat kicks in on the dragon's fireball; it ends on the Courier's frame shattering into the aurora. Each shot's own H3 sound (raw -12.7, -28.9, -23.4, -29.8, -41.8, -14.8, -42.7, -19.4, -35.7, -41.4, -40.6, -36.3 LUFS) is normalised to -24 LUFS under the music so the fireball, fist slam and lantern whoosh still punch through. Mastered to -14.1 LUFS integrated / -2.4 dBTP. Every shot is an unaltered Phasyn Studio render at native 768x448 (one is mirrored).
+  {
+    "slug": "showreel",
+    "title": {
+      "zh-hant": "短片精選",
+      "ja": "ショートフィルム集",
+      "en": "Showreel"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc / ref2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 31.42,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "c34ad760-7c5f-4358-a0de-af0f262bad81",
+        "seed": 5211,
+        "seconds": 2.542
+      },
+      {
+        "runId": "3553e6f0-fd28-4252-8df2-0930d48c8ed7",
+        "seed": 5111,
+        "seconds": 2.417
+      },
+      {
+        "runId": "33a1a5a2-7af6-4bb9-8e68-36d6300dfc0f",
+        "seed": 5311,
+        "seconds": 2.583
+      },
+      {
+        "runId": "c3f53443-e4ee-45c9-b9b5-594ed19e14d0",
+        "seed": 6231,
+        "seconds": 2.5
+      },
+      {
+        "runId": "793ba13b-c54b-4133-8441-e6ffb81918f4",
+        "seed": 6131,
+        "seconds": 2.5
+      },
+      {
+        "runId": "f5d70d47-4e01-4f7a-876e-48e3e87dd2cd",
+        "seed": 5617,
+        "seconds": 2.458
+      },
+      {
+        "runId": "23a6510d-de33-4569-8ded-33ff7d3f331a",
+        "seed": 5718,
+        "seconds": 2.542
+      },
+      {
+        "runId": "594f9e9a-e486-4fdf-868e-7113f8abcc69",
+        "seed": 5811,
+        "seconds": 2.5
+      },
+      {
+        "runId": "c092dc79-07ca-4763-bfc4-80b31904693f",
+        "seed": 5411,
+        "seconds": 2.542
+      },
+      {
+        "runId": "b060d4d1-da7b-4b8c-876a-ce92504ec1a1",
+        "seed": 5518,
+        "seconds": 2.458
+      },
+      {
+        "runId": "417b9a96-24de-414b-aabe-991219224af3",
+        "seed": 6631,
+        "seconds": 2.5
+      },
+      {
+        "runId": "bb4136ec-e215-4a0a-a9ed-955c61e06c21",
+        "seed": 6641,
+        "seconds": 3.875
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T19:15:17.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/showreel-poster-768.webp",
+        "srcSet": "/images/showcase/items/showreel-poster-768.webp 768w, /images/showcase/items/showreel-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/showreel.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/showreel-contact-1152.webp",
+        "srcSet": "/images/showcase/items/showreel-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 476
+      }
+    }
+  },
+  // dragon-night-market: Six FL2VA shots (each first frame is a Qwen-Image 2.1 still from t2i-pc) cut as one tiny story: the dragon lights the cold grill (the fireball lands on the music's lift), flips the skewers with its tail, steals a soup dumpling and freezes when the vendor turns, is forgiven with a skewer, then puffs a golden ember ring that rises into the lanterns, and the camera cranes up over the whole glowing market as the music's final chord rings out. H3's own sound events are in sync with the picture (flame whoosh, skewer landings, the gulp) and stay on top of a Suno bed (launch-film-a, back-timed so its final chord resolves over the ending; credit: Music generated with Suno). Raw H3 audio per shot: -28.7, -35.3, -46.6, -35.4, -35.2, -48.8 LUFS; each shot normalised to -20 LUFS with light compression, mix mastered to -14.1 LUFS integrated / -1.2 dBTP. Caveat: the dragon's design varies slightly between shots because every shot starts from its own t2i still.
+  {
+    "slug": "dragon-night-market",
+    "title": {
+      "zh-hant": "夜市小龍",
+      "ja": "夜市のちいさな竜",
+      "en": "Dragon Night Market"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 26.08,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "3553e6f0-fd28-4252-8df2-0930d48c8ed7",
+        "seed": 5111,
+        "seconds": 4.917
+      },
+      {
+        "runId": "f34cadbf-31f8-4b15-a6f2-6ea00fb7845f",
+        "seed": 5121,
+        "seconds": 4.5
+      },
+      {
+        "runId": "6426bffe-b2f2-467d-9fff-24b5227e7d83",
+        "seed": 5131,
+        "seconds": 5.083
+      },
+      {
+        "runId": "00906535-fa3b-4866-bab0-02af80a4d135",
+        "seed": 5141,
+        "seconds": 5.167
+      },
+      {
+        "runId": "fcd6902f-43da-41ac-bbf2-30d989358f84",
+        "seed": 5152,
+        "seconds": 5.167
+      },
+      {
+        "runId": "b9cc1130-1854-4649-9ccc-8e6917892128",
+        "seed": 5151,
+        "seconds": 2.417
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:55:41.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/dragon-night-market-poster-768.webp",
+        "srcSet": "/images/showcase/items/dragon-night-market-poster-768.webp 768w, /images/showcase/items/dragon-night-market-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/dragon-night-market.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/dragon-night-market-contact-1152.webp",
+        "srcSet": "/images/showcase/items/dragon-night-market-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 408
+      }
+    }
+  },
+  // penguin-rocket: Four FL2VA shots (first frames from Qwen-Image 2.1; prompts by 03-promptlab) cut as a fail → win → oops comedy: goggles down, the fuse fizzles out with a puff of black smoke, a silent beat, then ignition; a sea-skimming flight with a corkscrew smoke ring; a belly-slide that bowls over the whole colony, who then cheer. H3 made every comic sound in sync (fizz, pfft, the silence, the roar, the crash, the cheers; raw -34.0, -20.3, -24.7, -25.5 LUFS). A Suno bed (tour-bed-b; credit: Music generated with Suno) drops in hard on the ignition frame, entering on the downbeat right after a breakdown, and fades under the cheers. Mastered to -14.0 LUFS integrated / -1.2 dBTP.
+  {
+    "slug": "penguin-rocket",
+    "title": {
+      "zh-hant": "企鵝火箭",
+      "ja": "ペンギン・ロケット",
+      "en": "Penguin Rocket"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 25.46,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "764afae3-481a-4fa7-8606-eb45ae1d7b2d",
+        "seed": 6211,
+        "seconds": 5
+      },
+      {
+        "runId": "d4f5bb98-847e-4bd0-99fd-8cbc1ecd8f15",
+        "seed": 6221,
+        "seconds": 5.167
+      },
+      {
+        "runId": "c3f53443-e4ee-45c9-b9b5-594ed19e14d0",
+        "seed": 6231,
+        "seconds": 10.125
+      },
+      {
+        "runId": "9efe271e-edb0-4d29-acaa-d9a79dd92acb",
+        "seed": 6241,
+        "seconds": 5.167
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:07.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/penguin-rocket-poster-768.webp",
+        "srcSet": "/images/showcase/items/penguin-rocket-poster-768.webp 768w, /images/showcase/items/penguin-rocket-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/penguin-rocket.mp4",
+      "mixLufs": -14,
+      "contact": {
+        "src": "/images/showcase/items/penguin-rocket-contact-1152.webp",
+        "srcSet": "/images/showcase/items/penguin-rocket-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 408
+      }
+    }
+  },
+  // origami-flight: Four FL2VA shots: a paper crane wakes up on a letter, flies out of the window and over a neon city, becomes a glowing ribbon of cranes and climbs into the moonlight. Shot 2 is a chained render (re-rendered tonight on film-a's request) that starts from the last frame of shot 1, so that cut is seamless; the hard cut to the full moon lands on a downbeat. Suno bed (launch-film-a intro, credit: Music generated with Suno) placed so its first downbeat hits the lift-off; the later cuts land on beats. Raw H3 audio per shot: -36.9, -44.7, -30.3, -35.0 LUFS (paper creases, wing flaps); normalised to -21 LUFS with light compression under the music, mastered to -14.1 LUFS integrated / -1.3 dBTP.
+  {
+    "slug": "origami-flight",
+    "title": {
+      "zh-hant": "紙鶴起飛",
+      "ja": "折り鶴、夜を飛ぶ",
+      "en": "Origami Flight"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 20.83,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "c092dc79-07ca-4763-bfc4-80b31904693f",
+        "seed": 5411,
+        "seconds": 10.125
+      },
+      {
+        "runId": "494f032e-8f57-44c3-baea-89170144cacc",
+        "seed": 5418,
+        "seconds": 4.542
+      },
+      {
+        "runId": "f6d2ec69-d68d-4c39-b81e-4e2a812826b2",
+        "seed": 5422,
+        "seconds": 4
+      },
+      {
+        "runId": "33096243-5e81-4a2a-b7f6-2aecbd23d6af",
+        "seed": 5421,
+        "seconds": 2.667
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:02.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/origami-flight-poster-768.webp",
+        "srcSet": "/images/showcase/items/origami-flight-poster-768.webp 768w, /images/showcase/items/origami-flight-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/origami-flight.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/origami-flight-contact-1152.webp",
+        "srcSet": "/images/showcase/items/origami-flight-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // through-the-frame: Four Ref2VA shots of the Courier, the project's original character (reference images: her character sheet, plus a face sheet in shots 3-4; prompts by 03-promptlab): she lifts a small glass frame to the sunset sky, the sky inside it is an aurora night with a floating glass city, the frame grows into a glowing door and she walks through, and on the aurora coast beyond, the frame shatters into shards that rise into the sky. The layered glass frame is the Phasyn mark, so this is the brand's own little myth. Each shot is exactly two bars of a Suno track (launch-film-b; credit: Music generated with Suno) and every cut is on a downbeat; H3's chime, hum, whoosh and shard sounds (raw -48.0, -41.6, -37.7, -35.9 LUFS) sit under it. Mastered to -14.1 LUFS integrated / -1.4 dBTP. Shots 1-2 use single-reference renders (character sheet only) because the two-reference takes drew a second hair ornament; shots 3-4 are two-reference takes where the extra ornament is never visible, so her look is consistent across the film.
+  {
+    "slug": "through-the-frame",
+    "title": {
+      "zh-hant": "穿過那道框",
+      "ja": "フレームの向こうへ",
+      "en": "Through the Frame"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "ref2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 20.12,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "ff9ca9f1-5c04-43c3-9839-ff3fd9a793f7",
+        "seed": null,
+        "seconds": 5
+      },
+      {
+        "runId": "9c46b781-0e58-4b23-9204-da3de1a8b05d",
+        "seed": 6621,
+        "seconds": 4.958
+      },
+      {
+        "runId": "417b9a96-24de-414b-aabe-991219224af3",
+        "seed": 6631,
+        "seconds": 5
+      },
+      {
+        "runId": "bb4136ec-e215-4a0a-a9ed-955c61e06c21",
+        "seed": 6641,
+        "seconds": 5.167
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:27.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/through-the-frame-poster-768.webp",
+        "srcSet": "/images/showcase/items/through-the-frame-poster-768.webp 768w, /images/showcase/items/through-the-frame-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/through-the-frame.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/through-the-frame-contact-1152.webp",
+        "srcSet": "/images/showcase/items/through-the-frame-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // sky-whale: Three FL2VA shots (first frames from Qwen-Image 2.1 t2i-pc) cut as wide → closer → under it: a colossal whale crosses a sunset hillside city, street lamps light up as its shadow passes, birds scatter, and the tail glides out of frame. No music on purpose: H3's own soundtrack carries a tonal whale call over wind and birds (visible as sustained harmonics in the spectrogram), and a music bed would fight it. Shot 1 is mirrored to keep screen direction. Raw H3 audio per shot: -24.2, -19.7, -23.6 LUFS; each normalised to -20 LUFS with light compression, mastered to -14.1 LUFS integrated / -2.0 dBTP.
+  {
+    "slug": "sky-whale",
+    "title": {
+      "zh-hant": "天空之鯨",
+      "ja": "空飛ぶクジラ",
+      "en": "Sky Whale"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 19.83,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "33a1a5a2-7af6-4bb9-8e68-36d6300dfc0f",
+        "seed": 5311,
+        "seconds": 10.125
+      },
+      {
+        "runId": "4449a3ce-2395-4d35-ac4a-2e2d6682b0b4",
+        "seed": 5312,
+        "seconds": 5.208
+      },
+      {
+        "runId": "ec8f59c1-4cff-4826-ab05-f6a261d80871",
+        "seed": 5321,
+        "seconds": 5.167
+      }
+    ],
+    "music": false,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:19.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/sky-whale-poster-768.webp",
+        "srcSet": "/images/showcase/items/sky-whale-poster-768.webp 768w, /images/showcase/items/sky-whale-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/sky-whale.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/sky-whale-contact-1152.webp",
+        "srcSet": "/images/showcase/items/sky-whale-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 272
+      }
+    }
+  },
+  // snow-fox: Four photoreal FL2VA shots (first frames from Qwen-Image 2.1; prompts by 03-promptlab) in wildlife-documentary style: a red fox hears something under the snow, tilts its head, dives in headfirst so only its wagging tail sticks out, then pops up with a snowy face, sneezes and trots off. The cut follows a Suno track (tour-bed-a; credit: Music generated with Suno) through a breakdown so the dive lands exactly on the beat coming back. H3's crunch, thump and sneeze (raw -49.1, -48.5, -44.5, -30.7 LUFS) are kept under the music; mastered to -14.1 LUFS integrated / -1.1 dBTP.
+  {
+    "slug": "snow-fox",
+    "title": {
+      "zh-hant": "雪狐",
+      "ja": "雪ギツネ",
+      "en": "Snow Fox"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 19.5,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "37be8606-bcf5-43be-9ad3-e3a5b2a5acd9",
+        "seed": 6111,
+        "seconds": 5
+      },
+      {
+        "runId": "00042e96-0675-425d-a77a-eab173d69618",
+        "seed": 6121,
+        "seconds": 4.667
+      },
+      {
+        "runId": "793ba13b-c54b-4133-8441-e6ffb81918f4",
+        "seed": 6131,
+        "seconds": 4.667
+      },
+      {
+        "runId": "6f74e3fd-6355-4bdf-8090-a4a0592ca776",
+        "seed": 6141,
+        "seconds": 5.167
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:23.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/snow-fox-poster-768.webp",
+        "srcSet": "/images/showcase/items/snow-fox-poster-768.webp 768w, /images/showcase/items/snow-fox-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/snow-fox.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/snow-fox-contact-1152.webp",
+        "srcSet": "/images/showcase/items/snow-fox-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 272
+      }
+    }
+  },
+  // mecha-in-the-rain: Two chained FL2VA renders (the second starts from the last frame of the first, so the join is invisible; first frame from a Qwen-Image 2.1 still) play as one 15-second shot: a ten-storey mecha stomps toward the lens through a flooded neon street in heavy rain, then raises its fist and slams it into the water; a wall of spray hits the camera and steam blasts from its vents. No music: the sound is all H3, and its footfalls and the fist impact land exactly on the picture, with rain, hydraulics and steam in between (raw -15.9, -16.1 LUFS). Left uncompressed to keep the impacts punchy; mastered to -14.1 LUFS integrated / -1.3 dBTP. Faint pseudo-glyph strokes on small vertical neon signs at the frame edges (rain-blurred).
+  {
+    "slug": "mecha-in-the-rain",
+    "title": {
+      "zh-hant": "雨中機甲",
+      "ja": "雨の中の巨大メカ",
+      "en": "Mecha in the Rain"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 15.25,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "83393c3a-0b02-4fec-ace9-f4d9280a194d",
+        "seed": 5612,
+        "seconds": 10.125
+      },
+      {
+        "runId": "f5d70d47-4e01-4f7a-876e-48e3e87dd2cd",
+        "seed": 5617,
+        "seconds": 5.125
+      }
+    ],
+    "music": false,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:55:54.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/mecha-in-the-rain-poster-768.webp",
+        "srcSet": "/images/showcase/items/mecha-in-the-rain-poster-768.webp 768w, /images/showcase/items/mecha-in-the-rain-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/mecha-in-the-rain.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/mecha-in-the-rain-contact-1152.webp",
+        "srcSet": "/images/showcase/items/mecha-in-the-rain-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // glass-ocean: A single 14.4-second FL2VA generation (345 frames, first frame from a Qwen-Image 2.1 still) that contains its own cut: a calm lamp-lit desk with a full storm inside a glass sphere, then a close-up through the curved glass where the tiny ship climbs a wave under forked lightning. The two halves stay one world because they come from one generation. No music: the soundtrack is H3's own muffled thunder, waves and lightning crackle (raw -16.2 LUFS), lightly compressed and mastered to -14.1 LUFS integrated / -1.4 dBTP. Seeds 5211/5212 (10 s) also passed QA but 5212 is a different ship and lighthouse layout, so it is not intercut.
+  {
+    "slug": "glass-ocean",
+    "title": {
+      "zh-hant": "玻璃裡的海",
+      "ja": "ガラスの海",
+      "en": "Glass Ocean"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 14.38,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "c34ad760-7c5f-4358-a0de-af0f262bad81",
+        "seed": 5211,
+        "seconds": 14.375
+      }
+    ],
+    "music": false,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:55:44.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/glass-ocean-poster-768.webp",
+        "srcSet": "/images/showcase/items/glass-ocean-poster-768.webp 768w, /images/showcase/items/glass-ocean-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/glass-ocean.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/glass-ocean-contact-1152.webp",
+        "srcSet": "/images/showcase/items/glass-ocean-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // lantern-fpv: A single 14.4-second FL2VA generation (345 frames, first frame from a Qwen-Image 2.1 still) that plays like one continuous FPV drone flight through a valley of thousands of rising sky lanterns: a dive, close passes that sweep across the lens, a skim over the river reflections and a climb into the stars. H3 generated the wind whooshes in sync with every close pass (raw -20.5 LUFS); they sit on top of a Suno bed (tour-bed-b, entering from its breakdown so the beat lands on the first lantern pass and fading out as the camera rises into the quiet sky; credit: Music generated with Suno). Mastered to -14.2 LUFS integrated / -1.4 dBTP.
+  {
+    "slug": "lantern-fpv",
+    "title": {
+      "zh-hant": "穿越天燈",
+      "ja": "天灯の谷を飛ぶ",
+      "en": "Lantern FPV"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 14.38,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "594f9e9a-e486-4fdf-868e-7113f8abcc69",
+        "seed": 5811,
+        "seconds": 14.375
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:55:48.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/lantern-fpv-poster-768.webp",
+        "srcSet": "/images/showcase/items/lantern-fpv-poster-768.webp 768w, /images/showcase/items/lantern-fpv-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/lantern-fpv.mp4",
+      "mixLufs": -14.2,
+      "contact": {
+        "src": "/images/showcase/items/lantern-fpv-contact-1152.webp",
+        "srcSet": "/images/showcase/items/lantern-fpv-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // snow-fox-one-prompt: Bonus companion to Snow Fox: one prompt, one FL2VA generation, no editing. The prompt (by 03-promptlab) gave H3 shot timestamps at 3.5, 7.0 and 10.5 s, and the model cut between four camera set-ups by itself, keeping the same fox across all of them: a wide trot and sudden stop, a close-up of its face, the pounce with only the tail sticking out of the snow, and the snowy face pulling out before it trots away. Nothing was trimmed or re-ordered; only fades and a Suno bed were added (tour-bed-a, placed so a downbeat lands on the first cut; credit: Music generated with Suno). Raw H3 audio -38.0 LUFS (crunching snow, a thump, a sneeze); mastered to -14.1 LUFS integrated / -1.2 dBTP.
+  {
+    "slug": "snow-fox-one-prompt",
+    "title": {
+      "zh-hant": "雪狐：一個 Prompt",
+      "ja": "雪ギツネ：ひとつの Prompt",
+      "en": "Snow Fox: One Prompt"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 14.38,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "40539e65-9ae2-47d2-a347-0de1c41cc911",
+        "seed": 6111,
+        "seconds": 14.375
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T18:22:58.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/snow-fox-one-prompt-poster-768.webp",
+        "srcSet": "/images/showcase/items/snow-fox-one-prompt-poster-768.webp 768w, /images/showcase/items/snow-fox-one-prompt-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/snow-fox-one-prompt.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/snow-fox-one-prompt-contact-1152.webp",
+        "srcSet": "/images/showcase/items/snow-fox-one-prompt-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 340
+      }
+    }
+  },
+  // zero-g-cat: One 10-second FL2VA take (first frame: a Qwen-Image 2.1 still, re-rendered tonight so the milk looks liquid): an orange tabby floating in a space-station module does a slow somersault, licks a wobbling sphere of milk, the sphere bursts into floating blobs and the cat chases and licks the droplets before rolling upside down, pleased with itself. H3's soft beeps and lapping sounds (raw -41.9 LUFS, a very quiet bed) are kept under the gentle outro of a Suno track (tour-bed-a, back-timed so it resolves at the end; credit: Music generated with Suno). Mastered to -14.1 LUFS integrated / -1.3 dBTP.
+  {
+    "slug": "zero-g-cat",
+    "title": {
+      "zh-hant": "無重力貓咪",
+      "ja": "無重力ネコ",
+      "en": "Zero-G Cat"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "t2i-pc / fl2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 10.12,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "23a6510d-de33-4569-8ded-33ff7d3f331a",
+        "seed": 5718,
+        "seconds": 10.125
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:56:29.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/zero-g-cat-poster-768.webp",
+        "srcSet": "/images/showcase/items/zero-g-cat-poster-768.webp 768w, /images/showcase/items/zero-g-cat-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/zero-g-cat.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/zero-g-cat-contact-1152.webp",
+        "srcSet": "/images/showcase/items/zero-g-cat-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 256
+      }
+    }
+  },
+  // neon-koi-alley: One Ref2VA take of the Courier, the project's original character (from her reference image), re-rendered tonight with a prompt that bans signboards: she walks through a rainy alley lit only by bent neon tubes, paper lanterns and warm windows while glowing koi swim through the air around her, one gliding past her raised hand. Her face, silver hair, glass-frame hair ornament and the cyan-violet cloak trim stay consistent through the shot. H3's soft rain and water-like whooshes (raw -41.7 LUFS) sit under the intro of a Suno track (tour-bed-a; credit: Music generated with Suno); mastered to -14.1 LUFS integrated / -3.0 dBTP. Shorter than the 10-15 s target on purpose: the take is cut before a sign with fake glyphs enters the frame; two tiny, distant plaques in the background still carry unreadable marks.
+  {
+    "slug": "neon-koi-alley",
+    "title": {
+      "zh-hant": "霓虹錦鯉巷",
+      "ja": "ネオン鯉の路地",
+      "en": "Neon Koi Alley"
+    },
+    "kind": "film",
+    "category": "film",
+    "pipeline": "ref2va-pc",
+    "runId": "",
+    "outputId": null,
+    "seed": null,
+    "model": "",
+    "ditEngine": "",
+    "width": 768,
+    "height": 448,
+    "frames": null,
+    "fps": 24,
+    "seconds": 7.33,
+    "endToEndSeconds": null,
+    "endToEndApprox": false,
+    "steps": [],
+    "shots": [
+      {
+        "runId": "b060d4d1-da7b-4b8c-876a-ce92504ec1a1",
+        "seed": 5518,
+        "seconds": 7.333
+      }
+    ],
+    "music": true,
+    "reference": null,
+    "grade": "hero",
+    "createdAt": "2026-10-18T17:55:56.000Z",
+    "prompt": "",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/neon-koi-alley-poster-768.webp",
+        "srcSet": "/images/showcase/items/neon-koi-alley-poster-768.webp 768w, /images/showcase/items/neon-koi-alley-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/neon-koi-alley.mp4",
+      "mixLufs": -14.1,
+      "contact": {
+        "src": "/images/showcase/items/neon-koi-alley-contact-1152.webp",
+        "srcSet": "/images/showcase/items/neon-koi-alley-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 170
+      }
+    }
+  },
   // fl2va-ocean: studio/gen/clips/fl2va-ocean; first frame from the ocean still (768x448).
   {
     "slug": "fl2va-ocean",
@@ -82,6 +926,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "still-ocean"
     },
@@ -188,6 +1034,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },
@@ -285,6 +1133,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "still-rain"
     },
@@ -391,6 +1241,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },
@@ -488,6 +1340,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "still-cliff"
     },
@@ -585,6 +1439,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "still-portrait"
     },
@@ -656,6 +1512,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": null,
     "grade": "usable",
     "createdAt": "2026-10-18T15:30:17+09:00",
@@ -722,6 +1580,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": null,
     "grade": "usable",
     "createdAt": "2026-10-18T15:30:48+09:00",
@@ -788,6 +1648,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": null,
     "grade": "usable",
     "createdAt": "2026-10-18T15:31:16+09:00",
@@ -854,6 +1716,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": null,
     "grade": "usable",
     "createdAt": "2026-10-18T15:31:46+09:00",
@@ -928,6 +1792,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": false
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": null,
     "grade": "usable",
     "createdAt": "2026-10-18T15:28:57+09:00",
@@ -1036,6 +1902,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "component": "mux"
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },
@@ -1155,6 +2023,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "component": "mux"
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },
@@ -1274,6 +2144,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "component": "mux"
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },
@@ -1393,6 +2265,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "component": "mux"
       }
     ],
+    "shots": [],
+    "music": false,
     "reference": {
       "slug": "char-courier"
     },

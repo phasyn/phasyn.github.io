@@ -5,13 +5,15 @@ import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { FEATURED, ITEMS, machinesOf, shortRun, totals, type ShowcaseItem } from './data.ts';
-import { AiBadge, MachineDot, MachineName, PipelineChip, StepLanes, useSecondsText } from './parts.tsx';
+import { FEATURED, ITEMS, isEdit, machinesOf, shortRun, totals, type ShowcaseItem } from './data.ts';
+import { MusicChip, PipelineChips, ShotStrip } from './Films.tsx';
+import { AiBadge, MachineDot, MachineName, StepLanes, useSecondsText } from './parts.tsx';
 
 const at = (ms: number) => ({ '--sc-at': `${ms}ms` }) as CSSProperties;
 
-/** HUD label for the theatre frame: real run id and pipeline (decorative; the same facts are in text below). */
+/** HUD label for the theatre frame: real run id and pipeline, or the cut's shot count (decorative; facts repeat below). */
 function hudLabel(item: ShowcaseItem): string {
+  if (isEdit(item)) return `${item.kind.replace('-', ' ').toUpperCase()} · ${item.shots.length} SHOTS`;
   return `RUN ${shortRun(item.runId)} · ${item.pipeline}`;
 }
 
@@ -38,7 +40,7 @@ export function ShowcaseHero() {
         <div className="grid content-start gap-6">
           <p lang="en" className="eyebrow sc-in flex items-center gap-3 text-brand-cyan" style={at(0)}>
             <span className="sc-eyebrow-line w-10" />
-            <DecodeText text={`SHOWCASE · ${sum.results} RESULTS · ${sum.gpus} GPUS`} afterIntro />
+            <DecodeText text={sum.films ? `SHOWCASE · ${sum.films} FILMS · ${sum.results} RESULTS` : `SHOWCASE · ${sum.results} RESULTS · ${sum.gpus} GPUS`} afterIntro />
           </p>
           <h1 aria-label={copy.hero.title.join(locale === 'en' ? ' ' : '')} className="text-display tracking-display text-balance-cjk text-fg lg:text-[clamp(2.5rem,0.9rem+2.9vw,3.875rem)]">
             {copy.hero.title.map((line, i) => (
@@ -51,12 +53,19 @@ export function ShowcaseHero() {
 
           <HudFrame label="MEASURED · CONTROLLER" className="sc-in mt-2" innerClassName="bg-[rgb(7_11_20_/_0.62)] backdrop-blur-md">
             <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl bg-line-subtle" style={at(820)}>
+              {sum.films ? (
+                <Stat label={copy.hero.stats.films((sum.filmSeconds / 60).toFixed(1))}>
+                  <CountUp value={sum.films} />
+                </Stat>
+              ) : null}
               <Stat label={copy.hero.stats.results}>
                 <CountUp value={sum.results} />
               </Stat>
-              <Stat label={copy.hero.stats.video}>
-                <CountUp value={sum.videoSeconds} decimals={1} />
-              </Stat>
+              {sum.films ? null : (
+                <Stat label={copy.hero.stats.video}>
+                  <CountUp value={sum.videoSeconds} decimals={1} />
+                </Stat>
+              )}
               <Stat label={copy.hero.stats.render}>
                 {sum.renderApprox ? <span aria-hidden>≈</span> : null}
                 <CountUp value={minutes} decimals={1} />
@@ -80,24 +89,49 @@ export function ShowcaseHero() {
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">
               <div className="grid gap-1.5">
                 <p className="flex flex-wrap items-center gap-2">
-                  <span className="text-section font-semibold text-fg">{current.title[locale]}</span>
-                  <PipelineChip pipeline={current.pipeline} />
+                  <span className="text-section font-semibold text-balance-cjk text-fg">{current.title[locale]}</span>
+                  {isEdit(current) ? (
+                    <span className="inline-flex min-h-6 items-center rounded-full border border-line-strong bg-raised px-2.5 text-caption text-fg-secondary">{copy.card.kind[current.kind]}</span>
+                  ) : null}
+                  <PipelineChips pipeline={current.pipeline} />
                 </p>
-                <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-tertiary">
-                  {machinesOf(current).map((machine) => (
-                    <span key={machine} className="inline-flex items-center gap-1.5">
-                      <MachineDot machine={machine} />
-                      <MachineName machine={machine} />
+                {isEdit(current) ? (
+                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-tertiary">
+                    <span className="machine">{copy.gallery.shots(current.shots.length)}</span>
+                    <span lang="en" className="machine">
+                      {current.width}×{current.height}
                     </span>
-                  ))}
-                </p>
+                    {current.music ? <MusicChip /> : null}
+                  </p>
+                ) : (
+                  <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-tertiary">
+                    {machinesOf(current).map((machine) => (
+                      <span key={machine} className="inline-flex items-center gap-1.5">
+                        <MachineDot machine={machine} />
+                        <MachineName machine={machine} />
+                      </span>
+                    ))}
+                  </p>
+                )}
               </div>
               <p className="machine text-data text-fg sm:text-right">
-                <span className="text-fg-tertiary">{copy.card.endToEnd} </span>
-                {secondsText(current.endToEndSeconds, current.endToEndApprox)}
+                {isEdit(current) ? (
+                  secondsText(current.seconds)
+                ) : (
+                  <>
+                    <span className="text-fg-tertiary">{copy.card.endToEnd} </span>
+                    {secondsText(current.endToEndSeconds, current.endToEndApprox)}
+                  </>
+                )}
               </p>
             </div>
-            <StepLanes item={current} dense className="rounded-xl border border-line-subtle bg-[rgb(7_11_20_/_0.6)] p-3" />
+            {isEdit(current) ? (
+              <div className="rounded-xl border border-line-subtle bg-[rgb(7_11_20_/_0.6)] p-3">
+                <ShotStrip item={current} />
+              </div>
+            ) : (
+              <StepLanes item={current} dense className="rounded-xl border border-line-subtle bg-[rgb(7_11_20_/_0.6)] p-3" />
+            )}
 
             <div className="grid gap-2">
               <p className="text-caption font-semibold text-fg-tertiary">{copy.hero.featured}</p>

@@ -23,7 +23,7 @@ export function Breakdown() {
   const still = itemBySlug(BREAKDOWN.still);
   const clip = itemBySlug(BREAKDOWN.clip);
   const secondsText = useSecondsText();
-  if (!still || !clip) return null;
+  if (!still || !clip || still.seed === null || clip.seed === null) return null;
 
   return (
     <section id="breakdown" aria-labelledby="breakdown-title" className="relative isolate overflow-hidden border-y border-line-subtle bg-[rgb(4_6_12_/_0.82)] py-[clamp(4rem,2.5rem+6vw,8rem)]">
