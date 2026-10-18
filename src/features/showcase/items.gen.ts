@@ -646,7 +646,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       },
       {
-        "id": "vae",
+        "id": "vae-compose",
         "label": "VAE decode + compose",
         "machines": [
           "rtx5080",
@@ -712,7 +712,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       },
       {
-        "id": "vae",
+        "id": "vae-compose",
         "label": "VAE decode + compose",
         "machines": [
           "rtx5080",
@@ -778,7 +778,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       },
       {
-        "id": "vae",
+        "id": "vae-compose",
         "label": "VAE decode + compose",
         "machines": [
           "rtx5080",
@@ -844,7 +844,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "approx": true
       },
       {
-        "id": "vae",
+        "id": "vae-compose",
         "label": "VAE decode + compose",
         "machines": [
           "rtx5080",

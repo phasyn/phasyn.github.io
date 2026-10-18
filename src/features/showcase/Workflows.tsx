@@ -38,7 +38,7 @@ export function Workflows() {
           return (
             <li key={id} className={cn('min-w-0', SPAN[id], id === 'machines' && 'md:col-span-2 lg:col-span-2')}>
               <SpotlightCard tilt={3} className="h-full">
-                <article aria-labelledby={`wf-${id}`} className="grid h-full content-start gap-5 p-5 md:p-6">
+                <article aria-labelledby={`wf-${id}`} className="flex h-full flex-col gap-5 p-5 md:p-6">
                   <header className="flex items-start gap-4">
                     <span className="grid size-11 shrink-0 place-items-center rounded-xl border border-brand-cyan/40 bg-brand-gradient-soft text-brand-cyan shadow-glow-sm">
                       <Icon aria-hidden className="size-5" strokeWidth={1.75} />

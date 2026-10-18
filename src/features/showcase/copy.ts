@@ -70,6 +70,7 @@ export interface ShowcaseCopy {
     referenceImage: string;
     madeFrom: string;
     stepName: Record<string, string>;
+    stepShort: Record<string, string>;
     seconds: string;
   };
   gallery: {
@@ -122,15 +123,20 @@ export interface ShowcaseCopy {
   closing: { title: string; lead: string; tour: string; benchmarks: string; film: string };
 }
 
-const STEP_NAME_ZH = { te: '文字編碼', venc: '影片 VAE 編碼', aenc: '音訊 VAE 編碼', dit: 'DiT 去噪', video: '影片 VAE 解碼', audio: '音訊 VAE 解碼', mux: '封裝（Mux）', vae: 'VAE 解碼＋合成', compose: '合成' };
-const STEP_NAME_JA = { te: 'テキストエンコード', venc: '映像 VAE エンコード', aenc: '音声 VAE エンコード', dit: 'DiT デノイズ', video: '映像 VAE デコード', audio: '音声 VAE デコード', mux: '多重化（Mux）', vae: 'VAE デコード＋合成', compose: '合成' };
-const STEP_NAME_EN = { te: 'Text encoder', venc: 'Video VAE encode', aenc: 'Audio VAE encode', dit: 'DiT denoise', video: 'Video VAE decode', audio: 'Audio VAE decode', mux: 'Mux', vae: 'VAE decode + compose', compose: 'Compose' };
+const STEP_NAME_ZH = { te: '文字編碼', venc: '影片 VAE 編碼', aenc: '音訊 VAE 編碼', dit: 'DiT 去噪', video: '影片 VAE 解碼', audio: '音訊 VAE 解碼', mux: '封裝（Mux）', vae: 'VAE 解碼', compose: '合成', 'vae-compose': 'VAE 解碼＋合成' };
+const STEP_NAME_JA = { te: 'テキストエンコード', venc: '映像 VAE エンコード', aenc: '音声 VAE エンコード', dit: 'DiT デノイズ', video: '映像 VAE デコード', audio: '音声 VAE デコード', mux: '多重化（Mux）', vae: 'VAE デコード', compose: '合成', 'vae-compose': 'VAE デコード＋合成' };
+const STEP_NAME_EN = { te: 'Text encoder', venc: 'Video VAE encode', aenc: 'Audio VAE encode', dit: 'DiT denoise', video: 'Video VAE decode', audio: 'Audio VAE decode', mux: 'Mux', vae: 'VAE decode', compose: 'Compose', 'vae-compose': 'VAE decode + compose' };
+
+/** Lane-sized step names (cards); the full names above stay for the breakdown and tooltips. */
+const STEP_SHORT_ZH = { te: '文字編碼', venc: '影片編碼', aenc: '音訊編碼', dit: 'DiT', video: '影片解碼', audio: '音訊解碼', mux: '封裝', vae: 'VAE 解碼', compose: '合成', 'vae-compose': 'VAE＋合成' };
+const STEP_SHORT_JA = { te: 'テキスト', venc: '映像エンコード', aenc: '音声エンコード', dit: 'DiT', video: '映像デコード', audio: '音声デコード', mux: 'Mux', vae: 'VAE デコード', compose: '合成', 'vae-compose': 'VAE＋合成' };
+const STEP_SHORT_EN = { te: 'TE', venc: 'VAE enc', aenc: 'Audio enc', dit: 'DiT', video: 'VAE dec', audio: 'Audio dec', mux: 'Mux', vae: 'VAE', compose: 'Compose', 'vae-compose': 'VAE + compose' };
 
 export const SHOWCASE: Copy<ShowcaseCopy> = {
   'zh-hant': {
     hero: {
       title: ['這一頁的每一個畫面，', '都在作者家裡生成。'],
-      lead: '這裡的圖片與影片，全部由 Phasyn Studio 透過控制器 API（t2i-pc、fl2va-pc、ref2va-pc）在作者的兩台機器、三顆 GPU 上生成。每張卡片都附上 Prompt、管線、每一步跑在哪台機器，以及實測時間。',
+      lead: '這裡的圖片與影片，全部由 Phasyn Studio 透過控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的兩台機器、三顆 GPU 上生成。每張卡片都附上 Prompt、管線、每一步跑在哪台機器，以及實測時間。',
       stats: { results: '個生成結果', video: '秒有聲影片', render: '端到端生成時間合計', gpus: (hosts) => `顆 GPU，分在 ${hosts} 台機器` },
       minutes: '分鐘',
       featured: '精選',
@@ -168,12 +174,13 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       referenceImage: '參考圖',
       madeFrom: '來源',
       stepName: STEP_NAME_ZH,
+      stepShort: STEP_SHORT_ZH,
       seconds: '秒',
     },
     gallery: {
       eyebrow: 'GALLERY · EVERY RESULT',
       title: '每一個結果，都附上每一步。',
-      lead: '圖片用 Qwen-Image 2.1（t2i-pc），影片用 MiniMax H3（fl2va-pc、ref2va-pc）。影片以原生 768×448 播放，沒有放大；進入畫面時靜音循環，按下聲音才會聽到 H3 一起生成的聲音。',
+      lead: '圖片用 Qwen‑Image 2.1（t2i‑pc），影片用 MiniMax H3（fl2va‑pc、ref2va‑pc）。影片以原生 768×448 播放，沒有放大；進入畫面時靜音循環，按下聲音才會聽到 H3 一起生成的聲音。',
       films: '短片',
       filmsLead: '把多個鏡頭剪成一支的完整短片，按下播放就有聲音。',
       filterLabel: '依類型篩選',
@@ -186,11 +193,11 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     breakdown: {
       eyebrow: 'BREAKDOWN · PROMPT → STILL → CLIP',
       title: '一段 Prompt，一張圖，一段有聲影片。',
-      lead: '雨夜的巷子：t2i-pc 先生成 1152×672 的圖，縮小成 768×448 後當成 fl2va-pc 的第一幀，再加上動作與聲音的描述，生成 5.17 秒的有聲影片。',
+      lead: '雨夜的巷子：t2i‑pc 先生成 1152×672 的圖，縮小成 768×448 後當成 fl2va‑pc 的第一幀，再加上動作與聲音的描述，生成 5.17 秒的有聲影片。',
       stages: { prompt: 'Prompt', still: '圖片', frame: '第一幀', clip: '有聲影片' },
-      stillMeta: (seed, seconds) => `t2i-pc · Qwen-Image 2.1 · 種子 ${seed} · 端到端 ${seconds} 秒`,
+      stillMeta: (seed, seconds) => `t2i‑pc · Qwen‑Image 2.1 · 種子 ${seed} · 端到端 ${seconds} 秒`,
       frameMeta: '1152×672 縮小成 768×448（H3 的畫面大小）',
-      clipMeta: (seed, frames, seconds) => `fl2va-pc · MiniMax H3 · 種子 ${seed} · ${frames} 幀 · 端到端 ${seconds} 秒`,
+      clipMeta: (seed, frames, seconds) => `fl2va‑pc · MiniMax H3 · 種子 ${seed} · ${frames} 幀 · 端到端 ${seconds} 秒`,
       timelineTitle: (seconds) => `這 ${seconds} 秒，每台機器在做什麼`,
       timelineNote: '步驟的位置依照這次執行在 Records 裡的 Step Timeline（下方是實際畫面）。影片解碼在 RTX 5080、音訊解碼在 RTX 3060，兩者同時進行。',
       replay: '重播時間軸',
@@ -201,7 +208,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     character: {
       eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: '同一個角色，換一個場景。',
-      lead: '先用 t2i-pc 生成白底的角色設定圖，再把它當成 ref2va-pc 唯一的參考圖。Prompt 用 <Subject 1> 指名她，並要求 H3 保留 <Picture 1> 裡的樣子。請自己比較每一段。',
+      lead: '先用 t2i‑pc 生成白底的角色設定圖，再把它當成 ref2va‑pc 唯一的參考圖。Prompt 用 <Subject 1> 指名她，並要求 H3 保留 <Picture 1> 裡的樣子。請自己比較每一段。',
       sheet: '參考圖',
       candidates: '三個候選種子，各約 30 秒',
       picked: '選用',
@@ -220,7 +227,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: '一個專案從頭做到成片。',
           steps: [
             '在 Video Studio 的專案裡排好鏡頭，每個鏡頭一段 Prompt。',
-            '在 Image Studio 用 Qwen-Image 2.1 生成每個鏡頭的圖，用 Takes 比較不同種子。',
+            '在 Image Studio 用 Qwen‑Image 2.1 生成每個鏡頭的圖，用 Takes 比較不同種子。',
             '把圖當成鏡頭的 FL2VA 第一幀，生成有聲影片。',
             '在時間軸上排列、切割、對齊，加上溶接、變速、調色與字幕。',
             '用 FFmpeg 匯出一個 MP4（H.264 + AAC）。',
@@ -278,10 +285,10 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `網頁版已做響度正規化；原始輸出約 ${loudest}～${quietest} LUFS、AAC ${rates}。`,
       glyphs: '部分畫面裡的招牌文字，是模型生成的偽文字，不是真實的店名或品牌。',
       items: [
-        '全部是 AI 生成：圖片來自 Qwen-Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i-pc、fl2va-pc、ref2va-pc）在作者的機器上生成。「The Courier」是原創角色。',
-        '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen-Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
+        '全部是 AI 生成：圖片來自 Qwen‑Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的機器上生成。「The Courier」是原創角色。',
+        '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen‑Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
         '以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版只做了壓縮（WebP、H.264）。',
-        '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit-5080 45.9 秒、Ref2VA DiT 40.6 秒）。四張圖片的步驟時間是約略值。',
+        '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）。四張圖片的步驟時間是約略值。',
         '不同 GPU 上的步驟可以同時進行（例如影片解碼與音訊解碼），所以步驟加總可能超過端到端時間。',
       ],
     },
@@ -297,7 +304,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
   ja: {
     hero: {
       title: ['このページの映像は、', 'すべて自宅で生成しました。'],
-      lead: 'ここにある画像と映像は、すべて Phasyn Studio がコントローラー API（t2i-pc・fl2va-pc・ref2va-pc）を通じて、作者の 2 台のマシン・3 基の GPU で生成したものです。各カードに Prompt、パイプライン、各ステップを処理したマシン、実測時間を載せています。',
+      lead: 'ここにある画像と映像は、すべて Phasyn Studio がコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて、作者の 2 台のマシン・3 基の GPU で生成したものです。各カードに Prompt、パイプライン、各ステップを処理したマシン、実測時間を載せています。',
       stats: { results: '件の生成結果', video: '秒の音付き映像', render: 'エンドツーエンドの生成時間（合計）', gpus: (hosts) => `基の GPU（${hosts} 台のマシン）` },
       minutes: '分',
       featured: 'ピックアップ',
@@ -335,12 +342,13 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       referenceImage: '参照画像',
       madeFrom: '元にした素材',
       stepName: STEP_NAME_JA,
+      stepShort: STEP_SHORT_JA,
       seconds: '秒',
     },
     gallery: {
       eyebrow: 'GALLERY · EVERY RESULT',
       title: 'すべての結果に、すべてのステップを。',
-      lead: '画像は Qwen-Image 2.1（t2i-pc）、映像は MiniMax H3（fl2va-pc・ref2va-pc）で生成しています。映像はネイティブの 768×448 のまま拡大せずに表示し、画面内では無音でループします。音声ボタンを押すと、H3 が映像と一緒に生成した音を再生します。',
+      lead: '画像は Qwen‑Image 2.1（t2i‑pc）、映像は MiniMax H3（fl2va‑pc・ref2va‑pc）で生成しています。映像はネイティブの 768×448 のまま拡大せずに表示し、画面内では無音でループします。音声ボタンを押すと、H3 が映像と一緒に生成した音を再生します。',
       films: 'ショートフィルム',
       filmsLead: '複数のショットを 1 本に編集した短編です。再生すると音も流れます。',
       filterLabel: '種類で絞り込む',
@@ -353,11 +361,11 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     breakdown: {
       eyebrow: 'BREAKDOWN · PROMPT → STILL → CLIP',
       title: 'ひとつの Prompt から、画像と音付きの映像へ。',
-      lead: '雨の夜の路地。t2i-pc で 1152×672 の画像を生成し、768×448 に縮小して fl2va-pc の先頭フレームにしました。動きと音の説明を加えて、5.17 秒の音付き映像を生成しています。',
+      lead: '雨の夜の路地。t2i‑pc で 1152×672 の画像を生成し、768×448 に縮小して fl2va‑pc の先頭フレームにしました。動きと音の説明を加えて、5.17 秒の音付き映像を生成しています。',
       stages: { prompt: 'Prompt', still: '画像', frame: '先頭フレーム', clip: '音付きの映像' },
-      stillMeta: (seed, seconds) => `t2i-pc・Qwen-Image 2.1・シード ${seed}・エンドツーエンド ${seconds} 秒`,
+      stillMeta: (seed, seconds) => `t2i‑pc・Qwen‑Image 2.1・シード ${seed}・エンドツーエンド ${seconds} 秒`,
       frameMeta: '1152×672 を 768×448（H3 のフレームサイズ）に縮小',
-      clipMeta: (seed, frames, seconds) => `fl2va-pc・MiniMax H3・シード ${seed}・${frames} フレーム・エンドツーエンド ${seconds} 秒`,
+      clipMeta: (seed, frames, seconds) => `fl2va‑pc・MiniMax H3・シード ${seed}・${frames} フレーム・エンドツーエンド ${seconds} 秒`,
       timelineTitle: (seconds) => `この ${seconds} 秒、各マシンが何をしていたか`,
       timelineNote: 'ステップの位置は、この実行の Records にある Step Timeline に合わせています（下は実際の画面）。映像のデコードは RTX 5080、音声のデコードは RTX 3060 で同時に進みます。',
       replay: 'タイムラインを再生',
@@ -368,7 +376,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     character: {
       eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: '同じキャラクターを、別のシーンへ。',
-      lead: 't2i-pc で白背景のキャラクターシートを生成し、ref2va-pc の唯一の参照画像にしました。Prompt では彼女を <Subject 1> と定義し、<Picture 1> の見た目を保つよう H3 に指示しています。どのシーンも、ご自身で見比べてください。',
+      lead: 't2i‑pc で白背景のキャラクターシートを生成し、ref2va‑pc の唯一の参照画像にしました。Prompt では彼女を <Subject 1> と定義し、<Picture 1> の見た目を保つよう H3 に指示しています。どのシーンも、ご自身で見比べてください。',
       sheet: '参照画像',
       candidates: '3 つの候補シード（各約 30 秒）',
       picked: '採用',
@@ -387,7 +395,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: 'ひとつのプロジェクトで完成まで。',
           steps: [
             'Video Studio のプロジェクトにショットを並べ、ショットごとに Prompt を書きます。',
-            'Image Studio の Qwen-Image 2.1 で各ショットの画像を生成し、Takes でシードを比べます。',
+            'Image Studio の Qwen‑Image 2.1 で各ショットの画像を生成し、Takes でシードを比べます。',
             '画像をショットの FL2VA 先頭フレームにして、音付きの映像を生成します。',
             'タイムラインで並べ替え・分割・スナップし、ディゾルブ、速度、色、タイトルを加えます。',
             'FFmpeg で 1 本の MP4（H.264 + AAC）に書き出します。',
@@ -445,10 +453,10 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `Web 版はラウドネスを正規化しています（元の出力は約 ${loudest}〜${quietest} LUFS、AAC ${rates}）。`,
       glyphs: '一部の映像に映る看板の文字は、モデルが生成した疑似的な文字で、実在の店名やブランドではありません。',
       items: [
-        'すべて AI による生成物です。画像は Qwen-Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i-pc・fl2va-pc・ref2va-pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
-        'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen-Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
+        'すべて AI による生成物です。画像は Qwen‑Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
+        'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen‑Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
         'ネイティブ解像度のまま、拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 向けに行ったのは圧縮（WebP、H.264）だけです。',
-        '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit-5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。4 枚の画像のステップ時間は概算です。',
+        '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。4 枚の画像のステップ時間は概算です。',
         '別々の GPU のステップ（映像と音声のデコードなど）は同時に進むことがあるため、ステップの合計がエンドツーエンドの時間を超える場合があります。',
       ],
     },
@@ -464,7 +472,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
   en: {
     hero: {
       title: ['Every Frame Here', 'Was Generated at Home.'],
-      lead: 'Every image and clip here was generated by Phasyn Studio through its controller API (t2i-pc, fl2va-pc, ref2va-pc) on the author’s two machines and three GPUs. Each card shows the prompt, the pipeline, the machine behind every step and the measured time.',
+      lead: 'Every image and clip here was generated by Phasyn Studio through its controller API (t2i‑pc, fl2va‑pc, ref2va‑pc) on the author’s two machines and three GPUs. Each card shows the prompt, the pipeline, the machine behind every step and the measured time.',
       stats: { results: 'results', video: 's of video with sound', render: 'end-to-end render time, in total', gpus: (hosts) => `GPUs on ${hosts} machines` },
       minutes: 'min',
       featured: 'Featured',
@@ -502,12 +510,13 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       referenceImage: 'Reference image',
       madeFrom: 'Made from',
       stepName: STEP_NAME_EN,
+      stepShort: STEP_SHORT_EN,
       seconds: 's',
     },
     gallery: {
       eyebrow: 'GALLERY · EVERY RESULT',
       title: 'Every Result, Every Step.',
-      lead: 'Images come from Qwen-Image 2.1 (t2i-pc), clips from MiniMax H3 (fl2va-pc, ref2va-pc). Clips play at their native 768×448, never upscaled. They loop muted while on screen; the sound button plays the sound H3 generated with them.',
+      lead: 'Images come from Qwen‑Image 2.1 (t2i‑pc), clips from MiniMax H3 (fl2va‑pc, ref2va‑pc). Clips play at their native 768×448, never upscaled. They loop muted while on screen; the sound button plays the sound H3 generated with them.',
       films: 'Films',
       filmsLead: 'Finished pieces cut from many shots. Press play for sound.',
       filterLabel: 'Filter by type',
@@ -520,11 +529,11 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     breakdown: {
       eyebrow: 'BREAKDOWN · PROMPT → STILL → CLIP',
       title: 'One Prompt, One Still, One Clip With Sound.',
-      lead: 'The rainy alley: t2i-pc makes a 1152×672 still; scaled down to 768×448, it becomes the first frame for fl2va-pc, which adds the motion and sound described in a second prompt and returns a 5.17 s clip with sound.',
+      lead: 'The rainy alley: t2i‑pc makes a 1152×672 still; scaled down to 768×448, it becomes the first frame for fl2va‑pc, which adds the motion and sound described in a second prompt and returns a 5.17 s clip with sound.',
       stages: { prompt: 'Prompt', still: 'Still', frame: 'First frame', clip: 'Clip with sound' },
-      stillMeta: (seed, seconds) => `t2i-pc · Qwen-Image 2.1 · seed ${seed} · ${seconds} s end to end`,
+      stillMeta: (seed, seconds) => `t2i‑pc · Qwen‑Image 2.1 · seed ${seed} · ${seconds} s end to end`,
       frameMeta: '1152×672 scaled down to 768×448, H3’s frame size',
-      clipMeta: (seed, frames, seconds) => `fl2va-pc · MiniMax H3 · seed ${seed} · ${frames} frames · ${seconds} s end to end`,
+      clipMeta: (seed, frames, seconds) => `fl2va‑pc · MiniMax H3 · seed ${seed} · ${frames} frames · ${seconds} s end to end`,
       timelineTitle: (seconds) => `${seconds} Seconds, Machine by Machine`,
       timelineNote: 'Step positions follow this run’s Step Timeline in Records (real capture below). Video decode on the RTX 5080 and audio decode on the RTX 3060 run at the same time.',
       replay: 'Replay Timeline',
@@ -535,7 +544,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     character: {
       eyebrow: 'CHARACTER · ONE REFERENCE IMAGE',
       title: 'Same Character, New Scene.',
-      lead: 't2i-pc made a character sheet on white; it became the only reference image for ref2va-pc. The prompt defines her as <Subject 1> and asks H3 to keep her exact appearance from <Picture 1>. Compare the scenes yourself.',
+      lead: 't2i‑pc made a character sheet on white; it became the only reference image for ref2va‑pc. The prompt defines her as <Subject 1> and asks H3 to keep her exact appearance from <Picture 1>. Compare the scenes yourself.',
       sheet: 'Reference image',
       candidates: 'Three candidate seeds, ~30 s each',
       picked: 'Picked',
@@ -554,7 +563,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
           summary: 'One project, from first shot to final cut.',
           steps: [
             'Lay out the shots in a Video Studio project, one prompt per shot.',
-            'Generate each shot’s still in Image Studio with Qwen-Image 2.1, and compare seeds as takes.',
+            'Generate each shot’s still in Image Studio with Qwen‑Image 2.1, and compare seeds as takes.',
             'Send the still to its shot as the FL2VA first frame and render the clip with sound.',
             'Arrange, split and snap clips on the timeline; add dissolves, speed, color and titles.',
             'Export one MP4 (H.264 + AAC), rendered by FFmpeg.',
@@ -612,10 +621,10 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       loudness: (loudest, quietest, rates) => `Web copy is loudness-normalized; the raw output is about ${loudest} to ${quietest} LUFS, AAC ${rates}.`,
       glyphs: 'Signs in some shots carry pseudo-text made up by the model, not real shop names or brands.',
       items: [
-        'All AI-generated: images by Qwen-Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i-pc, fl2va-pc, ref2va-pc). “The Courier” is an original character.',
-        'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen-Image 2.1 is for research and non-commercial use. Model weights are not included.',
+        'All AI-generated: images by Qwen‑Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i‑pc, fl2va‑pc, ref2va‑pc). “The Courier” is an original character.',
+        'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen‑Image 2.1 is for research and non-commercial use. Model weights are not included.',
         'Shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. The web copies are otherwise only compressed (WebP, H.264).',
-        'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit-5080 45.9 s, Ref2VA DiT 40.6 s). Step times for the four stills are rounded readings.',
+        'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit‑5080 45.9 s, Ref2VA DiT 40.6 s). Step times for the four stills are rounded readings.',
         'Steps on different GPUs can run at the same time (video and audio decode, for example), so step times can add up to more than the end-to-end time.',
       ],
     },

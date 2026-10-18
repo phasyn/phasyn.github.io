@@ -32,6 +32,8 @@ interface ClipPlayerProps {
   variant?: 'full' | 'compact';
   /** Load the poster eagerly (above the fold). */
   priority?: boolean;
+  /** Frame aspect (default: the item's own). A different aspect letterboxes the media instead of cropping it. */
+  aspect?: number;
   className?: string;
 }
 
@@ -40,7 +42,7 @@ interface ClipPlayerProps {
  * motion), a sound toggle that restarts the clip with the sound H3 generated, and a pause control (WCAG 2.2.2). Native
  * controls are the fallback before hydration and without JavaScript. The video downloads only when it starts playing.
  */
-export function ClipPlayer({ item, sizes, variant = 'compact', priority = false, className }: ClipPlayerProps) {
+export function ClipPlayer({ item, sizes, variant = 'compact', priority = false, aspect, className }: ClipPlayerProps) {
   const locale = useLocale();
   const copy = SHOWCASE[locale].player;
   const title = item.title[locale];
@@ -117,7 +119,10 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
     }
   };
 
-  const ratio = `${item.width} / ${item.height}`;
+  const own = item.width / item.height;
+  const ratio = aspect ?? own;
+  // Never crop a result to fit a frame: a portrait sheet in a landscape card is shown whole, letterboxed.
+  const fit = Math.abs(ratio - own) / own > 0.03 ? 'object-contain' : 'object-cover';
   const iconButton =
     'pressable material-hud inline-flex min-h-9 items-center justify-center gap-2 rounded-full border border-[rgb(255_255_255_/_0.12)] text-fg hover:border-action/60 hover:text-fg focus-visible:outline-offset-2';
 
@@ -133,7 +138,7 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
           alt={title}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          className="absolute inset-0 size-full object-cover"
+          className={cn('absolute inset-0 size-full', fit)}
         />
       </div>
     );
@@ -152,12 +157,12 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
         aria-hidden
         loading={priority ? 'eager' : 'lazy'}
         decoding="async"
-        className="absolute inset-0 size-full object-cover"
+        className={cn('absolute inset-0 size-full', fit)}
       />
       {failed ? null : (
         <video
           ref={videoRef}
-          className="absolute inset-0 size-full object-cover"
+          className={cn('absolute inset-0 size-full', fit)}
           src={mediaUrl(clip)}
           poster={image.src}
           preload="none"

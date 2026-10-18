@@ -200,7 +200,7 @@
       "steps": [
         { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
         { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/cliff; step times are the session's rounded readings, shared by all four stills.",
@@ -222,7 +222,7 @@
       "steps": [
         { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
         { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/rain; first frame of the rain clip.",
@@ -244,7 +244,7 @@
       "steps": [
         { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
         { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/ocean.",
@@ -266,7 +266,7 @@
       "steps": [
         { "id": "te", "label": "Text encoder", "machine": "RTX 5080", "seconds": 2, "approx": true },
         { "id": "dit", "label": "DiT denoise", "machine": "RTX 5080", "seconds": 23, "approx": true },
-        { "id": "vae", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
+        { "id": "vae-compose", "label": "VAE decode + compose", "machine": "RTX 5080 / CPU", "seconds": 2, "approx": true }
       ],
       "grade": "usable",
       "notes": "studio/gen/stills/portrait.",

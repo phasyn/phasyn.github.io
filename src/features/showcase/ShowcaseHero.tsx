@@ -5,14 +5,14 @@ import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { FEATURED, ITEMS, machinesOf, totals, type ShowcaseItem } from './data.ts';
+import { FEATURED, ITEMS, machinesOf, shortRun, totals, type ShowcaseItem } from './data.ts';
 import { AiBadge, MachineDot, MachineName, PipelineChip, StepLanes, useSecondsText } from './parts.tsx';
 
 const at = (ms: number) => ({ '--sc-at': `${ms}ms` }) as CSSProperties;
 
 /** HUD label for the theatre frame: real run id and pipeline (decorative; the same facts are in text below). */
 function hudLabel(item: ShowcaseItem): string {
-  return `RUN ${item.runId} · ${item.pipeline}`;
+  return `RUN ${shortRun(item.runId)} · ${item.pipeline}`;
 }
 
 /**
@@ -40,7 +40,7 @@ export function ShowcaseHero() {
             <span className="sc-eyebrow-line w-10" />
             <DecodeText text={`SHOWCASE · ${sum.results} RESULTS · ${sum.gpus} GPUS`} afterIntro />
           </p>
-          <h1 aria-label={copy.hero.title.join('')} className="text-display tracking-display text-balance-cjk text-fg xl:text-[clamp(3rem,1rem+3.6vw,4.75rem)]">
+          <h1 aria-label={copy.hero.title.join(locale === 'en' ? ' ' : '')} className="text-display tracking-display text-balance-cjk text-fg lg:text-[clamp(2.5rem,0.9rem+2.9vw,3.875rem)]">
             {copy.hero.title.map((line, i) => (
               <RevealText key={line} text={line} on="load" delay={180 + i * 260} className="block" />
             ))}
@@ -101,7 +101,7 @@ export function ShowcaseHero() {
 
             <div className="grid gap-2">
               <p className="text-caption font-semibold text-fg-tertiary">{copy.hero.featured}</p>
-              <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:thin]">
+              <ul className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [mask-image:linear-gradient(90deg,#000_88%,transparent)] [scrollbar-width:thin]">
                 {featured.map((item, i) => {
                   const active = item.slug === current.slug;
                   return (
@@ -113,11 +113,11 @@ export function ShowcaseHero() {
                         aria-controls="sc-theatre"
                         aria-label={copy.player.show(item.title[locale])}
                         className={cn(
-                          'pressable relative block w-28 overflow-hidden rounded-lg border bg-stage sm:w-32',
+                          'pressable relative block w-24 overflow-hidden rounded-lg border bg-stage sm:w-28',
                           active ? 'border-brand-cyan/80 shadow-glow-sm' : 'border-line hover:border-action/60',
                         )}
                       >
-                        <img src={item.media.image.src} srcSet={item.media.image.srcSet} sizes="128px" width={item.media.image.width} height={item.media.image.height} alt="" loading="lazy" decoding="async" className={cn('aspect-[12/7] w-full object-cover transition-opacity', active ? 'opacity-100' : 'opacity-70')} />
+                        <img src={item.media.image.src} srcSet={item.media.image.srcSet} sizes="112px" width={item.media.image.width} height={item.media.image.height} alt="" loading="lazy" decoding="async" className={cn('aspect-[12/7] w-full object-cover transition-opacity', active ? 'opacity-100' : 'opacity-70')} />
                         {active ? <span aria-hidden className="absolute inset-x-0 bottom-0 h-0.5 bg-brand-gradient" /> : null}
                       </button>
                     </li>

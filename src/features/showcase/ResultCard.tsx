@@ -6,6 +6,9 @@ import { SHOWCASE } from './copy.ts';
 import { itemBySlug, type ShowcaseItem } from './data.ts';
 import { AiBadge, PipelineChip, PromptDisclosure, StepLanes, useSecondsText } from './parts.tsx';
 
+/** Every card frames its media at the H3 / Qwen-Image landscape ratio (768×448 = 1152×672), so rows line up. */
+const CARD_ASPECT = 768 / 448;
+
 /** Anchor id of a result card, for references between results. */
 export function cardId(slug: string): string {
   return `result-${slug}`;
@@ -29,7 +32,12 @@ export function ResultCard({ item, size = 'regular', className }: { item: Showca
     <SpotlightCard tilt={2} className={cn('h-full', className)}>
       <article id={cardId(item.slug)} aria-labelledby={titleId} className="grid h-full scroll-mt-[calc(var(--site-header-h)+1rem)] content-start">
         <div className="relative">
-          <ClipPlayer item={item} sizes={sizes} className="rounded-t-2xl" />
+          <ClipPlayer item={item} sizes={sizes} aspect={CARD_ASPECT} className="rounded-t-2xl" />
+          {item.frames && item.fps && item.seconds ? (
+            <span lang="en" className="machine pointer-events-none absolute bottom-3 left-3 inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-[11px] text-fg backdrop-blur-sm">
+              {item.seconds.toFixed(2)} s · {item.frames} f · {item.fps} fps
+            </span>
+          ) : null}
           <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
             <AiBadge />
             <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
@@ -51,10 +59,6 @@ export function ResultCard({ item, size = 'regular', className }: { item: Showca
             <Fact label={copy.resolution} value={`${item.width}×${item.height}`} />
             <Fact label={copy.seed} value={String(item.seed)} />
           </dl>
-
-          {item.frames && item.fps && item.seconds ? (
-            <p className="machine -mt-1 text-caption text-fg-tertiary">{copy.clip(item.frames, item.fps, item.seconds.toFixed(2))}</p>
-          ) : null}
 
           <StepLanes item={item} className="sc-lanes-grow" />
 

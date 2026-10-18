@@ -65,48 +65,54 @@ export function useSecondsText(): (seconds: number | null, approx?: boolean) => 
   };
 }
 
+export function useStepShort(): (step: ShowcaseStep) => string {
+  const names = SHOWCASE[useLocale()].card.stepShort;
+  return (step) => names[step.id] ?? step.label;
+}
+
 /**
- * Where each step ran: one lane per machine, its steps as segments in pipeline order, widths to scale against the
- * end-to-end time. Durations only — lanes never claim when a step started (steps on different GPUs can overlap).
+ * Where each step ran: one row per machine (its steps as segments in pipeline order, widths to scale against the
+ * end-to-end time, the machine's total on the right) and, under the bar, the steps by name with their times. Durations
+ * only — rows never claim when a step started (steps on different GPUs can overlap).
  */
 export function StepLanes({ item, className, dense = false }: { item: ShowcaseItem; className?: string; dense?: boolean }) {
   const locale = useLocale();
   const copy = SHOWCASE[locale].card;
   const stepName = useStepName();
+  const stepShort = useStepShort();
   const secondsText = useSecondsText();
   const groups = lanes(item);
   const scale = Math.max(item.endToEndSeconds ?? 0, ...groups.map((lane) => lane.seconds ?? 0), 1);
   return (
     <ul aria-label={copy.steps} className={cn('grid gap-2', className)}>
       {groups.map((lane) => (
-        <li key={lane.machine} className="grid gap-1">
-          <div className="flex items-baseline justify-between gap-3 text-caption">
-            <span className="inline-flex min-w-0 items-center gap-2 font-medium text-fg">
-              <MachineDot machine={lane.machine} />
+        <li key={lane.machine} className="grid grid-cols-[minmax(0,8.25rem)_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5">
+          <span className="inline-flex min-w-0 items-center gap-2 text-caption font-medium text-fg">
+            <MachineDot machine={lane.machine} />
+            <span className="truncate">
               <MachineName machine={lane.machine} />
             </span>
-            <span className="machine shrink-0 text-fg-secondary tabular-nums">{secondsText(lane.seconds, lane.approx)}</span>
-          </div>
-          <div aria-hidden className="flex h-1.5 gap-px overflow-hidden rounded-full bg-[rgb(255_255_255_/_0.06)]">
+          </span>
+          <span aria-hidden className="flex h-1.5 gap-px overflow-hidden rounded-full bg-[rgb(255_255_255_/_0.06)]">
             {lane.steps.map((step) =>
               step.seconds === null ? null : (
-                <span
-                  key={step.id}
-                  className={cn('sc-seg h-full rounded-full', `sc-seg-${lane.machine}`)}
-                  style={{ width: `${Math.max(1.2, (step.seconds / scale) * 100)}%` }}
-                />
+                <span key={step.id} className={cn('sc-seg h-full rounded-full', `sc-seg-${lane.machine}`)} style={{ width: `${Math.max(1.2, (step.seconds / scale) * 100)}%` }} />
               ),
             )}
-          </div>
+          </span>
+          <span className="machine text-right text-caption text-fg-secondary tabular-nums">{secondsText(lane.seconds, lane.approx)}</span>
           {dense ? null : (
-            <p className="text-[12px] leading-snug text-fg-tertiary">
+            <span className="col-span-3 truncate pl-4 text-[12px] leading-snug text-fg-tertiary">
               {lane.steps.map((step, index) => (
-                <span key={step.id}>
+                <span key={step.id} title={stepName(step)}>
                   {index ? <span aria-hidden> · </span> : null}
-                  {stepName(step)} <span className="machine text-fg-secondary tabular-nums">{secondsText(step.seconds, step.approx)}</span>
+                  {stepShort(step)}
+                  {lane.steps.length > 1 && step.seconds !== null ? (
+                    <span className="machine text-fg-secondary tabular-nums"> {secondsText(step.seconds, step.approx).replace(/ ?(s|秒)$/, '')}</span>
+                  ) : null}
                 </span>
               ))}
-            </p>
+            </span>
           )}
         </li>
       ))}

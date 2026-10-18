@@ -6,7 +6,7 @@ import { useReducedMotion } from '../../lib/hooks.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
+import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHORT, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
 import { useViewTrigger } from './hooks.ts';
 import { AiBadge, MachineDot, MachineName, PromptDisclosure, SectionHeading, useSecondsText, useStepName } from './parts.tsx';
 
@@ -244,8 +244,8 @@ function LaneLabel({ machine }: { machine: MachineKey }) {
     <span className="flex min-h-10 items-center gap-2 text-caption">
       <MachineDot machine={machine} />
       <span className="grid leading-tight">
-        <span className="font-semibold whitespace-nowrap text-fg">
-          <MachineName machine={machine} />
+        <span lang="en" className="font-semibold whitespace-nowrap text-fg">
+          {machine === 'unknown' ? <MachineName machine={machine} /> : MACHINE_SHORT[machine]}
         </span>
         {host ? (
           <span lang="en" className="text-[11px] text-fg-tertiary">

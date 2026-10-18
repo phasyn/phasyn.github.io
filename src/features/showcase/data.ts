@@ -133,9 +133,14 @@ export function range(items: readonly ShowcaseItem[], pipeline: string): { min: 
   return values.length ? { min: Math.min(...values), max: Math.max(...values) } : undefined;
 }
 
-/** Seconds with one decimal below 100 s, whole seconds above (the precision RUNS.md records). */
+/**
+ * Seconds as the runs record them: one decimal below 10 s (1.0, 0.9), one decimal up to 100 s unless the source gave a
+ * whole number (31.7, 70), whole seconds from 100 s (108, 195).
+ */
 export function formatSeconds(seconds: number): string {
-  return seconds >= 100 || Number.isInteger(seconds) ? String(Math.round(seconds)) : seconds.toFixed(1);
+  if (seconds >= 100) return String(Math.round(seconds));
+  if (seconds < 10) return seconds.toFixed(1);
+  return Number.isInteger(seconds) ? String(seconds) : seconds.toFixed(1);
 }
 
 /**
@@ -167,3 +172,6 @@ export function shortRun(id: string): string {
 }
 
 export const MACHINE_HOST_LABEL: Record<'dgx' | 'pc', string> = { dgx: 'DGX Spark', pc: 'PC' };
+
+/** Chip-only names for lanes that already show the host underneath. */
+export const MACHINE_SHORT: Record<Exclude<MachineKey, 'unknown'>, string> = { gb10: 'GB10', rtx5080: 'RTX 5080', rtx3060: 'RTX 3060', cpu: 'CPU' };
