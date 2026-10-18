@@ -1,5 +1,6 @@
 import { Check, Image as ImageIcon, Type, Video } from 'lucide-react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { DecodeText, HudFrame, RevealText } from '../../../components/fx/index.ts';
 import { useMockPlayback } from '../../../components/mock/index.ts';
 import { useCopy } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
@@ -8,6 +9,8 @@ import { HOME } from '../copy.ts';
 import { ImagePane, PromptPane, VideoPane } from './pipeline/PipelinePanes.tsx';
 
 const STEP_ICONS = [Type, ImageIcon, Video] as const;
+/** Decorative HUD tags (Latin, aria-hidden by the frame). */
+const STEP_TAGS = ['TEXT', 'IMAGE · QWEN-IMAGE 2.1', 'VIDEO · H3 FL2VA'] as const;
 
 /** Decorative step rail above the sticky window (the ordered list on the left carries the semantics). */
 function StepRail({ labels, active }: { labels: string[]; active: number }) {
@@ -54,7 +57,9 @@ function InlinePane({ index, labels }: { index: number; labels: ReturnType<typeo
   const play = useMockPlayback<HTMLDivElement>({ threshold: 0.45 });
   return (
     <div ref={play.ref} className="mt-8">
-      <Pane index={index} active={play.visible} armed={play.armed} labels={labels} />
+      <HudFrame label={`0${index + 1} · ${STEP_TAGS[index]}`}>
+        <Pane index={index} active={play.visible} armed={play.armed} labels={labels} />
+      </HudFrame>
     </div>
   );
 }
@@ -91,7 +96,10 @@ export function PipelineSection() {
         <SectionHeading id="pipeline-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
         <div className="mt-14 grid gap-10 md:mt-6 md:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)] md:gap-12 lg:gap-20">
-          <ol aria-label={t.stepsLabel} className="grid gap-16 md:gap-0">
+          <ol aria-label={t.stepsLabel} className="home-steps relative grid gap-16 md:gap-0 md:pl-10">
+            <li aria-hidden className="pointer-events-none absolute top-[12vh] bottom-[12vh] left-3 hidden w-px bg-line md:block">
+              <span className="home-rail-fill absolute inset-0 block bg-linear-to-b from-brand-cyan via-brand-iris to-brand-violet shadow-[0_0_12px_rgb(73_207_255_/_0.6)]" />
+            </li>
             {t.steps.map((step, index) => {
               const Icon = STEP_ICONS[index]!;
               return (
@@ -109,10 +117,12 @@ export function PipelineSection() {
                       <span className="grid size-8 place-items-center rounded-lg border border-action/25 bg-brand-gradient-soft">
                         <Icon className="size-4" aria-hidden />
                       </span>
-                      <span className="machine text-fg-tertiary">0{index + 1}</span>
+                      <DecodeText text={`0${index + 1}`} className="machine text-fg-tertiary" />
                       {step.label}
                     </span>
-                    <h3 className="max-w-[18ch] text-headline tracking-display text-balance-cjk text-fg">{step.title}</h3>
+                    <h3 className="max-w-[18ch] text-headline tracking-display text-balance-cjk text-fg">
+                      <RevealText text={step.title} on="view" />
+                    </h3>
                     <p className="max-w-[40ch] text-reading text-fg-secondary md:text-[1.0625rem] md:leading-[1.7]">{step.body}</p>
                     <ul className="flex flex-wrap gap-2">
                       {step.points.map((point) => (
@@ -137,20 +147,23 @@ export function PipelineSection() {
               style={{ top: 'calc(var(--site-header-h) + max(1.5rem, (100dvh - var(--site-header-h) - 38rem) / 2))' } as CSSProperties}
             >
               <StepRail labels={t.steps.map((step) => step.label)} active={activeStep} />
-              <div className="grid">
-                {t.steps.map((step, index) => {
-                  const shown = index === activeStep;
-                  return (
-                    <div
-                      key={step.label}
-                      className="home-pane [grid-area:1/1]"
-                      {...(shown ? {} : { 'data-inactive': '', inert: true, 'aria-hidden': true })}
-                    >
-                      <Pane index={index} active={shown && windowPlay.visible} armed={windowPlay.armed} labels={labels} />
-                    </div>
-                  );
-                })}
-              </div>
+              <HudFrame label={`PIPELINE · 0${activeStep + 1}/03 · ${STEP_TAGS[activeStep]}`} orbit scan>
+                <div className="relative grid">
+                  {t.steps.map((step, index) => {
+                    const shown = index === activeStep;
+                    return (
+                      <div
+                        key={step.label}
+                        className="home-pane [grid-area:1/1]"
+                        {...(shown ? {} : { 'data-inactive': '', inert: true, 'aria-hidden': true })}
+                      >
+                        <Pane index={index} active={shown && windowPlay.visible} armed={windowPlay.armed} labels={labels} />
+                      </div>
+                    );
+                  })}
+                  <span key={activeStep} aria-hidden className="home-pane-sweep" {...(windowPlay.armed ? { 'data-run': '' } : {})} />
+                </div>
+              </HudFrame>
             </div>
           </div>
         </div>

@@ -1,5 +1,7 @@
 import { AudioLines, CircleDashed, CircleDot, Gauge, Layers, Puzzle, ScanLine, SlidersHorizontal, type LucideIcon } from 'lucide-react';
+import { SpotlightCard } from '../../../components/fx/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
+import { cn } from '../../../lib/cn.ts';
 import { commonCopy } from '../../../i18n/common.ts';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import type { ArtKey } from '../art.ts';
@@ -32,10 +34,12 @@ export function RoadmapSection() {
       <div className="site-container">
         <SectionHeading id="roadmap-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
         <ul className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-5">
-          {ITEMS.map(({ key, art, icon, status }) => {
+          {ITEMS.map(({ key, art, icon, status }, index) => {
             const item = t.items[key];
+            const column = index % 3;
             return (
-              <li key={key} className="reveal flex flex-col gap-4 rounded-3xl border border-line-subtle bg-surface p-6 shadow-edge sm:p-7">
+              <li key={key} className={cn('reveal min-w-0', column === 1 && 'home-stagger-1', column === 2 && 'home-stagger-2')}>
+                <SpotlightCard tilt={5} className="flex h-full flex-col gap-4 rounded-3xl border-line-subtle p-6 sm:p-7">
                 <div className="flex items-start justify-between gap-3">
                   <ArtImage art={art} size={104} fallback={icon} className="-mt-2 -ml-2" />
                   {status === 'inDevelopment' ? (
@@ -48,6 +52,7 @@ export function RoadmapSection() {
                 </div>
                 <h3 className="text-[1.3rem] leading-tight font-semibold text-fg">{item.title}</h3>
                 <p className="text-body leading-relaxed text-fg-secondary">{item.body}</p>
+                </SpotlightCard>
               </li>
             );
           })}

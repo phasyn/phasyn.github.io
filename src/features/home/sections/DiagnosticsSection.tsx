@@ -1,4 +1,5 @@
 import { Activity, Bot, CircleCheck, CircleSlash, Gauge, ListChecks } from 'lucide-react';
+import { HudFrame } from '../../../components/fx/index.ts';
 import { AppWindow, IllustrativeBadge, MockChip, RecorderBars, Terminal, useMockPlayback, type RecorderBarRow } from '../../../components/mock/index.ts';
 import { useCopy } from '../../../i18n/locale.tsx';
 import { ArtImage } from '../components/ArtImage.tsx';
@@ -27,7 +28,8 @@ function RecorderPanel({ caption, headers }: { caption: string; headers: { label
     { label: MOCK_UI.blockLoads, value: String(DIT_METRICS.blockLoads) },
   ];
   return (
-    <div ref={play.ref}>
+    <HudFrame label="RECORDER · 102 METRICS" scan>
+      <div ref={play.ref}>
       <AppWindow title={MOCK_UI.records}>
         <div className="grid gap-5 p-4 sm:p-6">
           <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -76,16 +78,19 @@ function RecorderPanel({ caption, headers }: { caption: string; headers: { label
           </div>
         </div>
       </AppWindow>
-    </div>
+      </div>
+    </HudFrame>
   );
 }
 
 function AgentTerminal({ lines, label }: { lines: HomeTerminalLines; label: string }) {
   const play = useMockPlayback<HTMLDivElement>({ threshold: 0.45 });
   return (
-    <div ref={play.ref} role="group" aria-label={label}>
-      <Terminal lines={lines} title={MOCK_UI.terminalTitle} run={play.seen} armed={play.armed} badge={<IllustrativeBadge />} className="min-h-[21rem]" />
-    </div>
+    <HudFrame label="AGENT · PHASYNCTL" orbit>
+      <div ref={play.ref} role="group" aria-label={label}>
+        <Terminal lines={lines} title={MOCK_UI.terminalTitle} run={play.seen} armed={play.armed} badge={<IllustrativeBadge />} className="min-h-[21rem]" />
+      </div>
+    </HudFrame>
   );
 }
 

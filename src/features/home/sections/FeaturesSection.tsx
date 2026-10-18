@@ -1,5 +1,6 @@
 import { FlaskConical, Languages, Lightbulb, ScanSearch, Sparkles, UsersRound, Wand2 } from 'lucide-react';
 import type { ReactNode } from 'react';
+import { SpotlightCard } from '../../../components/fx/index.ts';
 import { AppWindow, IllustrativeBadge, MockChip, TimelineStrip, useMockPlayback } from '../../../components/mock/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
@@ -10,17 +11,19 @@ import { ArtImage } from '../components/ArtImage.tsx';
 import { SectionHeading } from '../components/SectionHeading.tsx';
 import { HOME, LANG_NAMES, MOCK_UI } from '../copy.ts';
 
-function Tile({ className, children }: { className?: string; children: ReactNode }) {
+/**
+ * Feature tile: the FX kit's SpotlightCard (pointer light, glare, gentle tilt) inside a wrapper that owns the scroll reveal,
+ * so the reveal animation and the tilt never write the same transform.
+ */
+function Tile({ className, tilt = 4, stagger = 0, children }: { className?: string; tilt?: number; stagger?: 0 | 1 | 2; children: ReactNode }) {
   return (
-    <article
-      className={cn(
-        'reveal relative isolate flex min-w-0 flex-col overflow-hidden rounded-3xl border border-line-subtle bg-surface p-6 shadow-edge sm:p-8',
-        'before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(120%_70%_at_0%_0%,rgb(62_137_255_/_0.09),transparent_62%)]',
-        className,
-      )}
-    >
-      {children}
-    </article>
+    <div className={cn('reveal min-w-0', stagger === 1 && 'home-stagger-1', stagger === 2 && 'home-stagger-2', className)}>
+      <SpotlightCard tilt={tilt} className="h-full rounded-3xl border-line-subtle">
+        <article className="relative flex h-full min-w-0 flex-col p-6 before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:bg-[radial-gradient(120%_70%_at_0%_0%,rgb(62_137_255_/_0.09),transparent_62%)] sm:p-8">
+          {children}
+        </article>
+      </SpotlightCard>
+    </div>
   );
 }
 
@@ -158,7 +161,7 @@ export function FeaturesSection() {
       <div className="site-container">
         <SectionHeading id="features-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
         <div className="mt-14 grid gap-4 md:grid-cols-2 lg:grid-cols-6 lg:gap-5">
-          <Tile className="md:col-span-2 lg:col-span-4">
+          <Tile className="md:col-span-2 lg:col-span-4" tilt={2.5}>
             <div className="flex items-start justify-between gap-6">
               <div className="grid max-w-[36rem] gap-3">
                 <TileHeading title={t.reverse.title} />
@@ -173,7 +176,7 @@ export function FeaturesSection() {
             <ReverseMock label={t.mockLabels.reverse} />
           </Tile>
 
-          <Tile className="lg:col-span-2">
+          <Tile className="lg:col-span-2" stagger={1}>
             <ArtImage art="swap" size={128} fallback={UsersRound} className="-mt-2 -ml-2" />
             <div className="mt-2 grid gap-3">
               <TileHeading title={t.swap.title}>
@@ -199,7 +202,7 @@ export function FeaturesSection() {
             <AdvisorMock />
           </Tile>
 
-          <Tile className="md:col-span-2 lg:col-span-4">
+          <Tile className="md:col-span-2 lg:col-span-4" tilt={2.5} stagger={1}>
             <div className="flex items-start justify-between gap-6">
               <div className="grid max-w-[36rem] gap-3">
                 <TileHeading title={t.timeline.title} />
@@ -250,7 +253,7 @@ export function FeaturesSection() {
             </figure>
           </Tile>
 
-          <Tile className="lg:col-span-3">
+          <Tile className="lg:col-span-3" stagger={1}>
             <div className="flex items-start justify-between gap-4">
               <div className="grid gap-3">
                 <TileHeading title={t.languages.title} />

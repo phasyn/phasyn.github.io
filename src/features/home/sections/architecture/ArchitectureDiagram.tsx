@@ -61,7 +61,7 @@ function wideLayout(c: DiagramCopy): Layout {
       { d: 'M884 446 C910 446 904 390 930 390', duration: 2, delay: 2 },
     ],
     fileRefLabel: { x: 606, y: 206, anchor: 'start' },
-    controlLabel: { x: 412, y: 140 },
+    controlLabel: { x: 404, y: 150 },
     showControllerSub: true,
   };
 }
@@ -144,7 +144,7 @@ function Diagram({ layout, copy, className, titleId }: { layout: Layout; copy: D
       {layout.control.map((d) => (
         <path key={d} d={d} className="fill-none stroke-line-control" strokeWidth="1.25" strokeDasharray="4 5" />
       ))}
-      <text x={layout.controlLabel.x} y={layout.controlLabel.y} className="fill-fg-tertiary text-[11px]">
+      <text x={layout.controlLabel.x} y={layout.controlLabel.y} textAnchor={layout.extent[0] > 400 ? 'end' : 'start'} className="fill-fg-tertiary text-[11px]">
         {copy.control}
       </text>
 

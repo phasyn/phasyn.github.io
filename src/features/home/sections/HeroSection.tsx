@@ -1,5 +1,6 @@
 import { ArrowRight, Play, UserRound } from 'lucide-react';
-import { useCallback, useRef, useState, type MouseEvent } from 'react';
+import { useCallback, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
+import { DecodeText, RevealText } from '../../../components/fx/index.ts';
 import { buttonClass, ButtonLink } from '../../../components/ui/Button.tsx';
 import { Chip } from '../../../components/ui/Chip.tsx';
 import { SourceSoon } from '../../../components/ui/SourceSoon.tsx';
@@ -39,22 +40,25 @@ export function HeroSection() {
   );
 
   return (
-    <section ref={sectionRef} aria-labelledby="hero-title" className="home-hero relative isolate flex min-h-dvh flex-col overflow-clip">
+    <section ref={sectionRef} aria-labelledby="hero-title" className="home-hero relative">
+      <div className="home-hero-pin relative isolate flex min-h-dvh flex-col overflow-clip">
       <HeroStage sectionRef={sectionRef} userPaused={paused} onLiveChange={setLive} className="-z-20" />
       <div aria-hidden className="home-hero-scrim pointer-events-none absolute inset-0 -z-10" />
 
       <div className="site-container relative flex flex-1 flex-col justify-center pt-[calc(var(--site-header-h)+2.5rem)] pb-20 [@media(max-aspect-ratio:1/1)]:justify-end [@media(max-aspect-ratio:1/1)]:pb-14">
         <div className="home-hero-copy grid max-w-[38rem] justify-items-start gap-6 [@media(max-aspect-ratio:1/1)]:max-w-[34rem]">
-          <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-fg-secondary">
-            <span className="h-px w-10 bg-brand-gradient" />
-            {t.eyebrow}
+          <p aria-hidden lang="en" className="home-hero-in eyebrow flex items-center gap-3 text-fg-secondary" style={{ '--home-in': '1500ms' } as CSSProperties}>
+            <span className="home-eyebrow-line w-10" />
+            <DecodeText text={t.eyebrow} duration={1100} />
           </p>
-          <h1 id="hero-title" className="text-hero tracking-display text-balance-cjk text-fg">
-            {t.title}
+          <h1 id="hero-title" className="home-hero-title text-hero tracking-display text-balance-cjk text-fg">
+            <RevealText text={t.title} on="load" delay={1700} />
           </h1>
-          <p className="max-w-[34ch] text-lead text-fg-secondary">{t.lead}</p>
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            <a href="#film" onClick={onWatch} className={buttonClass('primary', 'lg')}>
+          <p className="home-hero-in max-w-[34ch] text-lead text-fg-secondary" style={{ '--home-in': '2250ms' } as CSSProperties}>
+            {t.lead}
+          </p>
+          <div className="home-hero-in mt-2 flex flex-wrap items-center gap-3" style={{ '--home-in': '2450ms' } as CSSProperties}>
+            <a href="#film" onClick={onWatch} className={buttonClass('primary', 'lg', 'home-cta')}>
               <Play className="fill-current" aria-hidden />
               {t.watch}
             </a>
@@ -63,7 +67,7 @@ export function HeroSection() {
               <ArrowRight aria-hidden />
             </ButtonLink>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="home-hero-in flex flex-wrap items-center gap-2" style={{ '--home-in': '2650ms' } as CSSProperties}>
             <Chip icon={<UserRound aria-hidden />}>{common.personalProject}</Chip>
             <SourceSoon />
           </div>
@@ -79,6 +83,7 @@ export function HeroSection() {
           className="absolute right-(--site-gutter) bottom-6 z-10"
         />
       ) : null}
+      </div>
     </section>
   );
 }

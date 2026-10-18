@@ -76,8 +76,8 @@ export default function HeroCanvas({ running, progressRef, pointerRef, onReady, 
       />
       <FrameStackScene tier={tier} progressRef={progressRef} pointerRef={pointerRef} onReady={onReady} />
       <EffectComposer multisampling={settings.multisampling} enableNormalPass={false}>
-        {settings.bloom ? <Bloom mipmapBlur luminanceThreshold={0.92} luminanceSmoothing={0.22} intensity={0.85} radius={0.72} levels={settings.bloomLevels} /> : <></>}
-        <Vignette offset={0.22} darkness={0.5} />
+        {settings.bloom ? <Bloom mipmapBlur luminanceThreshold={0.86} luminanceSmoothing={0.24} intensity={1.15} radius={0.78} levels={settings.bloomLevels} /> : <></>}
+        <Vignette offset={0.2} darkness={0.55} />
         <ToneMapping mode={ToneMappingMode.NEUTRAL} />
       </EffectComposer>
     </Canvas>

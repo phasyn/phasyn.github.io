@@ -86,8 +86,11 @@ export function HeroStage({ sectionRef, userPaused, onLiveChange, className }: H
       top = rect.top + window.scrollY;
       height = Math.max(1, rect.height);
     };
+    // Pinned hero (taller than the viewport, sticky stage): progress spans the pinned range; otherwise 80 % of the hero.
     const onScroll = () => {
-      progressRef.current = Math.min(1, Math.max(0, (window.scrollY - top) / (height * 0.8)));
+      const pinned = height - window.innerHeight > 120;
+      const span = pinned ? height - window.innerHeight : height * 0.8;
+      progressRef.current = Math.min(1, Math.max(0, (window.scrollY - top) / span));
     };
     const onPointer = (event: PointerEvent) => {
       pointerRef.current.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -149,7 +152,10 @@ export function HeroStage({ sectionRef, userPaused, onLiveChange, className }: H
           alt=""
           decoding="async"
           fetchPriority="high"
-          className="absolute inset-0 size-full object-cover object-[72%_50%] [@media(max-aspect-ratio:1/1)]:object-[50%_0%]"
+          className={cn(
+            'absolute inset-0 size-full object-cover object-[72%_50%] transition-opacity duration-700 [@media(max-aspect-ratio:1/1)]:object-[50%_0%]',
+            live && !showCanvas ? 'opacity-35' : 'opacity-100',
+          )}
         />
       </picture>
       {live ? (

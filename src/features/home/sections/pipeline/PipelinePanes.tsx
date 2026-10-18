@@ -59,8 +59,8 @@ function RealBadge({ children, className }: { children: ReactNode; className?: s
 /** Step 1 — Image Studio "Basics": generation mode and the real prompt typing out. */
 export function PromptPane({ active, armed, label, className }: PaneProps) {
   return (
-    <AppWindow title={MOCK_UI.imageStudio} label={label} className={className}>
-      <div className="grid gap-4 p-4 sm:p-5">
+    <AppWindow title={MOCK_UI.imageStudio} label={label} className={cn('h-full', className)}>
+      <div className="flex h-full flex-col gap-4 p-4 sm:p-5">
         <MockTabs tabs={[MOCK_UI.basics, MOCK_UI.sampling, MOCK_UI.image]} current={0} />
         <div className="grid gap-2">
           <span className="text-caption text-fg-tertiary">{MOCK_UI.generationMode}</span>
@@ -89,7 +89,7 @@ export function PromptPane({ active, armed, label, className }: PaneProps) {
             </>
           }
         />
-        <div className="flex items-center justify-between gap-3">
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-line-subtle pt-4">
           <span className="text-caption text-fg-tertiary">{MOCK_UI.outputSize}</span>
           <MockPrimary>
             <Images className="size-3.5" aria-hidden />
@@ -117,8 +117,8 @@ export function ImagePane({ active, armed, label, className, realBadge }: PanePr
   }, [active, armed]);
 
   return (
-    <AppWindow title={MOCK_UI.imageStudio} label={label} className={className}>
-      <div className="grid gap-4 p-4 sm:p-5">
+    <AppWindow title={MOCK_UI.imageStudio} label={label} className={cn('h-full', className)}>
+      <div className="flex h-full flex-col justify-between gap-4 p-4 sm:p-5">
         <div className="flex items-center justify-between gap-3 text-data">
           <span className="truncate font-semibold text-fg">{MOCK_UI.takesOf}</span>
           <MockCount>1</MockCount>

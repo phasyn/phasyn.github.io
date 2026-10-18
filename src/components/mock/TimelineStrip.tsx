@@ -110,83 +110,86 @@ export function TimelineStrip({
   const pct = (value: number) => `${(value / duration) * 100}%`;
 
   return (
-    <div className={cn('grid grid-cols-[3.25rem_minmax(0,1fr)] overflow-hidden rounded-lg border border-line-subtle bg-surface text-fg', className)}>
-      {/* Ruler */}
-      <div className="h-6 border-r border-b border-line-subtle bg-sunken/80" />
-      <div className="relative h-6 border-b border-line-subtle bg-sunken/80">
-        {ticks.map((t) => (
-          <span key={t} className="absolute top-0 flex h-full items-end pb-1" style={{ left: pct(t) }}>
-            <span className="h-2 w-px bg-line-strong" />
-            {t < duration ? <span className="machine ml-1 text-[10px] leading-none text-fg-tertiary">{timecode(t)}</span> : null}
-          </span>
-        ))}
+    <div className={cn('flex overflow-hidden rounded-lg border border-line-subtle bg-surface text-fg', className)}>
+      {/* Track headers */}
+      <div className="flex w-[3.25rem] shrink-0 flex-col border-r border-line-subtle">
+        <div className="h-6 border-b border-line-subtle bg-sunken/80" />
+        <div className="flex h-14 items-center justify-center border-b border-line-subtle">
+          <span className="machine rounded-md bg-brand-blue/15 px-1.5 py-0.5 text-[10px] text-brand-blue ring-1 ring-brand-blue/35">{videoLabel}</span>
+        </div>
+        <div className="flex h-9 items-center justify-center">
+          <span className="machine rounded-md bg-brand-cyan/12 px-1.5 py-0.5 text-[10px] text-brand-cyan ring-1 ring-brand-cyan/30">{audioLabel}</span>
+        </div>
       </div>
 
-      {/* V1 */}
-      <div className="flex items-center justify-center border-r border-b border-line-subtle">
-        <span className="machine rounded-md bg-brand-blue/15 px-1.5 py-0.5 text-[10px] text-brand-blue ring-1 ring-brand-blue/35">{videoLabel}</span>
-      </div>
-      <div className="relative h-14 border-b border-line-subtle">
-        {video.map((clip) => (
+      {/* Ruler and tracks; the playhead overlay spans all three rows of this column. */}
+      <div className="relative min-w-0 flex-1">
+        <div className="relative h-6 border-b border-line-subtle bg-sunken/80">
+          {ticks.map((t) => (
+            <span key={t} className="absolute top-0 flex h-full items-end pb-1" style={{ left: pct(t) }}>
+              <span className="h-2 w-px bg-line-strong" />
+              {t < duration - 1e-6 ? <span className="machine ml-1 text-[10px] leading-none text-fg-tertiary">{timecode(t)}</span> : null}
+            </span>
+          ))}
+        </div>
+
+        <div className="relative h-14 border-b border-line-subtle">
+          {video.map((clip) => (
+            <div
+              key={clip.id}
+              className={cn(
+                'absolute inset-y-1.5 overflow-hidden rounded-md',
+                clip.pending
+                  ? 'border border-dashed border-line-strong bg-[repeating-linear-gradient(135deg,rgb(255_255_255_/_0.035)_0_6px,transparent_6px_12px)]'
+                  : 'border border-clip-video-edge/60 bg-clip-video',
+                clip.selected && 'border-transparent shadow-glow-sm',
+              )}
+              style={{ left: `calc(${pct(clip.start)} + 2px)`, width: `calc(${pct(clip.end - clip.start)} - 4px)` }}
+            >
+              {!clip.pending && clip.thumb ? (
+                <span
+                  aria-hidden
+                  className="absolute inset-0 opacity-70"
+                  style={{ backgroundImage: `url(${clip.thumb})`, backgroundSize: 'auto 100%', backgroundRepeat: 'repeat-x', backgroundPosition: 'left center' }}
+                />
+              ) : null}
+              {!clip.pending ? <span aria-hidden className="absolute inset-0 bg-linear-to-r from-brand-blue/30 to-brand-violet/30" /> : null}
+              {!clip.pending ? <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-linear-to-r from-brand-blue to-brand-violet" /> : null}
+              {clip.title ? (
+                <span className="absolute top-1 left-1 inline-flex max-w-[calc(100%-0.5rem)] items-center gap-1 truncate rounded-sm bg-sunken/75 px-1 text-[10px] leading-4 text-fg">
+                  {clip.index !== undefined ? <span className="machine text-brand-cyan">{clip.index}</span> : null}
+                  <span className="truncate">{clip.title}</span>
+                </span>
+              ) : null}
+              {clip.selected ? <span aria-hidden className="brand-edge" /> : null}
+            </div>
+          ))}
+        </div>
+
+        <div className="relative h-9">
+          {audio.map((clip) => (
+            <AudioClip key={clip.id} clip={clip} left={pct(clip.start)} width={pct(clip.end - clip.start)} />
+          ))}
+        </div>
+
+        <div aria-hidden className="pointer-events-none absolute inset-0">
           <div
-            key={clip.id}
-            className={cn(
-              'absolute inset-y-1.5 overflow-hidden rounded-md',
-              clip.pending
-                ? 'border border-dashed border-line-strong bg-[repeating-linear-gradient(135deg,rgb(255_255_255_/_0.035)_0_6px,transparent_6px_12px)]'
-                : 'border border-clip-video-edge/60 bg-clip-video',
-              clip.selected && 'border-transparent shadow-glow-sm',
-            )}
-            style={{ left: `calc(${pct(clip.start)} + 2px)`, width: `calc(${pct(clip.end - clip.start)} - 4px)` }}
+            key={running ? 'run' : 'rest'}
+            ref={playheadRef}
+            className={cn('absolute inset-0', running && 'mock-playhead mock-loop')}
+            {...(paused && running ? { 'data-mock-paused': '' } : {})}
+            style={
+              {
+                '--mock-duration': `${duration}s`,
+                animationIterationCount: 1,
+                animationFillMode: 'forwards',
+                transform: running ? undefined : `translateX(${staticAt * 100}%)`,
+              } as CSSProperties
+            }
           >
-            {!clip.pending && clip.thumb ? (
-              <span
-                aria-hidden
-                className="absolute inset-0 opacity-70"
-                style={{ backgroundImage: `url(${clip.thumb})`, backgroundSize: 'auto 100%', backgroundRepeat: 'repeat-x', backgroundPosition: 'left center' }}
-              />
-            ) : null}
-            {!clip.pending ? <span aria-hidden className="absolute inset-0 bg-linear-to-r from-brand-blue/30 to-brand-violet/30" /> : null}
-            {!clip.pending ? <span aria-hidden className="absolute inset-x-0 bottom-0 h-[3px] bg-linear-to-r from-brand-blue to-brand-violet" /> : null}
-            {clip.title ? (
-              <span className="absolute top-1 left-1 inline-flex max-w-[calc(100%-0.5rem)] items-center gap-1 truncate rounded-sm bg-sunken/75 px-1 text-[10px] leading-4 text-fg">
-                {clip.index !== undefined ? <span className="machine text-brand-cyan">{clip.index}</span> : null}
-                <span className="truncate">{clip.title}</span>
-              </span>
-            ) : null}
-            {clip.selected ? <span aria-hidden className="brand-edge" /> : null}
+            <span className="absolute inset-y-0 left-0 w-px bg-playhead shadow-glow-sm" />
+            <span className="absolute top-0 left-0 h-[15px] w-[11px] -translate-x-1/2 bg-linear-to-b from-brand-cyan to-brand-blue [clip-path:polygon(0_0,100%_0,100%_60%,50%_100%,0_60%)]" />
           </div>
-        ))}
-      </div>
-
-      {/* A1 */}
-      <div className="flex items-center justify-center border-r border-line-subtle">
-        <span className="machine rounded-md bg-brand-cyan/12 px-1.5 py-0.5 text-[10px] text-brand-cyan ring-1 ring-brand-cyan/30">{audioLabel}</span>
-      </div>
-      <div className="relative h-9">
-        {audio.map((clip) => (
-          <AudioClip key={clip.id} clip={clip} left={pct(clip.start)} width={pct(clip.end - clip.start)} />
-        ))}
-      </div>
-
-      {/* Playhead spans the ruler and both tracks of the right column. */}
-      <div aria-hidden className="pointer-events-none relative col-start-2 row-span-3 row-start-1">
-        <div
-          key={running ? 'run' : 'rest'}
-          ref={playheadRef}
-          className={cn('absolute inset-0', running && 'mock-playhead mock-loop')}
-          {...(paused && running ? { 'data-mock-paused': '' } : {})}
-          style={
-            {
-              '--mock-duration': `${duration}s`,
-              animationIterationCount: 1,
-              animationFillMode: 'forwards',
-              transform: running ? undefined : `translateX(${staticAt * 100}%)`,
-            } as CSSProperties
-          }
-        >
-          <span className="absolute inset-y-0 left-0 w-px bg-playhead shadow-glow-sm" />
-          <span className="absolute top-0 left-0 h-[15px] w-[11px] -translate-x-1/2 bg-linear-to-b from-brand-cyan to-brand-blue [clip-path:polygon(0_0,100%_0,100%_60%,50%_100%,0_60%)]" />
         </div>
       </div>
     </div>

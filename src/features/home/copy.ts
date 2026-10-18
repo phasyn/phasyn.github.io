@@ -105,6 +105,10 @@ export interface HomeCopy {
     lead: string;
     about: string;
   };
+  ticker: {
+    label: string;
+    items: { te: string; dit: string; video: string; audio: string; mux: string; render: string; fastest: string; still: string; fileRef: string; metrics: string; engines: string };
+  };
 }
 
 /**
@@ -377,6 +381,22 @@ export const HOME: Copy<HomeCopy> = {
       },
       note: '另外也參考了 ArtCraft 的相關功能，目前還沒有整合。',
     },
+    ticker: {
+      label: '實測數據',
+      items: {
+        te: '文字編碼 · te-gb10',
+        dit: 'DiT · dit-5080',
+        video: '影片 VAE · vae-5080',
+        audio: '音訊 VAE · audio-3060',
+        mux: '混流 · CPU',
+        render: '5.17 秒有聲片段 · 端到端',
+        fastest: '最快 t2va DiT · INT8 PAI 8',
+        still: 'Qwen-Image 2.1 · 1152×672',
+        fileRef: 'FileRef DGX → PC',
+        metrics: 'Recorder 指標',
+        engines: '跑完的 DiT 引擎',
+      },
+    },
     closing: {
       title: '讓你的想法動起來。',
       lead: '原始碼與架構說明整理好後就會公開。追蹤 GitHub 與 Hugging Face 上的 phasyn，第一時間收到消息。',
@@ -582,6 +602,22 @@ export const HOME: Copy<HomeCopy> = {
       },
       note: 'ArtCraft の機能も参考にしていますが、まだ統合していません。',
     },
+    ticker: {
+      label: '実測データ',
+      items: {
+        te: 'テキストエンコード · te-gb10',
+        dit: 'DiT · dit-5080',
+        video: '映像 VAE · vae-5080',
+        audio: '音声 VAE · audio-3060',
+        mux: 'Mux · CPU',
+        render: '音声付き 5.17 秒 · エンドツーエンド',
+        fastest: '最速 t2va DiT · INT8 PAI 8',
+        still: 'Qwen-Image 2.1 · 1152×672',
+        fileRef: 'FileRef DGX → PC',
+        metrics: 'Recorder の指標',
+        engines: '完走した DiT エンジン',
+      },
+    },
     closing: {
       title: 'あなたのアイデアを、動く映像に。',
       lead: 'ソースコードとアーキテクチャ解説は、準備ができしだい公開します。最新情報は GitHub と Hugging Face の phasyn でお知らせします。',
@@ -786,6 +822,22 @@ export const HOME: Copy<HomeCopy> = {
         optimise: { title: 'VAE and DiT Optimization', body: 'Video VAE encode and decode is still the heaviest step. A few experiments to go.' },
       },
       note: 'Ideas from ArtCraft are on the list too — not integrated yet.',
+    },
+    ticker: {
+      label: 'Measured values',
+      items: {
+        te: 'Text encode · te-gb10',
+        dit: 'DiT · dit-5080',
+        video: 'Video VAE · vae-5080',
+        audio: 'Audio VAE · audio-3060',
+        mux: 'Mux · CPU',
+        render: '5.17 s clip with sound · end to end',
+        fastest: 'Fastest t2va DiT · INT8 PAI 8',
+        still: 'Qwen-Image 2.1 · 1152×672',
+        fileRef: 'FileRef DGX → PC',
+        metrics: 'Recorder metrics',
+        engines: 'DiT engines completed',
+      },
     },
     closing: {
       title: 'Your ideas, in motion.',

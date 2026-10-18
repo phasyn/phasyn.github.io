@@ -1,5 +1,6 @@
 import { ArrowRight, Boxes, CloudCog, Network } from 'lucide-react';
 import { useState } from 'react';
+import { HudFrame } from '../../../components/fx/index.ts';
 import { useMockPlayback } from '../../../components/mock/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
 import { commonCopy } from '../../../i18n/common.ts';
@@ -23,14 +24,15 @@ export function ArchitectureSection() {
       <div className="site-container">
         <SectionHeading id="architecture-title" eyebrow={t.eyebrow} title={t.title} lead={t.lead} />
 
-        <figure ref={play.ref} className="reveal relative mt-14 overflow-hidden rounded-3xl border border-line-subtle bg-surface p-4 shadow-edge sm:p-8">
+        <HudFrame label="TOPOLOGY · 2 MACHINES · 3 GPUS" orbit className="reveal mt-14" innerClassName="rounded-[1.4rem]">
+        <figure ref={play.ref} className="relative overflow-hidden rounded-[1.4rem] border border-line-subtle bg-surface p-4 shadow-edge sm:p-8">
           <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_60%_at_70%_40%,rgb(62_137_255_/_0.08),transparent_70%)]" />
           <div className="relative">
             <ArchitectureDiagram copy={t.diagram} paused={userPaused || !play.visible} />
           </div>
-          <figcaption className="relative mt-6 flex flex-wrap items-start gap-x-6 gap-y-3 border-t border-line-subtle pt-5">
-            <span className="max-w-[80ch] flex-1 text-caption leading-relaxed text-fg-tertiary">{t.diagram.caption}</span>
-            <span aria-hidden className="flex shrink-0 items-center gap-4 text-caption text-fg-tertiary">
+          <figcaption className="relative mt-6 flex flex-col-reverse gap-3 border-t border-line-subtle pt-5 md:flex-row md:items-start md:gap-6">
+            <span className="max-w-[80ch] min-w-0 flex-1 text-caption leading-relaxed text-fg-tertiary">{t.diagram.caption}</span>
+            <span aria-hidden className="flex shrink-0 flex-wrap items-center gap-4 text-caption text-fg-tertiary">
               <span className="inline-flex items-center gap-2">
                 <span className="h-0.5 w-6 rounded-full bg-brand-gradient" />
                 {t.diagram.data}
@@ -51,6 +53,7 @@ export function ArchitectureSection() {
             />
           ) : null}
         </figure>
+        </HudFrame>
 
         <p className="reveal mt-5 text-caption text-fg-tertiary">{t.setup}</p>
 
