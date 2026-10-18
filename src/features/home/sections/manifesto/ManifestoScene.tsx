@@ -178,7 +178,10 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
               })}
             </ol>
 
-            <div ref={hudRef} aria-hidden className="home-mf-hud mx-auto w-full min-w-0 max-w-[36rem]">
+            <div ref={hudRef} aria-hidden className="home-mf-hud relative mx-auto w-full min-w-0 max-w-[36rem]">
+              <span className="absolute -top-3 right-6 z-20 rounded-full border border-line-strong bg-stage px-2.5 py-0.5 text-[11px] font-medium text-fg-secondary">
+                {t.illustration}
+              </span>
               <HudFrame label={current.tag} scan innerClassName="bg-sunken/80">
                 <div className="grid p-5 sm:p-7">
                   {BEATS.map((meta, index) => (

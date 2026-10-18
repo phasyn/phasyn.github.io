@@ -58,7 +58,10 @@ export function ManifestoGrid({ t }: { t: ManifestoCopy }) {
                       <span className={TONE_TEXT[meta.tone]}>{`0${index + 1}`}</span>
                       <span className="text-fg-tertiary"> — {meta.tag}</span>
                     </span>
-                    <meta.Icon className={cn('size-4 shrink-0', TONE_TEXT[meta.tone])} />
+                    <span className="flex shrink-0 items-center gap-2">
+                      <span className="rounded-full border border-line-strong px-2 py-0.5 text-[11px] font-medium text-fg-tertiary">{t.illustration}</span>
+                      <meta.Icon className={cn('size-4', TONE_TEXT[meta.tone])} />
+                    </span>
                   </div>
                   <div aria-hidden className="rounded-2xl border border-line-subtle bg-sunken/70 p-4 sm:p-5">
                     <meta.Visual still />
