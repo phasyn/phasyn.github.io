@@ -443,6 +443,62 @@
 }
 
 /*
+ * Film player seek bar (FilmPlayer): a 4 px track with the brand progress inside a 20 px hit area, 6 px in a 44 px hit area
+ * with a larger thumb on touch screens (FE-16). `--film-progress` (0–100 %) is set inline; progress is linear, no springs.
+ */
+@utility film-range {
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  --film-track: linear-gradient(90deg, var(--color-brand-cyan), var(--color-brand-blue) var(--film-progress, 0%), rgb(255 255 255 / 0.16) var(--film-progress, 0%));
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  @media (pointer: coarse) {
+    height: 2.75rem;
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+    }
+    &::-moz-range-track {
+      height: 6px;
+    }
+    &::-webkit-slider-thumb {
+      width: 20px;
+      height: 20px;
+      margin-top: -7px;
+    }
+    &::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/*
  * First-visit splash (see components/fx/IntroSplash.tsx): 1 s in all, holding 700 ms (= --fx-intro-delay) before the
  * fade. Hidden before paint when seen in the last 7 days; `fx-intro-leaving` is the visitor's skip during the hold.
  */
