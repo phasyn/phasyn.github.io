@@ -53,10 +53,19 @@
   letter-spacing: var(--display-tracking);
 }
 
-/* Balanced headline wrapping; Japanese breaks at phrase boundaries where supported. */
+/*
+ * Balanced headline wrapping. CJK headlines only break at punctuation or spaces (keep-all), so words such as 產品 or
+ * 哪台 never split; `anywhere` is the safety valve when a phrase is wider than the line. Japanese additionally uses
+ * phrase-aware breaking where supported.
+ */
 @utility text-balance-cjk {
   text-wrap: balance;
   line-break: strict;
+  :root:lang(zh-Hant) &,
+  :root:lang(ja) & {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
   :root:lang(ja) & {
     word-break: auto-phrase;
   }
@@ -385,5 +394,11 @@
   main {
     font-size: var(--text-reading);
     line-height: var(--text-reading--line-height);
+  }
+
+  /* No single-character last lines (「行。」) in running text. */
+  main p,
+  main li {
+    text-wrap: pretty;
   }
 }
