@@ -104,16 +104,22 @@ export function ShotList({ item, className }: { item: ShowcaseItem; className?: 
   );
 }
 
-/** One edited piece: muted preview while on screen, play for sound; kind, length, shots, pipelines, music credit. */
-export function FilmCard({ item, className }: { item: ShowcaseItem; className?: string }) {
+/**
+ * One edited piece: muted preview while on screen, play for sound; kind, length, shots, pipelines, music credit. `frame`
+ * aligns a row: a piece whose own aspect is within 5 % of it is framed at the row's aspect (FilmPlayer covers, so only a
+ * sliver of a cut's blurred backdrop is trimmed); anything further off keeps its own.
+ */
+export function FilmCard({ item, frame, className }: { item: ShowcaseItem; frame?: number; className?: string }) {
   const locale = useLocale();
   const copy = SHOWCASE[locale];
   const title = item.title[locale];
+  const own = item.width / item.height;
+  const aspect = frame && Math.abs(own - frame) / frame <= 0.05 ? String(frame) : `${item.width} / ${item.height}`;
   return (
     <article id={`film-${item.slug}`} aria-label={title} className={cn('grid content-start gap-3 scroll-mt-[calc(var(--site-header-h)+1rem)]', className)}>
       <div className="relative">
         {item.media.clip ? (
-          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={aspect} {...(item.media.captions ? { captions: item.media.captions } : {})} />
         ) : null}
         <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
           <AiBadge />
@@ -152,6 +158,13 @@ export function FilmsRow({ items }: { items: readonly ShowcaseItem[] }) {
   if (!items.length) return null;
   const visible = hydrated ? items.slice(0, limit) : items;
   const hidden = items.length - visible.length;
+  // The row's frame: the most common aspect among its pieces (films are 768×448).
+  const counts = new Map<number, number>();
+  for (const item of items) {
+    const ratio = Math.round((item.width / item.height) * 1000) / 1000;
+    counts.set(ratio, (counts.get(ratio) ?? 0) + 1);
+  }
+  const frame = [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0];
   return (
     <div className="grid gap-6">
       <div className="grid gap-1">
@@ -161,7 +174,7 @@ export function FilmsRow({ items }: { items: readonly ShowcaseItem[] }) {
       <ul className="grid gap-x-6 gap-y-10 md:grid-cols-2">
         {visible.map((item) => (
           <li key={item.slug}>
-            <FilmCard item={item} />
+            <FilmCard item={item} {...(frame ? { frame } : {})} />
           </li>
         ))}
       </ul>
@@ -192,7 +205,7 @@ export function SocialRow({ items }: { items: readonly ShowcaseItem[] }) {
         <h3 className="text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.social}</h3>
         <p className="text-body text-fg-secondary">{copy.gallery.socialLead}</p>
       </div>
-      <ul className="-mx-(--site-gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--site-gutter) pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4 xl:grid-cols-5">
+      <ul className="-mx-(--site-gutter) flex snap-x snap-mandatory gap-4 overflow-x-auto px-(--site-gutter) pb-2 sm:mx-0 sm:grid sm:snap-none sm:grid-cols-3 sm:overflow-visible sm:px-0 lg:grid-cols-4">
         {items.map((item) => (
           <li key={item.slug} className="w-[min(15rem,70vw)] shrink-0 snap-start sm:w-auto">
             <article aria-label={item.title[locale]} className="grid gap-2">
@@ -236,8 +249,9 @@ export function MakingOf({ item, className }: { item: ShowcaseItem; className?: 
         </div>
       </div>
       <div className="grid content-start gap-3">
-        <h3 id={`making-of-${item.slug}`} className="text-headline tracking-display text-balance-cjk text-fg">
-          {copy.gallery.makingOf}
+        <h3 id={`making-of-${item.slug}`} className="grid gap-1">
+          <span className="text-caption font-semibold text-brand-cyan">{copy.gallery.makingOf[0]}</span>
+          <span className="text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.makingOf[1]}</span>
         </h3>
         <p className="text-body text-fg-secondary">{copy.gallery.makingOfLead}</p>
         <p className="machine text-caption text-fg-secondary tabular-nums">

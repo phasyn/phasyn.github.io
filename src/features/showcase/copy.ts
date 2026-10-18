@@ -84,7 +84,7 @@ export interface ShowcaseCopy {
     shotList: string;
     shotHeaders: { shot: string; run: string; seed: string; length: string };
     scaled: (scale: string) => string;
-    makingOf: string;
+    makingOf: readonly [label: string, title: string];
     makingOfLead: string;
     moreFilms: (n: number) => string;
     social: string;
@@ -206,7 +206,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       shotList: '看鏡頭清單',
       shotHeaders: { shot: '鏡頭', run: '執行', seed: '種子', length: '長度' },
       scaled: (scale) => `原生影片放大 ${scale} 倍、疊在模糊背景上（只重新取樣，無超解析）`,
-      makingOf: '幕後：文字 → 圖片 → 影片',
+      makingOf: ['幕後', '文字\u00A0→ 圖片\u00A0→ 影片'],
       makingOfLead: '三種風格，同一個流程：每一段都是原生靜圖慢慢推近，再溶接到由它長出來的 FL2VA 影片，聲音隨之淡入。',
       moreFilms: (n) => `顯示更多短片（還有 ${n} 支）`,
       social: '直式短片',
@@ -387,7 +387,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       shotList: 'ショット一覧を見る',
       shotHeaders: { shot: 'ショット', run: '実行', seed: 'シード', length: '長さ' },
       scaled: (scale) => `ネイティブの映像を ${scale} 倍に拡大し、ぼかした背景に配置（リサンプリングのみ、超解像なし）`,
-      makingOf: 'メイキング：テキスト → 画像 → 映像',
+      makingOf: ['メイキング', 'テキスト\u00A0→ 画像\u00A0→ 映像'],
       makingOfLead: '3 つのスタイルを同じ流れで。どれもネイティブの静止画をゆっくり寄りながら、そこから生まれた FL2VA の映像にディゾルブし、音がフェードインします。',
       moreFilms: (n) => `さらに表示（残り ${n} 本）`,
       social: '縦型ショート',
@@ -568,7 +568,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       shotList: 'Show Shot List',
       shotHeaders: { shot: 'Shot', run: 'Run', seed: 'Seed', length: 'Length' },
       scaled: (scale) => `Native clips shown at ${scale}× on a blurred backdrop (resampled, no super-resolution)`,
-      makingOf: 'Making Of: Text → Image → Video',
+      makingOf: ['Making Of', 'Text\u00A0→ Image\u00A0→ Video'],
       makingOfLead: 'Three styles, one workflow: each part slowly pushes in on the native still, dissolves into the FL2VA clip that grew from it, and the sound fades in.',
       moreFilms: (n) => `Show More Films (${n} Left)`,
       social: 'Social Cuts',

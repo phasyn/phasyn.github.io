@@ -58,7 +58,9 @@ export function Breakdown() {
               <ClipPlayer item={clip} sizes="(min-width: 1024px) 44vw, 100vw" variant="full" />
               <AiBadge className="absolute top-3 left-3" />
               <span className="pointer-events-none absolute top-3 right-3 inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption text-fg-secondary backdrop-blur-sm">
-                {copy.breakdown.stages.frame}: {copy.breakdown.frameMeta}
+                {copy.breakdown.stages.frame}
+                {locale === 'en' ? ': ' : '：'}
+                {copy.breakdown.frameMeta}
               </span>
             </div>
             <p className="machine text-caption text-fg-secondary">{copy.breakdown.clipMeta(clip.seed, clip.frames ?? 0, formatSeconds(clip.endToEndSeconds ?? 0))}</p>
