@@ -116,12 +116,12 @@ function PendingFrame({ capture, pending, loading }: { capture: UiKey; pending: 
     <div className={cn('absolute inset-0 grid place-items-center p-4 text-center transition-opacity duration-(--duration-base)', loading && 'opacity-0')}>
       <div aria-hidden className="tour-pending-grid absolute inset-0" />
       <div className="relative grid justify-items-center gap-2">
-        <span className="grid size-10 place-items-center rounded-xl border border-line-strong bg-sunken text-fg-tertiary">
+        <span className="grid size-10 place-items-center rounded-xl border border-line-strong bg-sunken text-fg-secondary">
           <ScanLine className="size-5" aria-hidden />
         </span>
-        <p className="text-data font-semibold text-fg-secondary">{pending.title}</p>
-        <p className="max-w-[34ch] text-caption text-fg-tertiary">{pending.body}</p>
-        <code translate="no" className="machine text-[11px] text-fg-tertiary">
+        <p className="text-body font-semibold text-fg">{pending.title}</p>
+        <p className="max-w-[34ch] text-data text-fg-secondary">{pending.body}</p>
+        <code translate="no" className="machine rounded-md bg-sunken px-1.5 py-0.5 text-[11px] text-fg-secondary">
           {capture}
         </code>
       </div>

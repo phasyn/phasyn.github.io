@@ -7,10 +7,10 @@ export const TOUR_META: Copy<{ title: string; description: string }> = {
   },
   ja: {
     title: '操作ガイド — Phasyn Studio',
-    description: '操作ガイド：テキストから画像、画像から映像、参照素材と Prompt Advisor、タイムライン編集、画像のリバースプロンプト、コンポーネント調整、性能記録（実際の操作の録画を準備中）。',
+    description: '実際の操作を収録する操作ガイドです（録画は準備中）。テキストから画像、画像から動画、参照素材と Prompt Advisor、タイムライン編集、プロンプト逆引き、コンポーネントの調整、性能の記録まで。',
   },
   en: {
     title: 'Tour — Phasyn Studio',
-    description: 'Tour: text to image, image to video, references and Prompt Advisor, timeline editing, image to prompt, component tuning and performance records (recorded sessions in production).',
+    description: 'Five chapters of the real app: text to image to video, Prompt Advisor, timeline editing, image to prompt and measured records of every run (recordings still being made).',
   },
 };

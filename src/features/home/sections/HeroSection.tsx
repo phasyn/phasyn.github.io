@@ -49,11 +49,12 @@ export function HeroSection() {
         <div className="home-hero-copy grid max-w-[38rem] justify-items-start gap-6 [@media(max-aspect-ratio:1/1)]:max-w-[34rem]">
           <p aria-hidden lang="en" className="home-hero-in eyebrow flex items-center gap-3 text-fg-secondary" style={{ '--home-in': '0ms' } as CSSProperties}>
             <span className="home-eyebrow-line w-10" />
-            <DecodeText text={t.eyebrow} duration={1100} afterIntro />
+            <DecodeText text={t.eyebrow} duration={500} afterIntro />
           </p>
           <RevealText as="h1" id="hero-title" text={t.title} on="load" delay={150} className="text-hero tracking-display text-balance-cjk text-fg" />
-          <p className="home-hero-in max-w-[34ch] text-lead text-fg-secondary" style={{ '--home-in': '700ms' } as CSSProperties}>
-            {t.lead}
+          <p className="home-hero-in max-w-[30em] text-lead text-fg-secondary" style={{ '--home-in': '700ms' } as CSSProperties}>
+            <span className="block">{t.lead[0]}</span>
+            <span className="block text-balance-cjk">{t.lead[1]}</span>
           </p>
           <div className="home-hero-in mt-2 flex flex-wrap items-center gap-3" style={{ '--home-in': '900ms' } as CSSProperties}>
             <a href="#film" onClick={onWatch} className={buttonClass('primary', 'lg', 'home-cta')}>
@@ -71,6 +72,13 @@ export function HeroSection() {
           </div>
         </div>
       </div>
+
+      <p aria-hidden className="home-hero-strip pointer-events-none absolute inset-x-0 bottom-7 z-10 px-(--site-gutter) text-center text-caption text-fg-secondary">
+        <span className="material-hud inline-flex min-h-7 items-center gap-2 rounded-full px-3">
+          <span className="size-1.5 rounded-full bg-success" />
+          {t.strip}
+        </span>
+      </p>
 
       {live && !reduced ? (
         <MotionToggle

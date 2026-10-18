@@ -4,7 +4,10 @@ import { useCopy } from '../../../i18n/locale.tsx';
 import { SectionHeading } from '../components/SectionHeading.tsx';
 import { HOME } from '../copy.ts';
 
-/** The intro film inside a HUD frame, over a local nebula. Until the film is rendered the player shows its "in preparation" state. */
+/**
+ * The intro film (71.5 s, burned-in locale cut, WebVTT captions) inside a HUD frame, over a local nebula. Poster first: no ambient
+ * loop until a light films/ambient.mp4 exists — the full film (~36 MB) only loads when someone presses play.
+ */
 export function FilmSection() {
   const t = useCopy(HOME).film;
   return (
@@ -17,9 +20,9 @@ export function FilmSection() {
           <HudFrame label="INTRO FILM" orbit innerClassName="rounded-[1.4rem]">
             <FilmPlayer
               src={{ 'zh-hant': 'films/intro.zh-hant.mp4', ja: 'films/intro.ja.mp4', en: 'films/intro.en.mp4' }}
+              captions={{ 'zh-hant': '/captions/films/intro.zh-hant.vtt', ja: '/captions/films/intro.ja.vtt', en: '/captions/films/intro.en.vtt' }}
               poster="/brand/backgrounds/hero.webp"
               title={t.videoTitle}
-              ambient
             />
           </HudFrame>
         </div>
