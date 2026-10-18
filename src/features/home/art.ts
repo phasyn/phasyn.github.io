@@ -61,12 +61,15 @@ export const ART: Record<ArtKey, ArtEntry | null> = {
 };
 
 /**
- * Real Phasyn Studio output (original character "The Courier"), made 2026-10-18:
- * - stills: Qwen-Image 2.1 through Image Studio's t2i-pc pipeline, 1152×672, about 27 s each end to end on the RTX 5080;
- * - clip: H3 fl2va from the ocean still as its first frame, 768×448, 5.17 s with generated audio (clips like it took 57–76 s end
- *   to end: text encoding on DGX Spark GB10, DiT and video decode on RTX 5080, audio decode on RTX 3060).
- * Prompts: studio/gen/prompts/still-*.txt and fl2va-*.txt. The clip is review media (public/media, git-ignored) read through
- * mediaUrl(); production serves it from VITE_MEDIA_BASE.
+ * Real Phasyn Studio output (original character "The Courier"), made 2026-10-18 through the real controller (studio/gen/RUNS.md):
+ * - stills: Qwen-Image 2.1 through t2i-pc, the pipeline Image Studio uses, 1152×672, about 27 s each end to end (TE, DiT and VAE
+ *   on the RTX 5080, compositing on the CPU);
+ * - clip: H3 fl2va with the rain still as its first frame, run cfa759df (the run the Records capture shows): 768×448, 24 fps,
+ *   124 frames (5.17 s) with generated audio, 57.2 s end to end (te 1.3 s on DGX Spark GB10 · venc 1.1 · dit 32.0 · video 22.4 on
+ *   RTX 5080 · audio 0.9 on RTX 3060 · mux 0.3 on CPU).
+ * The clip's web copy is loudness-normalised (two-pass loudnorm to −16 LUFS / −1.5 dBTP, AAC 48 kHz 192 kb/s; the raw output is
+ * −39 LUFS, AAC 32 kHz). It is review media (public/media, git-ignored) read through mediaUrl(); production serves it from
+ * VITE_MEDIA_BASE.
  */
 export const REAL = {
   stills: {
@@ -75,5 +78,5 @@ export const REAL = {
     rain: { src: '/images/home/still-rain.webp', small: '/images/home/still-rain-sm.webp', width: 1152, height: 672 },
     portrait: { src: '/images/home/still-portrait.webp', small: '/images/home/still-portrait-sm.webp', width: 1152, height: 672 },
   },
-  oceanClip: 'home/ocean.mp4',
+  clip: { src: 'home/rain.mp4', firstFrame: 'rain', run: 'cfa759df' },
 } as const;

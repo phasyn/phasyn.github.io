@@ -1,16 +1,23 @@
 import { Check, Image as ImageIcon, Type, Video } from 'lucide-react';
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import { DecodeText, HudFrame, RevealText } from '../../../components/fx/index.ts';
-import { useMockPlayback } from '../../../components/mock/index.ts';
 import { useCopy } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
 import { SectionHeading } from '../components/SectionHeading.tsx';
+import { usePlayback } from '../components/usePlayback.ts';
 import { HOME } from '../copy.ts';
-import { ImagePane, PromptPane, VideoPane } from './pipeline/PipelinePanes.tsx';
+import type { HotspotId, ScreenKey } from '../screens.ts';
+import { ClipPane, ScreenPane, type ClipLabels } from './pipeline/PipelinePanes.tsx';
 
 const STEP_ICONS = [Type, ImageIcon, Video] as const;
 /** Decorative HUD tags (Latin, aria-hidden by the frame). */
-const STEP_TAGS = ['TEXT', 'IMAGE · QWEN-IMAGE 2.1', 'VIDEO · H3 FL2VA'] as const;
+const STEP_TAGS = ['TEXT · REAL UI', 'IMAGE · REAL UI', 'VIDEO · REAL OUTPUT'] as const;
+
+/** The real screens of steps 1 and 2 (step 3 is the real clip). */
+const STEP_SCREENS: readonly { screen: ScreenKey; hotspots: readonly HotspotId[] }[] = [
+  { screen: 'image-studio-generating', hotspots: ['generating.flow', 'generating.te', 'generating.take'] },
+  { screen: 'image-studio-takes', hotspots: ['takes.inUse', 'takes.strip'] },
+];
 
 /** Decorative step rail above the sticky window (the ordered list on the left carries the semantics). */
 function StepRail({ labels, active }: { labels: string[]; active: number }) {
@@ -40,41 +47,50 @@ function StepRail({ labels, active }: { labels: string[]; active: number }) {
   );
 }
 
-function Pane({ index, active, armed, labels }: { index: number; active: boolean; armed: boolean; labels: ReturnType<typeof usePipelineLabels> }) {
-  const label = labels.mockLabels[index] ?? '';
-  if (index === 0) return <PromptPane active={active} armed={armed} label={label} />;
-  if (index === 1) return <ImagePane active={active} armed={armed} label={label} realBadge={labels.realBadge} />;
-  return <VideoPane active={active} armed={armed} label={label} realBadge={labels.realBadge} labels={labels} />;
+interface PaneProps {
+  index: number;
+  active: boolean;
+  armed: boolean;
+  notes: string[];
+  clip: Omit<ClipLabels, 'note'>;
+  /** Narrow layouts: the screen's focused crop in its own HUD frame. */
+  inline?: boolean;
 }
 
-function usePipelineLabels() {
-  const t = useCopy(HOME).pipeline;
-  return { mockLabels: t.mockLabels, realBadge: t.realBadge, sound: t.sound, mute: t.mute, play: t.play, replay: t.replay };
+function Pane({ index, active, armed, notes, clip, inline = false }: PaneProps) {
+  const note = notes[index] ?? '';
+  const step = STEP_SCREENS[index];
+  if (!step) return <ClipPane active={active} armed={armed} labels={{ ...clip, note }} />;
+  return inline ? (
+    <ScreenPane screen={step.screen} crop="panel" hotspots={step.hotspots} note={note} active={active} framed hud={`0${index + 1} · ${STEP_TAGS[index]}`} displayWidth="min(92vw, 40rem)" />
+  ) : (
+    <ScreenPane screen={step.screen} crop="window" hotspots={step.hotspots} note={note} active={active} displayWidth="min(41rem, 52vw)" />
+  );
 }
 
 /** Inline pane for narrow layouts: runs when it is on screen. */
-function InlinePane({ index, labels }: { index: number; labels: ReturnType<typeof usePipelineLabels> }) {
-  const play = useMockPlayback<HTMLDivElement>({ threshold: 0.45 });
+function InlinePane(props: Omit<PaneProps, 'active' | 'armed' | 'inline'>) {
+  const play = usePlayback<HTMLDivElement>({ threshold: 0.45 });
+  const content = <Pane {...props} active={play.visible} armed={play.armed} inline />;
   return (
     <div ref={play.ref} className="mt-8">
-      <HudFrame label={`0${index + 1} · ${STEP_TAGS[index]}`}>
-        <Pane index={index} active={play.visible} armed={play.armed} labels={labels} />
-      </HudFrame>
+      {STEP_SCREENS[props.index] ? content : <HudFrame label={`0${props.index + 1} · ${STEP_TAGS[props.index]}`}>{content}</HudFrame>}
     </div>
   );
 }
 
 /**
- * Text → Image → Video as a scroll-told story. Wide layouts: the step texts scroll on the left while one sticky app window on
- * the right swaps panes (prompt typing → GeneratingFrame → the real clip with a linear playhead). Narrow layouts: each step shows
- * its own pane inline. The active step comes from an IntersectionObserver band in the middle of the viewport.
+ * Text → Image → Video as a scroll-told story, shown with the real product: the real Image Studio while a prompt is text-encoded,
+ * the real Image Studio with the finished take, then a real fl2va clip made from a real still. Wide layouts: the step texts scroll
+ * on the left while one sticky HUD window on the right swaps panes. Narrow layouts: each step shows its own pane inline (the
+ * screen's focused crop). The active step comes from an IntersectionObserver band in the middle of the viewport.
  */
 export function PipelineSection() {
   const t = useCopy(HOME).pipeline;
-  const labels = usePipelineLabels();
   const [activeStep, setActiveStep] = useState(0);
   const stepRefs = useRef<(HTMLLIElement | null)[]>([]);
-  const windowPlay = useMockPlayback<HTMLDivElement>({ threshold: 0.25 });
+  const windowPlay = usePlayback<HTMLDivElement>({ threshold: 0.25 });
+  const clip = { firstFrame: t.firstFrame, clipLabel: t.clipLabel, loudness: t.loudness, realBadge: t.realBadge, sound: t.sound, mute: t.mute, play: t.play, pause: t.pause, replay: t.replay };
 
   useEffect(() => {
     const steps = stepRefs.current.filter((node): node is HTMLLIElement => node !== null);
@@ -131,7 +147,7 @@ export function PipelineSection() {
                     </ul>
                   </div>
                   <div className="md:hidden">
-                    <InlinePane index={index} labels={labels} />
+                    <InlinePane index={index} notes={t.notes} clip={clip} />
                   </div>
                 </li>
               );
@@ -142,20 +158,20 @@ export function PipelineSection() {
             <div
               ref={windowPlay.ref}
               className="sticky grid gap-5"
-              style={{ top: 'calc(var(--site-header-h) + max(1.5rem, (100dvh - var(--site-header-h) - 38rem) / 2))' } as CSSProperties}
+              style={{ top: 'calc(var(--site-header-h) + max(1.5rem, (100dvh - var(--site-header-h) - 35rem) / 2))' } as CSSProperties}
             >
               <StepRail labels={t.steps.map((step) => step.label)} active={activeStep} />
-              <HudFrame label={`PIPELINE · 0${activeStep + 1}/03 · ${STEP_TAGS[activeStep]}`} orbit scan>
-                <div className="relative grid">
+              <HudFrame label={`PIPELINE · 0${activeStep + 1}/03 · ${STEP_TAGS[activeStep]}`} orbit>
+                <div className="relative grid p-2 sm:p-3">
                   {t.steps.map((step, index) => {
                     const shown = index === activeStep;
                     return (
                       <div
                         key={step.label}
-                        className="home-pane [grid-area:1/1]"
+                        className="home-pane self-center [grid-area:1/1]"
                         {...(shown ? {} : { 'data-inactive': '', inert: true, 'aria-hidden': true })}
                       >
-                        <Pane index={index} active={shown && windowPlay.visible} armed={windowPlay.armed} labels={labels} />
+                        <Pane index={index} active={shown && windowPlay.visible} armed={windowPlay.armed} notes={t.notes} clip={clip} />
                       </div>
                     );
                   })}
