@@ -1,0 +1,100 @@
+/*
+ * Illustrative UI primitives (src/components/mock). Plain CSS for the few looping effects the brand tokens do not ship.
+ * Only transform/opacity animate; playheads are linear. The global reduced-motion rule in tokens.css cancels every animation
+ * here, which leaves each primitive in its static end state (caret visible, playhead at the start, bars at full length).
+ */
+
+/* Typing caret. */
+@keyframes mock-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.mock-caret {
+  animation: mock-caret 1.06s steps(1, end) infinite;
+}
+
+/*
+ * Linear playhead. The travel element spans the whole track area, so translateX(100%) of the travel element equals the track
+ * width; the visible line sits on its left edge. Duration comes from --mock-duration (seconds of the illustrated sequence).
+ */
+@keyframes mock-playhead {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.mock-playhead {
+  animation: mock-playhead var(--mock-duration, 12s) linear infinite;
+}
+
+/* Slow push-in on a still, so a monitor reads as moving footage (transform only). */
+@keyframes mock-push {
+  from {
+    transform: scale(1.04) translate3d(-1.2%, 0.6%, 0);
+  }
+  to {
+    transform: scale(1.12) translate3d(1.2%, -0.8%, 0);
+  }
+}
+
+.mock-push {
+  animation: mock-push 14s ease-in-out infinite alternate;
+}
+
+/*
+ * Horizontal bars (width = the value, set inline) grow once from the left: the owner sets data-mock-armed after hydration
+ * and data-mock-shown when the chart scrolls into view.
+ */
+.mock-bar {
+  transform-origin: left center;
+  transition: transform var(--duration-spring-smooth) var(--ease-spring-smooth);
+  transition-delay: calc(min(var(--i, 0), 10) * 40ms);
+}
+
+[data-mock-armed]:not([data-mock-shown]) .mock-bar {
+  transform: scaleX(0);
+}
+
+/* Terminal and prompt lines fade in as they are revealed. */
+.mock-line {
+  transition:
+    opacity var(--duration-base) var(--ease-enter),
+    transform var(--duration-spring-snappy) var(--ease-spring-snappy);
+}
+
+.mock-line[data-hidden] {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+/* Loops pause while their owner is off screen. */
+[data-mock-paused] .mock-loop,
+.mock-loop[data-mock-paused] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mock-bar,
+  .mock-line {
+    transition: none;
+  }
+
+  [data-mock-armed]:not([data-mock-shown]) .mock-bar {
+    transform: none;
+  }
+
+  .mock-line[data-hidden] {
+    opacity: 1;
+    transform: none;
+  }
+}

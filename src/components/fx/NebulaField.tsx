@@ -53,9 +53,12 @@ void main() {
   vec2 r = vec2(fbm(p * 1.7 + 2.0 * q + vec2(1.7, 9.2) + t * 1.4), fbm(p * 1.7 + 2.0 * q + vec2(8.3, 2.8) - t));
   float f = fbm(p * 1.15 + 2.3 * r);
   float sway = 0.22 * sin(p.x * 1.5 + t * 3.0) + 0.08 * sin(p.x * 3.7 - t * 5.0);
+  // Squares are written as x * x: pow() with a negative base is undefined in GLSL.
   float bandY = p.y - sway - 0.15 * (f - 0.5) + (uScroll - 0.2) * 0.5;
-  float band = exp(-pow(bandY * 2.0, 2.0));
-  float core = exp(-pow(bandY * 6.0 + (f - 0.5) * 2.4, 2.0));
+  float b1 = bandY * 2.0;
+  float band = exp(-b1 * b1);
+  float c1 = bandY * 6.0 + (f - 0.5) * 2.4;
+  float core = exp(-c1 * c1);
   float wisp = smoothstep(0.28, 0.80, f);
   vec3 col = vec3(0.016, 0.026, 0.055);
   // Hue runs cyan → violet along the ribbon (x) with a little turbulence, like the brand hero art.
@@ -63,11 +66,12 @@ void main() {
   col += light * wisp * band * 1.1 * uIntensity;
   col += light * core * (0.55 + 0.9 * wisp) * 1.4 * uIntensity;
   col += brand(0.85) * pow(f, 3.0) * 0.35 * uIntensity * (1.0 - band);
-  float bandY2 = p.y + 0.42 + 0.18 * sin(p.x * 1.1 - t * 2.4) - 0.1 * (f - 0.5);
-  col += brand(0.12) * exp(-pow(bandY2 * 5.0, 2.0)) * wisp * 0.55 * uIntensity;
+  float b2 = (p.y + 0.42 + 0.18 * sin(p.x * 1.1 - t * 2.4) - 0.1 * (f - 0.5)) * 5.0;
+  col += brand(0.12) * exp(-b2 * b2) * wisp * 0.55 * uIntensity;
   float glow = exp(-length(p - pointer * 0.9) * 2.0);
   col += brand(0.3) * glow * 0.16 * uIntensity;
-  float vignette = smoothstep(1.35, 0.15, length(p * vec2(0.85, 1.0)));
+  // smoothstep needs edge0 < edge1; invert the result instead of the edges.
+  float vignette = 1.0 - smoothstep(0.15, 1.35, length(p * vec2(0.85, 1.0)));
   col *= mix(0.45, 1.0, vignette);
   col = 1.0 - exp(-col * 1.5);
   col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.012;

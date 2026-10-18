@@ -10,18 +10,44 @@ function graphemes(text: string): string[] {
   return graphemeSegmenter ? Array.from(graphemeSegmenter.segment(text), (s) => s.segment) : Array.from(text);
 }
 
-/** Word groups that must not break internally; closing punctuation sticks to the word before it (kinsoku). */
+const CJK = /[　-鿿가-힯＀-￯]/;
+const CLOSING = /^[、。，．！？：；）」』】〉》’”…ー・,.!?:;)\]]+$/;
+/** Longest CJK phrase kept on one line; longer runs fall back to word boundaries so nothing overflows. */
+const MAX_PHRASE = 10;
+
+/**
+ * Groups that must not break internally. Closing punctuation sticks to the group before it (kinsoku). In CJK text,
+ * words between two punctuation marks are joined into one phrase (so 產品 or 哪台 never split), unless that phrase
+ * would exceed MAX_PHRASE characters.
+ */
 function wordGroups(text: string, lang: string): string[] {
   if (!hasSegmenter) return Array.from(text);
-  const groups: string[] = [];
+  const words: string[] = [];
   for (const { segment } of new Intl.Segmenter(lang, { granularity: 'word' }).segment(text)) {
-    if (/^[、。，．！？：；）」』】〉》’”…ー・,.!?:;)\]]+$/.test(segment) && groups.length) groups[groups.length - 1] += segment;
-    else groups.push(segment);
+    if (CLOSING.test(segment) && words.length) words[words.length - 1] += segment;
+    else words.push(segment);
   }
-  return groups;
+  if (!CJK.test(text)) return words;
+  const phrases: string[] = [];
+  let current = '';
+  for (const word of words) {
+    const ends = CLOSING.test(word.slice(-1));
+    if (/^\s+$/.test(word)) {
+      if (current) phrases.push(current);
+      phrases.push(word);
+      current = '';
+    } else if (current && graphemes(current + word).length > MAX_PHRASE) {
+      phrases.push(current);
+      current = word;
+    } else current += word;
+    if (ends && current) {
+      phrases.push(current);
+      current = '';
+    }
+  }
+  if (current) phrases.push(current);
+  return phrases;
 }
-
-const CJK = /[　-鿿가-힯＀-￯]/;
 
 export interface RevealTextProps {
   text: string;
