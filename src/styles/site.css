@@ -116,13 +116,251 @@
   }
 }
 
+/*
+ * FX layer (BRIEF §4.1): game-grade motion in the brand light. Every effect is decorative, ends in the readable state,
+ * and collapses to the static state under prefers-reduced-motion.
+ */
+@property --fx-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes fx-char-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.42em) scale(0.94);
+    filter: blur(10px);
+    text-shadow: 0 0 28px rgb(73 207 255 / 0.9);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: 0 0 22px rgb(114 125 255 / 0.65);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    text-shadow: 0 0 0 rgb(114 125 255 / 0);
+  }
+}
+
+@keyframes fx-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+@keyframes fx-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    /* The line is 22 % of its frame, so 460 % of its own height crosses the whole frame. */
+    transform: translateY(460%);
+    opacity: 0;
+  }
+}
+
+@keyframes fx-spin {
+  to {
+    --fx-angle: 360deg;
+  }
+}
+
+@keyframes fx-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fx-pulse-line {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fx-intro-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@keyframes fx-intro-mark {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-8deg);
+    filter: blur(16px) brightness(2);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.04) rotate(0);
+    filter: blur(0) brightness(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes fx-intro-line {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fx-intro-out {
+  0%,
+  70% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Per-character reveal: `fx-chars` holds spans with --d (delay). `data-fx-play` starts it. */
+@utility fx-chars {
+  & .fx-char {
+    display: inline-block;
+    white-space: pre;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-fx-state="armed"] .fx-char {
+      opacity: 0;
+    }
+    &[data-fx-state="play"] .fx-char {
+      animation: fx-char-in 900ms var(--ease-enter) both;
+      animation-delay: var(--d, 0ms);
+    }
+  }
+}
+
+/* A bright light pass across text (gradient-clipped overlay on a duplicate layer). */
+@utility fx-sweep-text {
+  background-image: linear-gradient(100deg, transparent 35%, rgb(255 255 255 / 0.9) 48%, rgb(143 176 255 / 0.85) 52%, transparent 65%);
+  background-size: 250% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fx-sweep 2.6s var(--ease-standard) 0.6s both;
+  }
+}
+
+/* Rotating conic light around a rounded box (border drawn with mask; content stays readable). */
+@utility fx-orbit-border {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--fx-angle), transparent 0deg, var(--color-brand-cyan) 40deg, var(--color-brand-violet) 90deg, transparent 140deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: fx-spin 5s linear infinite;
+    }
+  }
+}
+
+@utility fx-ticker-track {
+  display: flex;
+  width: max-content;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fx-ticker var(--fx-ticker-duration, 48s) linear infinite;
+    &:hover {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@utility fx-scanline {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 22%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgb(73 207 255 / 0.08) 70%, rgb(73 207 255 / 0.35) 98%, transparent);
+  display: none;
+  @media (prefers-reduced-motion: no-preference) {
+    display: block;
+    animation: fx-scan var(--fx-scan-duration, 5.5s) var(--ease-standard) infinite;
+  }
+}
+
+/* First-visit splash (see components/fx/IntroSplash.tsx). Skipped by an inline script when already seen this session. */
+@utility fx-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(60% 50% at 50% 50%, rgb(23 33 57 / 0.95), var(--color-stage) 70%);
+  animation: fx-intro-out 1700ms var(--ease-exit) forwards;
+  pointer-events: none;
+  :root.fx-intro-skip & {
+    display: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
 @layer base {
   html {
     scroll-padding-top: calc(var(--site-header-h) + 1rem);
   }
 
+  /*
+   * The page background lives on <html> (first paint #070b14); body stays transparent so the fixed FX backdrop
+   * (z-index −10, painted after the root background) shows through.
+   */
   body {
     overflow-x: clip;
+    background-color: transparent;
   }
 
   /* Marketing pages use a larger reading size than the App's 14 px body. */

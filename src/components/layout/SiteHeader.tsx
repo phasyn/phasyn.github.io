@@ -29,7 +29,10 @@ export function SiteHeader() {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50">
-      <div className="border-b border-[rgb(255_255_255_/_0.06)] bg-[rgb(7_11_20_/_0.62)] backdrop-blur-[22px] backdrop-saturate-[160%] supports-[not(backdrop-filter:blur(1px))]:bg-[rgb(7_11_20_/_0.96)]">
+      <div className="relative border-b border-[rgb(255_255_255_/_0.06)] bg-[rgb(7_11_20_/_0.55)] backdrop-blur-[22px] backdrop-saturate-[160%] supports-[not(backdrop-filter:blur(1px))]:bg-[rgb(7_11_20_/_0.96)]">
+        <span aria-hidden className="pointer-events-none absolute inset-x-0 -bottom-px h-px overflow-hidden">
+          <span className="block h-full w-1/3 bg-[linear-gradient(90deg,transparent,var(--color-brand-cyan),var(--color-brand-violet),transparent)] motion-safe:animate-[fx-pulse-line_6s_var(--ease-standard)_infinite] motion-reduce:hidden" />
+        </span>
         <div className="site-container flex h-(--site-header-h) items-center gap-4">
           <Link to={pagePath(locale, 'home')} className="pressable flex items-center gap-2.5 text-fg no-underline" aria-label="Phasyn Studio" viewTransition>
             <BrandMark size={28} glow />
