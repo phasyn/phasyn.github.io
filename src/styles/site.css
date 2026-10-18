@@ -378,6 +378,11 @@
 
 @layer base {
   html {
+    /*
+     * Safety net (FE-01): decorative overflow (light sweeps, glows) must never widen the mobile layout viewport.
+     * `clip` on the root is applied to the viewport as `hidden`; body keeps its own `clip` below.
+     */
+    overflow-x: clip;
     scroll-padding-top: calc(var(--site-header-h) + 1rem);
   }
 
