@@ -1,0 +1,119 @@
+// Showcase data: the generated items (items.gen.ts, written by scripts/import-showcase.ts from item.json records) plus the
+// derived values the page shows. Add results by adding item folders or seed entries and re-running the importer — never by
+// editing numbers here. Every total on the page is computed from the items, so it can never disagree with the cards.
+
+import { SHOWCASE_ITEMS } from './items.gen.ts';
+import type { MachineKey, ShowcaseCategory, ShowcaseItem, ShowcaseStep } from './types.ts';
+
+export type * from './types.ts';
+
+export const ITEMS: readonly ShowcaseItem[] = SHOWCASE_ITEMS;
+
+/** Machine labels as the app writes them (never hostnames or IPs). `unknown` is labelled in copy ("placement not recorded"). */
+export const MACHINE_LABEL: Record<Exclude<MachineKey, 'unknown'>, string> = {
+  gb10: 'DGX Spark · GB10',
+  rtx5080: 'RTX 5080',
+  rtx3060: 'RTX 3060',
+  cpu: 'CPU',
+};
+
+/** Device colours: the same keys and series colours as the shared DataTicker and the Tour. */
+export const MACHINE_DOT: Record<MachineKey, string> = {
+  rtx5080: 'bg-series-1',
+  gb10: 'bg-series-2',
+  rtx3060: 'bg-series-3',
+  cpu: 'bg-series-neutral',
+  unknown: 'bg-line-strong',
+};
+
+/** Lane order: where a render starts (text encoding on the DGX Spark) to where it ends (mux on the CPU). */
+export const MACHINE_ORDER: readonly MachineKey[] = ['gb10', 'rtx5080', 'rtx3060', 'cpu', 'unknown'];
+
+/** Which machine is in which box (the author's setup: two machines, three GPUs). */
+export const MACHINE_HOST: Record<Exclude<MachineKey, 'unknown'>, 'dgx' | 'pc'> = { gb10: 'dgx', rtx5080: 'pc', rtx3060: 'pc', cpu: 'pc' };
+
+export const CATEGORY_ORDER: readonly ShowcaseCategory[] = ['image', 'video', 'character', 'multishot'];
+
+export function itemBySlug(slug: string): ShowcaseItem | undefined {
+  return ITEMS.find((item) => item.slug === slug);
+}
+
+/** Hero-graded results, in data order (the importer keeps the curated seed order first). */
+export const FEATURED: readonly ShowcaseItem[] = ITEMS.filter((item) => item.grade === 'hero');
+
+export function isClip(item: ShowcaseItem): boolean {
+  return Boolean(item.media.clip);
+}
+
+/** The step's lane: its first machine (a combined step such as "VAE decode + compose" lists both). */
+export function laneOf(step: ShowcaseStep): MachineKey {
+  return step.machines[0] ?? 'unknown';
+}
+
+export interface Lane {
+  machine: MachineKey;
+  steps: ShowcaseStep[];
+  /** Sum of the lane's measured step times (null when none was recorded). */
+  seconds: number | null;
+  approx: boolean;
+}
+
+/** Steps grouped by machine, in pipeline order within each lane. Durations only: lanes never claim when a step started. */
+export function lanes(item: ShowcaseItem): Lane[] {
+  return MACHINE_ORDER.flatMap((machine) => {
+    const steps = item.steps.filter((step) => laneOf(step) === machine);
+    if (!steps.length) return [];
+    const measured = steps.filter((step) => step.seconds !== null);
+    const seconds = measured.length ? measured.reduce((sum, step) => sum + (step.seconds ?? 0), 0) : null;
+    return [{ machine, steps, seconds, approx: steps.some((step) => step.approx) || measured.length < steps.length }];
+  });
+}
+
+/** Every machine an item touched (combined steps count for each machine they list). */
+export function machinesOf(item: ShowcaseItem): MachineKey[] {
+  const used = new Set(item.steps.flatMap((step) => step.machines));
+  return MACHINE_ORDER.filter((machine) => used.has(machine));
+}
+
+export interface Totals {
+  results: number;
+  clips: number;
+  stills: number;
+  /** Seconds of generated video (every clip carries its own sound). */
+  videoSeconds: number;
+  frames: number;
+  /** Sum of controller-observed end-to-end times. */
+  renderSeconds: number;
+  /** True when any end-to-end time in the sum is a rounded reading or missing. */
+  renderApprox: boolean;
+  gpus: number;
+  hosts: number;
+}
+
+export function totals(items: readonly ShowcaseItem[] = ITEMS): Totals {
+  const used = new Set(items.flatMap((item) => item.steps.flatMap((step) => step.machines)));
+  const gpus = (['gb10', 'rtx5080', 'rtx3060'] as const).filter((key) => used.has(key)).length;
+  const hosts = new Set([...used].filter((key): key is Exclude<MachineKey, 'unknown'> => key !== 'unknown').map((key) => MACHINE_HOST[key])).size;
+  return {
+    results: items.length,
+    clips: items.filter(isClip).length,
+    stills: items.filter((item) => !isClip(item)).length,
+    videoSeconds: items.reduce((sum, item) => sum + (isClip(item) ? (item.seconds ?? 0) : 0), 0),
+    frames: items.reduce((sum, item) => sum + (isClip(item) ? (item.frames ?? 0) : 0), 0),
+    renderSeconds: items.reduce((sum, item) => sum + (item.endToEndSeconds ?? 0), 0),
+    renderApprox: items.some((item) => item.endToEndApprox || item.endToEndSeconds === null),
+    gpus,
+    hosts,
+  };
+}
+
+/** Range of end-to-end times for one pipeline, e.g. fl2va-pc 57.2–76 s. */
+export function range(items: readonly ShowcaseItem[], pipeline: string): { min: number; max: number } | undefined {
+  const values = items.filter((item) => item.pipeline === pipeline && item.endToEndSeconds !== null && !item.endToEndApprox).map((item) => item.endToEndSeconds as number);
+  return values.length ? { min: Math.min(...values), max: Math.max(...values) } : undefined;
+}
+
+/** Seconds with one decimal below 100 s, whole seconds above (the precision RUNS.md records). */
+export function formatSeconds(seconds: number): string {
+  return seconds >= 100 || Number.isInteger(seconds) ? String(Math.round(seconds)) : seconds.toFixed(1);
+}

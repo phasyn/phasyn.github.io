@@ -21,12 +21,13 @@ export const OG_LOCALE: Record<Locale, string> = {
   en: 'en_US',
 };
 
-export const PAGES = ['home', 'tour', 'benchmarks', 'about'] as const;
+export const PAGES = ['home', 'tour', 'showcase', 'benchmarks', 'about'] as const;
 export type Page = (typeof PAGES)[number];
 
 const PAGE_SEGMENT: Record<Page, string> = {
   home: '',
   tour: 'tour/',
+  showcase: 'showcase/',
   benchmarks: 'benchmarks/',
   about: 'about/',
 };
