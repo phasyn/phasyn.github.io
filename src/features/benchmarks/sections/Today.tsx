@@ -1,5 +1,6 @@
 import { HudFrame } from '../../../components/fx/index.ts';
 import { FilmPlayer } from '../../../components/media/FilmPlayer.tsx';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
 import { useLocale } from '../../../i18n/locale.tsx';
 import { useBenchCopy } from '../copy.ts';
 import { img, todayClip, todayStill } from '../data/media.ts';
@@ -22,8 +23,7 @@ function ClipCard({ row }: { row: SpeedRow }) {
     <article className="panel grid min-w-0 content-start gap-4 p-3 sm:p-4">
       {/* The HUD tag is upper-cased by the kit, so it carries the date; the lowercase run ID is in the line below. */}
       <HudFrame label={`MEASURED · ${row.date}`}>
-        {/* TODO(lead): pass the licence badge once the shared FilmPlayer `badge` prop lands — badge="h3" (MiniMax H3 clip). */}
-        <FilmPlayer src={clip.video} poster={clip.poster} title={copy.today.clipAria(scene)} aspect="768 / 448" className="rounded-xl shadow-none" />
+        <FilmPlayer src={clip.video} poster={clip.poster} title={copy.today.clipAria(scene)} aspect="768 / 448" badge="h3" className="rounded-xl shadow-none" />
       </HudFrame>
       <div className="grid gap-3 px-1 pb-1">
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -82,6 +82,7 @@ export function TodaySection() {
       </div>
       <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <figure className="panel grid content-start gap-3 p-4">
+          <AiBadge variant="qwen" className="justify-self-start" />
           <img src={img('today-courier-ref.webp')} alt={copy.today.refTitle} width={384} height={512} loading="lazy" decoding="async" className="mx-auto aspect-[3/4] w-full max-w-60 rounded-lg bg-[#fff] object-contain" />
           <figcaption className="grid gap-1">
             <span className="text-data font-semibold text-fg">{copy.today.refTitle}</span>
@@ -90,7 +91,10 @@ export function TodaySection() {
         </figure>
         <div className="panel grid content-start gap-4 p-4 sm:p-5">
           <div className="grid gap-1">
-            <h3 className="text-section font-semibold text-fg">{copy.today.stillsTitle}</h3>
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <h3 className="text-section font-semibold text-fg">{copy.today.stillsTitle}</h3>
+              <AiBadge variant="qwen" />
+            </div>
             <p className="text-caption text-pretty text-fg-secondary">{copy.today.stillsBody}</p>
           </div>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">

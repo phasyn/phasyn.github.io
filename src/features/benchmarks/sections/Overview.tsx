@@ -21,7 +21,7 @@ export function StepTicker() {
     (row?.steps ?? []).flatMap((step): TickerItem[] => {
       const label = labels[step.kind];
       if (!label || step.seconds == null || !isDevice(step.placement)) return [];
-      return [{ label: `${label} · ${step.component ?? ''}`, value: fmtSeconds(locale, step.seconds, step.approx), device: TICKER_DEVICE[step.placement] }];
+      return [{ label: `${row?.pipeline ?? ''} · ${label} · ${step.component ?? ''}`, value: fmtSeconds(locale, step.seconds, step.approx), device: TICKER_DEVICE[step.placement] }];
     });
   const t = copy.ticker.items;
   const items = [
