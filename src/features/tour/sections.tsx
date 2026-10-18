@@ -60,7 +60,7 @@ export function AgentSection({ t }: { t: TourCopy }) {
               pending={{ title: t.screens.pendingTitle, body: t.screens.pendingBody }}
             />
           </HudFrame>
-          <figcaption className="text-caption text-fg-tertiary">{t.screens.captures['terminal-phasynctl']}</figcaption>
+          <figcaption className="justify-self-start rounded-full bg-[rgb(7_11_20_/_0.82)] px-3 py-1 text-data text-fg-secondary">{t.screens.captures['terminal-phasynctl']}</figcaption>
         </figure>
       </div>
     </section>
@@ -127,7 +127,9 @@ export function ClosingSection({ t }: { t: TourCopy }) {
             </li>
           ))}
         </ul>
-        <SourceSoon className="reveal" />
+        <span className="reveal inline-flex rounded-full bg-canvas">
+          <SourceSoon />
+        </span>
       </div>
     </section>
   );

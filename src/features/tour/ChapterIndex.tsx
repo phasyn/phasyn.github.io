@@ -2,7 +2,7 @@ import { useEffect, useRef, type CSSProperties } from 'react';
 import { HudFrame } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
 import { useReducedMotion } from '../../lib/hooks.ts';
-import { CHAPTERS, TOTAL_LENGTH, chapterNumber, clock, type ChapterId } from './chapters.ts';
+import { CHAPTERS, TOTAL_LENGTH, chapterNumber, lengthText, type ChapterId } from './chapters.ts';
 import type { TourCopy } from './copy.ts';
 
 interface ChapterIndexProps {
@@ -119,7 +119,7 @@ export function ChapterIndex({ t, active }: ChapterIndexProps) {
                         </span>
                         <span className="min-w-0 font-medium leading-snug [text-wrap:pretty]">{title(spec.id)}</span>
                         <span aria-hidden className="col-start-2 flex items-center gap-2">
-                          <span className="shrink-0 text-[11px] text-fg-tertiary tabular-nums">{t.chapter.planned(clock(spec.length))}</span>
+                          <span className={cn('shrink-0 text-[11px] tabular-nums', spec.recorded ? 'text-success' : 'text-fg-tertiary')}>{lengthText(spec, t.chapter.planned)}</span>
                           <span className="relative h-0.5 min-w-0 flex-1 overflow-hidden rounded-full bg-line-subtle">
                             <span
                               ref={(element) => {

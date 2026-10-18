@@ -6,7 +6,8 @@ import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { HTML_LANG } from '../../site/config.ts';
 import { useInView, useReducedMotion } from '../../lib/hooks.ts';
-import { chapterCaptions, chapterNumber, chapterSource, chapterTimingPath, clock, type ChapterSpec } from './chapters.ts';
+import { CircleCheck } from 'lucide-react';
+import { chapterCaptions, chapterNumber, chapterSource, chapterTimingPath, lengthText, type ChapterSpec } from './chapters.ts';
 import type { TourCopy } from './copy.ts';
 import { useFilmControl, useStepTimes } from './hooks.ts';
 import { RichText } from './RichText.tsx';
@@ -63,10 +64,16 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
             <DecodeText text={`CH ${number}`} duration={600} />
           </span>
           <span className="tour-eyebrow-line w-10" />
-          {/* Planned length (no letter-spacing: the label is CJK in two locales). */}
+          {/* Length, planned until the cut exists (no letter-spacing: the label is CJK in two locales). */}
           <span lang={lang} className="text-caption font-medium text-fg-tertiary tabular-nums">
-            {t.chapter.planned(clock(spec.length))}
+            {lengthText(spec, t.chapter.planned)}
           </span>
+          {spec.recorded ? (
+            <span lang={lang} className="inline-flex h-6 items-center gap-1 rounded-full border border-success/30 bg-success/12 px-2 text-[11px] font-medium text-success">
+              <CircleCheck className="size-3" aria-hidden />
+              {t.chapter.recorded}
+            </span>
+          ) : null}
         </p>
         <h2 id={`${spec.id}-title`} tabIndex={-1} aria-label={`${label}: ${copy.title}`} className="max-w-[24ch] text-headline tracking-display text-balance-cjk text-fg outline-none">
           <RevealText text={copy.title} on="view" />
