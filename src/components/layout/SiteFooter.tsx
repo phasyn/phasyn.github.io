@@ -25,7 +25,7 @@ export function SiteFooter() {
           <SourceSoon className="justify-self-start" />
         </div>
 
-        <nav aria-label={copy.navLabel} className="grid content-start gap-3">
+        <nav aria-label={copy.footerNavLabel} className="grid content-start gap-3">
           <h2 className="text-caption font-semibold text-fg-tertiary">Phasyn Studio</h2>
           <ul className="grid gap-2">
             {PAGES.map((page) => (

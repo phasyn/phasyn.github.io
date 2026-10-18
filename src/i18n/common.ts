@@ -6,6 +6,8 @@ interface CommonCopy {
   skipToContent: string;
   nav: Record<Page, string>;
   navLabel: string;
+  /** Footer navigation landmark name (distinct from the header's main navigation). */
+  footerNavLabel: string;
   menuOpen: string;
   menuClose: string;
   languageLabel: string;
@@ -35,6 +37,7 @@ export const COMMON: Copy<CommonCopy> = {
     skipToContent: '跳至主要內容',
     nav: { home: '首頁', tour: '操作導覽', benchmarks: '效能實測', about: '關於' },
     navLabel: '主要導覽',
+    footerNavLabel: '頁尾導覽',
     menuOpen: '開啟選單',
     menuClose: '關閉選單',
     languageLabel: '語言',
@@ -63,6 +66,7 @@ export const COMMON: Copy<CommonCopy> = {
     skipToContent: 'メインコンテンツへスキップ',
     nav: { home: 'ホーム', tour: '操作ガイド', benchmarks: 'ベンチマーク', about: 'このプロジェクトについて' },
     navLabel: 'メインナビゲーション',
+    footerNavLabel: 'フッターナビゲーション',
     menuOpen: 'メニューを開く',
     menuClose: 'メニューを閉じる',
     languageLabel: '言語',
@@ -91,6 +95,7 @@ export const COMMON: Copy<CommonCopy> = {
     skipToContent: 'Skip to Main Content',
     nav: { home: 'Home', tour: 'Tour', benchmarks: 'Benchmarks', about: 'About' },
     navLabel: 'Main navigation',
+    footerNavLabel: 'Footer',
     menuOpen: 'Open menu',
     menuClose: 'Close menu',
     languageLabel: 'Language',
