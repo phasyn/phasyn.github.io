@@ -28,6 +28,7 @@ pnpm preview      # GitHub-Pages-like static server for build/client (PORT=4173)
 | `src/styles/tokens.css` | Brand token owner — unchanged copy of the brand system's `tokens.tailwind.css`. Never edit. |
 | `src/styles/site.css` | Site layer: `text-hero/display/headline/lead`, `tracking-display`, `text-balance-cjk`, `site-container`, `site-section`, `eyebrow`, `reveal` (fixed 240 px range), `text-on-fx` (scrim for solid-colour copy over FX), `fx-orbit` (always-on loops rotate with `fx-rotate`; `fx-spin`/`--fx-angle` only for hover effects), `film-range`, `grain`, `glow-backdrop` |
 | `public/brand/` | Brand assets from the brand system (`mark-*.webp`, `icon-*`, `areas/`, `illustrations/`, `backgrounds/`, `og-1200x630.jpg`) |
+| `public/og/`, `scripts/og/` | Social cards `<page>-<locale>.jpg` (1200×630, `pageMeta()`'s default image), rendered from `card.html` with real media: `PLAYWRIGHT=<playwright/index.mjs> node scripts/og/render.mjs [--sheet <file>]` on a Mac (CJK system fonts); the run fails if a card's copy or badge no longer matches the site |
 | `public/media/` | Review-only large media (git-ignored, removed from the build). Production reads `VITE_MEDIA_BASE` (Hugging Face) |
 
 ## Conventions

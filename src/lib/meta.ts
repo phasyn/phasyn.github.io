@@ -7,7 +7,7 @@ interface PageMeta {
   page: Page;
   title: string;
   description: string;
-  /** Site-relative image path (1200×630). */
+  /** Site-relative image path (1200×630); defaults to the page's own card, public/og/<page>-<locale>.jpg (scripts/og). */
   image?: string;
 }
 
@@ -30,7 +30,7 @@ function websiteJsonLd(locale: Locale): MetaDescriptor {
 }
 
 /** Title, description, canonical, hreflang alternates, social cards and site JSON-LD for one prerendered page. */
-export function pageMeta({ locale, page, title, description, image = '/brand/og-1200x630.jpg' }: PageMeta): MetaDescriptor[] {
+export function pageMeta({ locale, page, title, description, image = `/og/${page}-${locale}.jpg` }: PageMeta): MetaDescriptor[] {
   const url = pageUrl(locale, page);
   const imageUrl = `${SITE_URL}${image}`;
   return [
@@ -45,11 +45,16 @@ export function pageMeta({ locale, page, title, description, image = '/brand/og-
     { property: 'og:description', content: description },
     { property: 'og:url', content: url },
     { property: 'og:image', content: imageUrl },
+    { property: 'og:image:width', content: '1200' },
+    { property: 'og:image:height', content: '630' },
+    { property: 'og:image:alt', content: title },
     { property: 'og:locale', content: OG_LOCALE[locale] },
+    ...LOCALES.filter((alt) => alt !== locale).map((alt) => ({ property: 'og:locale:alternate', content: OG_LOCALE[alt] })),
     { name: 'twitter:card', content: 'summary_large_image' },
     { name: 'twitter:title', content: title },
     { name: 'twitter:description', content: description },
     { name: 'twitter:image', content: imageUrl },
+    { name: 'twitter:image:alt', content: title },
     websiteJsonLd(locale),
   ];
 }
