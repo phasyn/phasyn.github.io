@@ -5,6 +5,7 @@ export default [
   route(':lang', 'routes/locale-layout.tsx', [
     index('routes/home.tsx'),
     route('tour', 'routes/tour.tsx'),
+    route('showcase', 'routes/showcase.tsx'),
     route('benchmarks', 'routes/benchmarks.tsx'),
     route('about', 'routes/about.tsx'),
   ]),

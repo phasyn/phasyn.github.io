@@ -1,0 +1,105 @@
+import { ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { cn } from '../../lib/cn.ts';
+import { useHydrated } from '../../lib/hooks.ts';
+import { useLocale } from '../../i18n/locale.tsx';
+import { SHOWCASE } from './copy.ts';
+import { CATEGORY_ORDER, FILMS, RESULTS, SOCIAL, type ShowcaseCategory } from './data.ts';
+import { FilmsRow, SocialRow } from './Films.tsx';
+import { SectionHeading } from './parts.tsx';
+import { ResultCard } from './ResultCard.tsx';
+
+/** Cards shown before "Show more" (after hydration; the prerendered HTML lists every result). */
+const PAGE = 12;
+
+/**
+ * Gallery: films first (their own featured row, when there are any), then every result with filters by group and a
+ * "Show more" that keeps a ~30-item gallery manageable. Scales by data alone.
+ */
+export function Gallery() {
+  const locale = useLocale();
+  const copy = SHOWCASE[locale];
+  const hydrated = useHydrated();
+  const [filter, setFilter] = useState<ShowcaseCategory | 'all'>('all');
+  const [limit, setLimit] = useState(PAGE);
+
+  const rest = RESULTS;
+  const groups = CATEGORY_ORDER.filter((category) => category !== 'film' && category !== 'social' && rest.some((item) => item.category === category));
+  const filtered = filter === 'all' ? rest : rest.filter((item) => item.category === filter);
+  const visible = hydrated ? filtered.slice(0, limit) : filtered;
+  const hidden = filtered.length - visible.length;
+
+  return (
+    <section id="gallery" aria-labelledby="gallery-title" className="site-container scroll-mt-[calc(var(--site-header-h)+1rem)] py-[clamp(4rem,2.5rem+6vw,8rem)]">
+      <SectionHeading id="gallery-title" eyebrow={copy.gallery.eyebrow} title={copy.gallery.title} lead={copy.gallery.lead} />
+
+      {FILMS.length ? (
+        <div className="mt-12">
+          <FilmsRow items={FILMS} />
+        </div>
+      ) : null}
+      {SOCIAL.length ? (
+        <div className="mt-16">
+          <SocialRow items={SOCIAL} />
+        </div>
+      ) : null}
+
+      {FILMS.length || SOCIAL.length ? <h3 className="mt-16 text-headline tracking-display text-balance-cjk text-fg">{copy.gallery.singles}</h3> : null}
+      <div className={cn('flex flex-wrap items-center justify-between gap-4', FILMS.length || SOCIAL.length ? 'mt-6' : 'mt-12')}>
+        <div role="group" aria-label={copy.gallery.filterLabel} className="flex flex-wrap gap-2">
+          {(['all', ...groups] as const).map((key) => {
+            const count = key === 'all' ? rest.length : rest.filter((item) => item.category === key).length;
+            const active = filter === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                aria-pressed={active}
+                onClick={() => {
+                  setFilter(key);
+                  setLimit(PAGE);
+                }}
+                className={cn(
+                  'pressable inline-flex min-h-10 items-center gap-2 rounded-full border px-4 text-data font-medium',
+                  active ? 'border-brand-cyan/70 bg-brand-gradient-soft text-fg shadow-glow-sm' : 'border-line bg-raised/60 text-fg-secondary hover:border-action/50 hover:text-fg',
+                )}
+              >
+                {key === 'all' ? copy.gallery.all : copy.gallery.category[key]}
+                <span className="machine text-[11px] text-fg-tertiary tabular-nums">{count}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p aria-live="polite" className="text-caption text-fg-tertiary">
+          {copy.gallery.count(filtered.length)}
+        </p>
+      </div>
+      <p className="mt-3 max-w-[70ch] text-caption text-fg-tertiary">{copy.card.lanesNote}</p>
+
+      {visible.length ? (
+        <ul className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {visible.map((item) => (
+            <li key={item.slug}>
+              <ResultCard item={item} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-8 rounded-xl border border-line-subtle bg-surface p-6 text-body text-fg-secondary">{copy.gallery.empty}</p>
+      )}
+
+      {hidden > 0 ? (
+        <div className="mt-8 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setLimit((value) => value + PAGE)}
+            className="pressable inline-flex min-h-12 items-center gap-2 rounded-full border border-line-strong bg-raised px-6 text-[15px] font-medium text-fg shadow-edge hover:border-action/60"
+          >
+            {copy.gallery.more(hidden)}
+            <ChevronDown aria-hidden className="size-4" />
+          </button>
+        </div>
+      ) : null}
+    </section>
+  );
+}

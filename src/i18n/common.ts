@@ -33,7 +33,7 @@ export const COMMON: Copy<CommonCopy> = {
   'zh-hant': {
     languageName: '繁體中文',
     skipToContent: '跳至主要內容',
-    nav: { home: '首頁', tour: '操作導覽', benchmarks: '效能實測', about: '關於' },
+    nav: { home: '首頁', tour: '操作導覽', showcase: '作品', benchmarks: '效能實測', about: '關於' },
     navLabel: '主要導覽',
     menuOpen: '開啟選單',
     menuClose: '關閉選單',
@@ -61,7 +61,7 @@ export const COMMON: Copy<CommonCopy> = {
   ja: {
     languageName: '日本語',
     skipToContent: 'メインコンテンツへスキップ',
-    nav: { home: 'ホーム', tour: '操作ガイド', benchmarks: 'ベンチマーク', about: 'このプロジェクトについて' },
+    nav: { home: 'ホーム', tour: '操作ガイド', showcase: '作例', benchmarks: 'ベンチマーク', about: 'このプロジェクトについて' },
     navLabel: 'メインナビゲーション',
     menuOpen: 'メニューを開く',
     menuClose: 'メニューを閉じる',
@@ -89,7 +89,7 @@ export const COMMON: Copy<CommonCopy> = {
   en: {
     languageName: 'English',
     skipToContent: 'Skip to Main Content',
-    nav: { home: 'Home', tour: 'Tour', benchmarks: 'Benchmarks', about: 'About' },
+    nav: { home: 'Home', tour: 'Tour', showcase: 'Showcase', benchmarks: 'Benchmarks', about: 'About' },
     navLabel: 'Main navigation',
     menuOpen: 'Open menu',
     menuClose: 'Close menu',
