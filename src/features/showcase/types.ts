@@ -27,9 +27,11 @@ export interface ShowcaseStepJson {
   seconds: number | null;
   /** Optional: the value is a rounded reading ("~23 s"). */
   approx?: boolean;
+  /** Optional: the component instance that ran the step (te-gb10, dit-5080…). */
+  component?: string;
 }
 
-/** The reference an item was made from: another item's slug, a file in the item folder, or a short label. */
+/** The reference an item was made from: another item's slug, a file (in the item folder or relative to the project root), or a label. */
 export type ShowcaseReferenceJson = string | { slug?: string; file?: string; label?: string };
 
 export interface ShowcaseItemJson {
@@ -70,6 +72,8 @@ export interface ShowcaseStep {
   machines: readonly MachineKey[];
   seconds: number | null;
   approx: boolean;
+  /** Component instance id (never translated), when the item recorded it. */
+  component?: string;
 }
 
 export interface ShowcaseImage {
@@ -90,6 +94,8 @@ export interface ShowcaseMedia {
   contact?: ShowcaseImage;
   /** Loudness of the raw output before the web copy was normalised (LUFS, integrated), when it had sound. */
   rawLufs?: number;
+  /** Sample rate of the raw output's sound (H3 writes 32 kHz AAC). */
+  rawSampleRate?: number;
 }
 
 export interface ShowcaseReference {

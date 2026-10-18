@@ -76,8 +76,12 @@ interface SeedEntry extends ShowcaseItemJson {
 interface Candidate {
   json: ShowcaseItemJson;
   origin: string;
+  /** The item folder (absent for seeds). */
+  folder?: string;
   still?: string;
   clip?: string;
+  /** A loudness-normalised web copy made by the producer (web.mp4); used instead of normalising again. */
+  web?: string;
   /** A supplied poster (films: poster.jpg); otherwise a frame is taken from the clip. */
   poster?: string;
   prompt?: string;
@@ -174,7 +178,19 @@ function measure(file: string): Record<string, string> | undefined {
  * Web copy of a clip: H.264 + AAC with the index up front; native size, never upscaled. Sound is loudness-normalised
  * (two-pass loudnorm to -16 LUFS, -1.5 dBTP, 48 kHz AAC 192k). Returns the raw integrated loudness.
  */
-function webClip(source: string, slug: string): { path: string; rawLufs?: number } {
+interface WebClip {
+  path: string;
+  rawLufs?: number;
+  rawSampleRate?: number;
+}
+
+function rawRate(raw: string): { rawSampleRate?: number } {
+  const rate = Number(probe(raw).streams.find((s) => s.codec_type === 'audio')?.sample_rate);
+  return Number.isFinite(rate) && rate > 0 ? { rawSampleRate: rate } : {};
+}
+
+function webClip(source: string, slug: string, ready?: string): WebClip {
+  if (ready) return readyClip(source, ready, slug);
   const info = probe(source);
   const video = info.streams.find((s) => s.codec_type === 'video');
   const audio = info.streams.find((s) => s.codec_type === 'audio');
@@ -197,7 +213,31 @@ function webClip(source: string, slug: string): { path: string; rawLufs?: number
     remember(output, source, params);
     if (rawLufs !== undefined && Number.isFinite(rawLufs)) (cache[output] as CacheEntry).rawLufs = rawLufs;
   }
-  return { path: `showcase/${slug}.mp4`, ...(rawLufs !== undefined && Number.isFinite(rawLufs) ? { rawLufs: Math.round(rawLufs * 10) / 10 } : {}) };
+  return { path: `showcase/${slug}.mp4`, ...(rawLufs !== undefined && Number.isFinite(rawLufs) ? { rawLufs: Math.round(rawLufs * 10) / 10 } : {}), ...rawRate(source) };
+}
+
+/**
+ * A producer's web copy (web.mp4, already two-pass loudnorm -16 LUFS / 48 kHz AAC): checked, then remuxed with +faststart
+ * (no re-encode). The raw clip is still measured, for the page's note on raw loudness.
+ */
+function readyClip(raw: string, ready: string, slug: string): WebClip {
+  const info = probe(ready);
+  const video = info.streams.find((s) => s.codec_type === 'video');
+  const audio = info.streams.find((s) => s.codec_type === 'audio');
+  if (video?.codec_name !== 'h264' || video.pix_fmt !== 'yuv420p') return webClip(raw, slug);
+  if (audio && audio.codec_name !== 'aac') return webClip(raw, slug);
+  const output = join(MEDIA, `${slug}.mp4`);
+  const params = 'ready-web-copy';
+  produced.add(output);
+  let rawLufs = cache[output]?.rawLufs;
+  if (!DRY && !fresh(output, ready, params)) {
+    const level = audio && raw !== ready ? measure(raw) : undefined;
+    rawLufs = level ? Number(level.input_i) : undefined;
+    run(FFMPEG, ['-y', '-v', 'error', '-i', ready, '-map', '0', '-c', 'copy', '-movflags', '+faststart', output]);
+    remember(output, ready, params);
+    if (rawLufs !== undefined && Number.isFinite(rawLufs)) (cache[output] as CacheEntry).rawLufs = rawLufs;
+  }
+  return { path: `showcase/${slug}.mp4`, ...(rawLufs !== undefined && Number.isFinite(rawLufs) ? { rawLufs: Math.round(rawLufs * 10) / 10 } : {}), ...rawRate(raw) };
 }
 
 function machines(text: string): MachineKey[] {
@@ -261,12 +301,14 @@ function loadCandidates(): Candidate[] {
       const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
       const ref = json.reference;
       const refName = typeof ref === 'string' ? ref : ref?.file;
-      const candidate: Candidate = { json, origin: name };
+      const candidate: Candidate = { json, origin: name, folder };
       const still = file('still.png');
       const clip = file('clip.mp4');
+      const web = file('web.mp4');
+      if (web) candidate.web = web;
       const prompt = file('prompt.txt');
       const contact = file('contact.jpg');
-      const referenceFile = refName ? file(refName) : undefined;
+      const referenceFile = refName ? (file(refName) ?? (existsSync(join(ROOT, refName)) ? join(ROOT, refName) : undefined)) : undefined;
       if (still) candidate.still = still;
       if (clip) candidate.clip = clip;
       if (prompt) candidate.prompt = prompt;
@@ -290,8 +332,10 @@ function loadCandidates(): Candidate[] {
         continue;
       }
       const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
-      const candidate: Candidate = { json: { ...json, kind: json.kind ?? 'film' }, origin: `films/${name}` };
+      const candidate: Candidate = { json: { ...json, kind: json.kind ?? 'film' }, origin: `films/${name}`, folder };
       const clip = file('film.mp4') ?? file('clip.mp4');
+      const web = file('web.mp4');
+      if (web) candidate.web = web;
       const poster = file('poster.jpg') ?? file('poster.png') ?? file('poster.webp');
       const prompt = file('prompt.txt');
       const contact = file('contact.jpg');
@@ -306,7 +350,7 @@ function loadCandidates(): Candidate[] {
   return [...bySlug.values()];
 }
 
-function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefined {
+function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, string>): ShowcaseItem | undefined {
   const { json, origin } = candidate;
   const fail = (reason: string) => {
     skipped.push(`${origin}: ${reason}`);
@@ -347,14 +391,15 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
     machines: machines(String(step.machine ?? '')),
     seconds: num(step.seconds),
     approx: Boolean(step.approx),
+    ...(typeof step.component === 'string' && step.component && !isPrivate(step.component) ? { component: step.component } : {}),
   }));
   for (const step of steps) if (step.machines.includes('unknown')) problems.push(`${origin}: step "${step.id}" has no recognised machine (shown as "placement not recorded")`);
 
   try {
     let image: ShowcaseImage;
-    let clip: { path: string; rawLufs?: number } | undefined;
+    let clip: WebClip | undefined;
     if (candidate.clip) {
-      clip = webClip(candidate.clip, json.slug);
+      clip = webClip(candidate.clip, json.slug, candidate.web);
       const length = num(json.seconds) ?? Number(probe(candidate.clip).format.duration);
       const at = num(json.posterAt) ?? Math.max(0, length * 0.4);
       const posterWidths = json.kind === 'film' ? [1920, 1280, 768] : POSTER_WIDTHS;
@@ -371,7 +416,10 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
       const label = typeof ref === 'object' ? ref.label : undefined;
       reference = {};
       if (slug && slugs.has(slug)) reference.slug = slug;
-      if (candidate.referenceFile) reference.image = webpSet(candidate.referenceFile, `${json.slug}-ref`, [768, 384]);
+      // A reference file that is another result's own source links to that result instead of a copy.
+      const owner = candidate.referenceFile ? sources.get(resolve(candidate.referenceFile)) : undefined;
+      if (owner && owner !== json.slug) reference.slug = owner;
+      else if (candidate.referenceFile) reference.image = webpSet(candidate.referenceFile, `${json.slug}-ref`, [768, 384]);
       if (label && !isPrivate(label)) reference.label = label;
       if (!reference.slug && !reference.image && !reference.label) {
         problems.push(`${origin}: reference "${typeof ref === 'string' ? ref : JSON.stringify(ref)}" matched no item or file`);
@@ -404,7 +452,7 @@ function build(candidate: Candidate, slugs: Set<string>): ShowcaseItem | undefin
       prompt,
       media: {
         image,
-        ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined ? { rawLufs: clip.rawLufs } : {}) } : {}),
+        ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined ? { rawLufs: clip.rawLufs } : {}), ...(clip.rawSampleRate ? { rawSampleRate: clip.rawSampleRate } : {}) } : {}),
         ...(contact ? { contact } : {}),
       },
     };
@@ -439,9 +487,12 @@ if (!DRY) {
 
 const candidates = loadCandidates();
 const slugs = new Set(candidates.map((c) => c.json.slug));
+/** Source file → slug, so a reference given as a path can link to the result made from it. */
+const sources = new Map<string, string>();
+for (const c of candidates) for (const file of [c.still, c.clip]) if (file) sources.set(resolve(file), c.json.slug);
 const items: ShowcaseItem[] = [];
 for (const candidate of candidates) {
-  const item = build(candidate, slugs);
+  const item = build(candidate, slugs, sources);
   if (item) {
     items.push(item);
     console.log(`import-showcase: ${item.slug} (${item.kind}, ${item.grade}${item.media.rawLufs !== undefined ? `, raw ${item.media.rawLufs} LUFS → -16` : ''})`);
@@ -450,12 +501,13 @@ for (const candidate of candidates) {
 // A reference must point at a published item.
 for (const item of items) if (item.reference?.slug && !items.some((other) => other.slug === item.reference?.slug)) delete item.reference.slug;
 
-// Seeds keep their curated order; folder items follow, newest first within each grade.
+// Seeds keep their curated order; folder items follow, hero first, then in production order (a shot series stays in order
+// and new results append instead of reshuffling the top).
 const seedCount = candidates.filter((c) => c.origin.startsWith('seed:')).length;
 const seeded = items.filter((item) => candidates.find((c) => c.json.slug === item.slug)?.origin.startsWith('seed:'));
 const farmed = items
   .filter((item) => !seeded.includes(item))
-  .sort((a, b) => (a.grade === b.grade ? b.createdAt.localeCompare(a.createdAt) : a.grade === 'hero' ? -1 : 1));
+  .sort((a, b) => (a.grade === b.grade ? a.createdAt.localeCompare(b.createdAt) : a.grade === 'hero' ? -1 : 1));
 // Films lead (the owner's #1 asset), then the curated seeds, then new results.
 const ordered = [...farmed.filter((item) => item.kind === 'film'), ...seeded, ...farmed.filter((item) => item.kind !== 'film')];
 

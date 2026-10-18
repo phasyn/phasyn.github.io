@@ -96,7 +96,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-ocean.mp4",
-      "rawLufs": -50.6
+      "rawLufs": -50.6,
+      "rawSampleRate": 32000
     }
   },
   // ref2va-rooftop: studio/gen/clips/ref2va-rooftop; one reference image (the character sheet).
@@ -201,7 +202,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/ref2va-rooftop.mp4",
-      "rawLufs": -36.1
+      "rawLufs": -36.1,
+      "rawSampleRate": 32000
     }
   },
   // fl2va-rain: studio/gen/clips/fl2va-rain; run record captured in work/real-ui/records-run-steps (created 15:35:41, elapsed 57.156 s).
@@ -297,7 +299,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-rain.mp4",
-      "rawLufs": -39.2
+      "rawLufs": -39.2,
+      "rawSampleRate": 32000
     }
   },
   // ref2va-meadow: studio/gen/clips/ref2va-meadow; one reference image (the character sheet).
@@ -402,7 +405,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/ref2va-meadow.mp4",
-      "rawLufs": -45.7
+      "rawLufs": -45.7,
+      "rawSampleRate": 32000
     }
   },
   // fl2va-cliff: studio/gen/clips/fl2va-cliff; first FL2VA run of the session.
@@ -498,7 +502,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-cliff.mp4",
-      "rawLufs": -44.9
+      "rawLufs": -44.9,
+      "rawSampleRate": 32000
     }
   },
   // fl2va-portrait: studio/gen/clips/fl2va-portrait.
@@ -594,7 +599,8 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "height": 448
       },
       "clip": "showcase/fl2va-portrait.mp4",
-      "rawLufs": -47.3
+      "rawLufs": -47.3,
+      "rawSampleRate": 32000
     }
   },
   // still-cliff: studio/gen/stills/cliff; step times are the session's rounded readings, shared by all four stills.
@@ -932,6 +938,482 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
         "srcSet": "/images/showcase/items/char-courier-768.webp 768w, /images/showcase/items/char-courier-384.webp 384w",
         "width": 768,
         "height": 1024
+      }
+    }
+  },
+  // rooftop-courier-s1: Film shot S1 (shot list by the lead). 243 frames Ref2VA from the Courier reference sheet: identity, hair ornament, cloak trim and satchel hold through a slow push-in from a wide dusk view to a night profile; face and hand crops clean. Audio: AAC 32000 Hz; raw -48.4 LUFS, TP -25.4 dBFS. web.mp4 = loudness-normalised copy (-16.0 LUFS, TP -2.4 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  {
+    "slug": "rooftop-courier-s1",
+    "title": {
+      "zh-hant": "屋頂信使・暮色啟程",
+      "ja": "屋上の配達人・夕暮れの出発",
+      "en": "Rooftop Courier · Dusk Departure"
+    },
+    "kind": "ref2va",
+    "category": "character",
+    "pipeline": "ref2va-pc",
+    "runId": "c11f2c4b-c38f-402f-aeeb-e8329bc117fd",
+    "outputId": "df67edb6-653a-4e7b-8a34-199e262180fa",
+    "seed": 9011,
+    "model": "MiniMax H3",
+    "ditEngine": "dit5080-ref2va-fp8-pai8 (H3 Ref2VA · FP8 · PAI 8 steps)",
+    "width": 768,
+    "height": 448,
+    "frames": 243,
+    "fps": 24,
+    "seconds": 10.125,
+    "endToEndSeconds": 195.2,
+    "endToEndApprox": false,
+    "steps": [
+      {
+        "id": "te",
+        "label": "Text encode",
+        "machines": [
+          "gb10"
+        ],
+        "seconds": 8.5,
+        "approx": false,
+        "component": "te-gb10"
+      },
+      {
+        "id": "venc",
+        "label": "Video VAE encode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 9.2,
+        "approx": false,
+        "component": "venc-5080"
+      },
+      {
+        "id": "aenc",
+        "label": "Audio VAE encode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1.2,
+        "approx": false,
+        "component": "aenc-3060"
+      },
+      {
+        "id": "dit",
+        "label": "DiT denoise",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 128.5,
+        "approx": false,
+        "component": "dit5080-ref2va-fp8-pai8"
+      },
+      {
+        "id": "video",
+        "label": "Video VAE decode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 47.8,
+        "approx": false,
+        "component": "vae-5080"
+      },
+      {
+        "id": "audio",
+        "label": "Audio VAE decode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 5.3,
+        "approx": false,
+        "component": "audio-3060"
+      },
+      {
+        "id": "mux",
+        "label": "Mux",
+        "machines": [
+          "cpu"
+        ],
+        "seconds": 0.4,
+        "approx": false,
+        "component": "mux"
+      }
+    ],
+    "reference": {
+      "slug": "char-courier"
+    },
+    "grade": "hero",
+    "createdAt": "2026-10-18T11:38:10.930Z",
+    "prompt": "subject_definitions:\n<Subject 1> is the young woman shown in <Picture 1>, with long silver-white hair with faint cyan highlights, calm violet-grey eyes, a dark navy hooded travel cloak edged with a thin luminous cyan-to-violet trim, a small hair ornament of three stacked translucent glass frames, brown leather boots and a leather satchel on a cross-body strap.\n\nsummary:\n[reference generation] At dusk <Subject 1> stands at the edge of a high rooftop above a vast hillside city, looks at a small glowing parcel and tucks it into her satchel, keeping the exact appearance from <Picture 1>.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - face, silver-white hair with cyan highlights, violet-grey eyes, the navy cloak with its luminous cyan-to-violet trim, the glass-frame hair ornament, boots and satchel.\n\ndetailed_description:\nHigh-end 2D anime film style, dusk light fading from warm orange to deep blue, rich painterly backgrounds and crisp clean lineart.\n[Shot 1] A wide shot from behind and slightly above. <Subject 1> stands at the low parapet of a high concrete rooftop, her cloak and long silver-white hair moving in the evening wind, a vast hillside city spreading below toward the sea. She lifts a small parcel wrapped in pale paper and tied with string; it glows softly cyan from inside, lighting her fingers and face. She looks at it for a moment, then tucks it carefully into her leather satchel and closes the flap. Across the city, windows and street lights switch on one district after another. The camera pushes in slowly and arcs around to her profile, ending on her calm, determined face against the darkening sky.\n\noverall_soundscape:\nSteady evening wind across the rooftop, the flutter of the cloak, a faint crystalline chime from the glowing parcel, distant traffic and a far-off train horn, birds settling for the night.\n\nnon_diegetic_music:\nN/A",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/rooftop-courier-s1-poster-768.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s1-poster-768.webp 768w, /images/showcase/items/rooftop-courier-s1-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/rooftop-courier-s1.mp4",
+      "rawLufs": -48.5,
+      "rawSampleRate": 32000,
+      "contact": {
+        "src": "/images/showcase/items/rooftop-courier-s1-contact-1152.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s1-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 546
+      }
+    }
+  },
+  // rooftop-courier-s3: Film shot S3. 243 frames Ref2VA: a 10 s side-tracking sprint across wet rooftops with synced splashes; running poses hold in 1:1 crops (slight motion smear on the trailing leg). Background neon signs carry pseudo-CJK glyphs (one resembles real characters); no brands. Audio: AAC 32000 Hz; raw -37.2 LUFS, TP -12.3 dBFS. web.mp4 = loudness-normalised copy (-17.9 LUFS, TP -2.0 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  {
+    "slug": "rooftop-courier-s3",
+    "title": {
+      "zh-hant": "屋頂信使・雨夜疾奔",
+      "ja": "屋上の配達人・雨夜の疾走",
+      "en": "Rooftop Courier · Night Run"
+    },
+    "kind": "ref2va",
+    "category": "character",
+    "pipeline": "ref2va-pc",
+    "runId": "a5fcea35-c02a-42e3-932d-a42c0b50a300",
+    "outputId": "3e5281c3-d2aa-4286-8468-44367b40cf70",
+    "seed": 9031,
+    "model": "MiniMax H3",
+    "ditEngine": "dit5080-ref2va-fp8-pai8 (H3 Ref2VA · FP8 · PAI 8 steps)",
+    "width": 768,
+    "height": 448,
+    "frames": 243,
+    "fps": 24,
+    "seconds": 10.125,
+    "endToEndSeconds": 180.1,
+    "endToEndApprox": false,
+    "steps": [
+      {
+        "id": "te",
+        "label": "Text encode",
+        "machines": [
+          "gb10"
+        ],
+        "seconds": 8.4,
+        "approx": false,
+        "component": "te-gb10"
+      },
+      {
+        "id": "venc",
+        "label": "Video VAE encode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 5.1,
+        "approx": false,
+        "component": "venc-5080"
+      },
+      {
+        "id": "aenc",
+        "label": "Audio VAE encode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1,
+        "approx": false,
+        "component": "aenc-3060"
+      },
+      {
+        "id": "dit",
+        "label": "DiT denoise",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 122.7,
+        "approx": false,
+        "component": "dit5080-ref2va-fp8-pai8"
+      },
+      {
+        "id": "video",
+        "label": "Video VAE decode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 43.5,
+        "approx": false,
+        "component": "vae-5080"
+      },
+      {
+        "id": "audio",
+        "label": "Audio VAE decode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1.1,
+        "approx": false,
+        "component": "audio-3060"
+      },
+      {
+        "id": "mux",
+        "label": "Mux",
+        "machines": [
+          "cpu"
+        ],
+        "seconds": 0.4,
+        "approx": false,
+        "component": "mux"
+      }
+    ],
+    "reference": {
+      "slug": "char-courier"
+    },
+    "grade": "hero",
+    "createdAt": "2026-10-18T11:43:11.936Z",
+    "prompt": "subject_definitions:\n<Subject 1> is the young woman shown in <Picture 1>, with long silver-white hair with faint cyan highlights, calm violet-grey eyes, a dark navy hooded travel cloak edged with a thin luminous cyan-to-violet trim, a small hair ornament of three stacked translucent glass frames, brown leather boots and a leather satchel on a cross-body strap.\n\nsummary:\n[reference generation] <Subject 1> sprints across rain-soaked rooftops at night, splashing through neon puddles and vaulting a low pipe, keeping the exact appearance from <Picture 1>.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - face, silver-white hair with cyan highlights, violet-grey eyes, the navy cloak with its luminous cyan-to-violet trim, the glass-frame hair ornament, boots and satchel.\n\ndetailed_description:\nHigh-end 2D anime film style, night, heavy rain, cyan and violet neon reflections, crisp clean lineart.\n[Shot 1] A side tracking shot at rooftop height. <Subject 1>, hood up, sprints from left to right across a chain of flat wet rooftops. Her boots splash through shallow puddles that mirror glowing shop signs below; spray flies with each step. She vaults cleanly over a low horizontal pipe with one hand and keeps running without losing speed. Her cloak streams behind her and its cyan-to-violet trim leaves a faint glowing trail in the rain. Water tanks, antennas and dripping laundry lines rush past in the foreground. The camera tracks alongside her at the same speed, slightly ahead, with rain streaks catching the neon light.\n\noverall_soundscape:\nHeavy steady rain, fast splashing footsteps on wet concrete, rushing wind, the snap of the cloak, a distant roll of thunder.\n\nnon_diegetic_music:\nN/A",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/rooftop-courier-s3-poster-768.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s3-poster-768.webp 768w, /images/showcase/items/rooftop-courier-s3-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/rooftop-courier-s3.mp4",
+      "rawLufs": -37.2,
+      "rawSampleRate": 32000,
+      "contact": {
+        "src": "/images/showcase/items/rooftop-courier-s3-contact-1152.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s3-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 546
+      }
+    }
+  },
+  // rooftop-courier-s4: Film shot S4. 124 frames Ref2VA, low angle from the gap: she jumps from the far roof toward the camera and lands in a crouch with a splash; landing crops (face, hand, boots) are clean. The leap reads as a jump down toward the camera rather than strictly across the gap. Audio: AAC 32000 Hz; raw -28.9 LUFS, TP -8.1 dBFS. web.mp4 = loudness-normalised copy (-15.7 LUFS, TP -2.2 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  {
+    "slug": "rooftop-courier-s4",
+    "title": {
+      "zh-hant": "屋頂信使・躍過樓隙",
+      "ja": "屋上の配達人・ビルの谷間を跳ぶ",
+      "en": "Rooftop Courier · The Leap"
+    },
+    "kind": "ref2va",
+    "category": "character",
+    "pipeline": "ref2va-pc",
+    "runId": "fd5913b2-6228-4987-9764-e2fcfe101b2f",
+    "outputId": "2c971827-855c-445f-8567-af9c6471adb1",
+    "seed": 9041,
+    "model": "MiniMax H3",
+    "ditEngine": "dit5080-ref2va-fp8-pai8 (H3 Ref2VA · FP8 · PAI 8 steps)",
+    "width": 768,
+    "height": 448,
+    "frames": 124,
+    "fps": 24,
+    "seconds": 5.167,
+    "endToEndSeconds": 103.3,
+    "endToEndApprox": false,
+    "steps": [
+      {
+        "id": "te",
+        "label": "Text encode",
+        "machines": [
+          "gb10"
+        ],
+        "seconds": 8.3,
+        "approx": false,
+        "component": "te-gb10"
+      },
+      {
+        "id": "venc",
+        "label": "Video VAE encode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 5,
+        "approx": false,
+        "component": "venc-5080"
+      },
+      {
+        "id": "aenc",
+        "label": "Audio VAE encode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1,
+        "approx": false,
+        "component": "aenc-3060"
+      },
+      {
+        "id": "dit",
+        "label": "DiT denoise",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 67.1,
+        "approx": false,
+        "component": "dit5080-ref2va-fp8-pai8"
+      },
+      {
+        "id": "video",
+        "label": "Video VAE decode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 22.4,
+        "approx": false,
+        "component": "vae-5080"
+      },
+      {
+        "id": "audio",
+        "label": "Audio VAE decode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1,
+        "approx": false,
+        "component": "audio-3060"
+      },
+      {
+        "id": "mux",
+        "label": "Mux",
+        "machines": [
+          "cpu"
+        ],
+        "seconds": 0.3,
+        "approx": false,
+        "component": "mux"
+      }
+    ],
+    "reference": {
+      "slug": "char-courier"
+    },
+    "grade": "hero",
+    "createdAt": "2026-10-18T11:46:12.798Z",
+    "prompt": "subject_definitions:\n<Subject 1> is the young woman shown in <Picture 1>, with long silver-white hair with faint cyan highlights, calm violet-grey eyes, a dark navy hooded travel cloak edged with a thin luminous cyan-to-violet trim, a small hair ornament of three stacked translucent glass frames, brown leather boots and a leather satchel on a cross-body strap.\n\nsummary:\n[reference generation] <Subject 1> leaps across a wide gap between two buildings in the rain at night and lands in a crouch on the far roof, keeping the exact appearance from <Picture 1>.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - face, silver-white hair with cyan highlights, violet-grey eyes, the navy cloak with its luminous cyan-to-violet trim, the glass-frame hair ornament, boots and satchel.\n\ndetailed_description:\nHigh-end 2D anime film style, night rain, neon skyline, crisp clean lineart, dramatic low angle.\n[Shot 1] A low-angle shot looking up from inside the gap between two tall buildings. <Subject 1> runs to the edge of the left roof, plants one boot on the parapet and leaps across the wide gap. For a moment she is airborne against a rain-streaked skyline of glowing cyan and violet signs, her cloak spread wide and her hair flowing, rain drops frozen in the light. She lands smoothly on the far roof in a low crouch, one hand touching the wet concrete, water splashing around her. The camera tilts up to follow the jump and settles as she lands.\n\noverall_soundscape:\nRushing wind and rain, a brief hush while she is in the air, a solid thud and splash on landing, distant thunder.\n\nnon_diegetic_music:\nN/A",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/rooftop-courier-s4-poster-768.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s4-poster-768.webp 768w, /images/showcase/items/rooftop-courier-s4-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/rooftop-courier-s4.mp4",
+      "rawLufs": -28.1,
+      "rawSampleRate": 32000,
+      "contact": {
+        "src": "/images/showcase/items/rooftop-courier-s4-contact-1152.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s4-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 274
+      }
+    }
+  },
+  // rooftop-courier-s6: Film shot S6. 124 frames Ref2VA: she drops in from above onto the roof of a fast train and steadies herself as the neon city streaks past. The drop happens within ~0.5 s (hair streaks during the fall); the train reads as a commuter train rather than a maglev. Background signs show pseudo-glyphs. Audio: AAC 32000 Hz; raw -32.9 LUFS, TP -9.6 dBFS. web.mp4 = loudness-normalised copy (-16.3 LUFS, TP -2.3 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  {
+    "slug": "rooftop-courier-s6",
+    "title": {
+      "zh-hant": "屋頂信使・躍上列車",
+      "ja": "屋上の配達人・列車の屋根へ",
+      "en": "Rooftop Courier · Onto the Train"
+    },
+    "kind": "ref2va",
+    "category": "character",
+    "pipeline": "ref2va-pc",
+    "runId": "a286077b-a202-411f-ad95-ccb0818663d7",
+    "outputId": "c4391681-05ce-47a4-b504-c0668a587710",
+    "seed": 9061,
+    "model": "MiniMax H3",
+    "ditEngine": "dit5080-ref2va-fp8-pai8 (H3 Ref2VA · FP8 · PAI 8 steps)",
+    "width": 768,
+    "height": 448,
+    "frames": 124,
+    "fps": 24,
+    "seconds": 5.167,
+    "endToEndSeconds": 105,
+    "endToEndApprox": false,
+    "steps": [
+      {
+        "id": "te",
+        "label": "Text encode",
+        "machines": [
+          "gb10"
+        ],
+        "seconds": 8.3,
+        "approx": false,
+        "component": "te-gb10"
+      },
+      {
+        "id": "venc",
+        "label": "Video VAE encode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 5.7,
+        "approx": false,
+        "component": "venc-5080"
+      },
+      {
+        "id": "aenc",
+        "label": "Audio VAE encode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 1.4,
+        "approx": false,
+        "component": "aenc-3060"
+      },
+      {
+        "id": "dit",
+        "label": "DiT denoise",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 67.7,
+        "approx": false,
+        "component": "dit5080-ref2va-fp8-pai8"
+      },
+      {
+        "id": "video",
+        "label": "Video VAE decode",
+        "machines": [
+          "rtx5080"
+        ],
+        "seconds": 22.6,
+        "approx": false,
+        "component": "vae-5080"
+      },
+      {
+        "id": "audio",
+        "label": "Audio VAE decode",
+        "machines": [
+          "rtx3060"
+        ],
+        "seconds": 0.9,
+        "approx": false,
+        "component": "audio-3060"
+      },
+      {
+        "id": "mux",
+        "label": "Mux",
+        "machines": [
+          "cpu"
+        ],
+        "seconds": 0.4,
+        "approx": false,
+        "component": "mux"
+      }
+    ],
+    "reference": {
+      "slug": "char-courier"
+    },
+    "grade": "usable",
+    "createdAt": "2026-10-18T11:47:58.233Z",
+    "prompt": "subject_definitions:\n<Subject 1> is the young woman shown in <Picture 1>, with long silver-white hair with faint cyan highlights, calm violet-grey eyes, a dark navy hooded travel cloak edged with a thin luminous cyan-to-violet trim, a small hair ornament of three stacked translucent glass frames, brown leather boots and a leather satchel on a cross-body strap.\n\nsummary:\n[reference generation] <Subject 1> drops from a low rooftop onto the roof of a passing maglev train at night and steadies herself, keeping the exact appearance from <Picture 1>.\n\nretention_analysis:\n<Subject 1> (appears in [Shot 1]): fully_preserved - face, silver-white hair with cyan highlights, violet-grey eyes, the navy cloak with its luminous cyan-to-violet trim, the glass-frame hair ornament, boots and satchel.\n\ndetailed_description:\nHigh-end 2D anime film style, night, light rain, neon city, crisp clean lineart, motion blur in the background.\n[Shot 1] A medium shot from the roof of a sleek white maglev train gliding fast through a neon city. <Subject 1> drops down from a low rooftop at the edge of the frame and lands on the flat train roof with bent knees, one hand down for balance. She rises carefully and finds her footing, her hood blown back and her silver-white hair and cloak snapping in the strong wind. Neon signs and lit windows streak past in long light trails behind her. The camera moves with the train, steady, at her height.\n\noverall_soundscape:\nA deep steady electric hum of the maglev, strong roaring wind, a metallic footstep on landing, light rain hitting the train roof.\n\nnon_diegetic_music:\nN/A",
+    "media": {
+      "image": {
+        "src": "/images/showcase/items/rooftop-courier-s6-poster-768.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s6-poster-768.webp 768w, /images/showcase/items/rooftop-courier-s6-poster-384.webp 384w",
+        "width": 768,
+        "height": 448
+      },
+      "clip": "showcase/rooftop-courier-s6.mp4",
+      "rawLufs": -33.7,
+      "rawSampleRate": 32000,
+      "contact": {
+        "src": "/images/showcase/items/rooftop-courier-s6-contact-1152.webp",
+        "srcSet": "/images/showcase/items/rooftop-courier-s6-contact-1152.webp 1152w",
+        "width": 1152,
+        "height": 274
       }
     }
   },

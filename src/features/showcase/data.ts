@@ -41,8 +41,17 @@ export function itemBySlug(slug: string): ShowcaseItem | undefined {
   return ITEMS.find((item) => item.slug === slug);
 }
 
-/** Hero-graded results for the hero theatre, films first, in data order (the importer keeps the curated seed order). */
-export const FEATURED: readonly ShowcaseItem[] = ITEMS.filter((item) => item.grade === 'hero');
+/**
+ * The hero theatre: films, then hero-graded results with the longest pieces first (the owner ranks long video highest);
+ * equal lengths keep data order (curated seeds, then production order).
+ */
+export const FEATURED: readonly ShowcaseItem[] = [
+  ...ITEMS.filter((item) => item.kind === 'film'),
+  ...ITEMS.filter((item) => item.kind !== 'film' && item.grade === 'hero')
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => (b.item.seconds ?? 0) - (a.item.seconds ?? 0) || a.index - b.index)
+    .map(({ item }) => item),
+];
 
 export function isClip(item: ShowcaseItem): boolean {
   return Boolean(item.media.clip);
@@ -108,6 +117,14 @@ export function totals(items: readonly ShowcaseItem[] = ITEMS): Totals {
     gpus,
     hosts,
   };
+}
+
+/** Raw loudness range and sample rates of the published clips, for the loudness note (computed, never typed in). */
+export function rawAudio(items: readonly ShowcaseItem[] = ITEMS): { loudest: number; quietest: number; rates: number[] } | undefined {
+  const levels = items.map((item) => item.media.rawLufs).filter((value): value is number => typeof value === 'number');
+  if (!levels.length) return undefined;
+  const rates = [...new Set(items.map((item) => item.media.rawSampleRate).filter((value): value is number => typeof value === 'number'))].sort((a, b) => a - b);
+  return { loudest: Math.max(...levels), quietest: Math.min(...levels), rates };
 }
 
 /** Range of end-to-end times for one pipeline, e.g. fl2va-pc 57.2–76 s. */

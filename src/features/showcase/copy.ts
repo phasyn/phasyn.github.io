@@ -117,7 +117,7 @@ export interface ShowcaseCopy {
     tour: string;
     items: Record<WorkflowId, Workflow>;
   };
-  notes: { title: string; items: readonly string[] };
+  notes: { title: string; items: readonly string[]; loudness: (loudest: string, quietest: string, rates: string) => string; glyphs: string };
   closing: { title: string; lead: string; tour: string; benchmarks: string };
 }
 
@@ -273,11 +273,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     notes: {
       title: '關於這些結果',
+      loudness: (loudest, quietest, rates) => `網頁版已做響度正規化；原始輸出約 ${loudest}～${quietest} LUFS、AAC ${rates}。`,
+      glyphs: '部分畫面裡的招牌文字，是模型生成的偽文字，不是真實的店名或品牌。',
       items: [
         '全部是 AI 生成：圖片來自 Qwen-Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i-pc、fl2va-pc、ref2va-pc）在作者的機器上生成。「The Courier」是原創角色。',
         '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen-Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
         '以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版只做了壓縮（WebP、H.264）。',
-        '網頁版已做響度正規化；原始輸出約 −37～−50 LUFS、AAC 32 kHz。',
         '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit-5080 45.9 秒、Ref2VA DiT 40.6 秒）。四張圖片的步驟時間是約略值。',
         '不同 GPU 上的步驟可以同時進行（例如影片解碼與音訊解碼），所以步驟加總可能超過端到端時間。',
       ],
@@ -437,11 +438,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     notes: {
       title: 'この作例について',
+      loudness: (loudest, quietest, rates) => `Web 版はラウドネスを正規化しています（元の出力は約 ${loudest}〜${quietest} LUFS、AAC ${rates}）。`,
+      glyphs: '一部の映像に映る看板の文字は、モデルが生成した疑似的な文字で、実在の店名やブランドではありません。',
       items: [
         'すべて AI による生成物です。画像は Qwen-Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i-pc・fl2va-pc・ref2va-pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
         'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen-Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
         'ネイティブ解像度のまま、拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 向けに行ったのは圧縮（WebP、H.264）だけです。',
-        'Web 版はラウドネスを正規化しています（元の出力は約 −37〜−50 LUFS、AAC 32 kHz）。',
         '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit-5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。4 枚の画像のステップ時間は概算です。',
         '別々の GPU のステップ（映像と音声のデコードなど）は同時に進むことがあるため、ステップの合計がエンドツーエンドの時間を超える場合があります。',
       ],
@@ -601,11 +603,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
     },
     notes: {
       title: 'About These Results',
+      loudness: (loudest, quietest, rates) => `Web copy is loudness-normalized; the raw output is about ${loudest} to ${quietest} LUFS, AAC ${rates}.`,
+      glyphs: 'Signs in some shots carry pseudo-text made up by the model, not real shop names or brands.',
       items: [
         'All AI-generated: images by Qwen-Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i-pc, fl2va-pc, ref2va-pc). “The Courier” is an original character.',
         'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen-Image 2.1 is for research and non-commercial use. Model weights are not included.',
         'Shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. The web copies are otherwise only compressed (WebP, H.264).',
-        'Web copy is loudness-normalized; the raw output is about −37 to −50 LUFS, AAC 32 kHz.',
         'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit-5080 45.9 s, Ref2VA DiT 40.6 s). Step times for the four stills are rounded readings.',
         'Steps on different GPUs can run at the same time (video and audio decode, for example), so step times can add up to more than the end-to-end time.',
       ],
