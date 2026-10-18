@@ -77,7 +77,7 @@ export function GridPlayer() {
                 const text = tileText(tile);
                 return (
                   <li key={tile.component + index} className="absolute p-1.5 sm:p-2.5" style={{ left: `${left * 100}%`, top: `${top * 100}%` }}>
-                    <span className="material-hud inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 rounded-md px-1.5 py-0.5 text-[10px] leading-4 text-fg sm:px-2 sm:text-[11px]">
+                    <span className="material-hud inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 rounded-md px-1.5 py-0.5 text-[11px] leading-4 text-fg sm:px-2 sm:text-[12px]">
                       <span className="font-semibold">{text.name}</span>
                       {text.time ? <span className="machine text-fg">{text.time}</span> : null}
                     </span>
@@ -94,7 +94,7 @@ export function GridPlayer() {
               <li key={tile.component + index} className="flex min-w-0 flex-wrap items-baseline gap-x-2">
                 <span className="text-fg-tertiary">{['↖', '↗', '↙', '↘'][index]}</span>
                 <span className="text-fg">{text.name}</span>
-                <code className="machine text-[11px] text-fg-tertiary">{tile.component}</code>
+                <code className="machine text-[12px] text-fg-tertiary">{tile.component}</code>
                 {text.time ? <span className="machine text-fg">{text.time}</span> : null}
               </li>
             );

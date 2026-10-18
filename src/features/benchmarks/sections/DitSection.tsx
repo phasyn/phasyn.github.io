@@ -62,7 +62,7 @@ function VariantBars() {
           {v.dit != null ? <TipRow value={fmtSeconds(locale, v.dit)} label={`${b.wall} · ${copy.machines['pc-rtx5080']}`} /> : null}
           {v.compute != null ? <TipRow value={fmtSeconds(locale, v.compute)} label={b.compute} keyClass="bg-series-1" /> : null}
           {v.reserved != null ? <TipRow value={`${fmtGiB(locale, v.alloc ?? 0)} / ${fmtGiB(locale, v.reserved)} GiB`} label="allocated / reserved" /> : null}
-          <span className="machine text-[11px] text-fg-tertiary">{v.runId ? `run ${v.runId}` : copy.status.loadFailed}</span>
+          <span className="machine text-[12px] text-fg-tertiary">{v.runId ? `run ${v.runId}` : copy.status.loadFailed}</span>
         </>
       ),
     };

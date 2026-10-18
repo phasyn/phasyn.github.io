@@ -100,6 +100,8 @@ export interface BenchCopy {
       featured: string;
       allRows: (n: number) => string;
       showing: (shown: number, total: number) => string;
+      /** "32 featured rows of 77" (featured view). */
+      featuredShowing: (shown: number, total: number) => string;
       reset: string;
       empty: string;
     };

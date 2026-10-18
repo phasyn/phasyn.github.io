@@ -54,7 +54,7 @@ export function ExperimentsSection() {
                   <span className="grid min-w-0 flex-1 gap-1">
                     <span className="text-section font-semibold text-balance-cjk text-fg">{item.title}</span>
                     <span className="text-data text-pretty text-fg-secondary">{item.question}</span>
-                    <span className="machine text-[11px] text-fg-tertiary">{EXPERIMENT_ROWS[id]?.date}</span>
+                    <span className="machine text-[12px] text-fg-tertiary">{EXPERIMENT_ROWS[id]?.date}</span>
                   </span>
                   <ChevronDown aria-hidden className="mt-1 size-5 shrink-0 text-fg-tertiary transition-transform group-open:rotate-180" />
                 </summary>

@@ -52,7 +52,7 @@ export function BarChart({ items, max, label, format, unit }: { items: BarItem[]
       <div ref={wrapRef} className="relative">
         <div className="mb-1 hidden grid-cols-[minmax(0,16rem)_minmax(0,1fr)] gap-4 md:grid" aria-hidden>
           <span />
-          <div className="relative h-4 text-[11px] text-fg-tertiary">
+          <div className="relative h-4 text-[12px] text-fg-tertiary">
             {ticks.map((tick) => (
               <span key={tick} className="machine absolute -translate-x-1/2" style={{ left: pos(tick) }}>
                 {format(tick)}
@@ -89,7 +89,7 @@ export function BarChart({ items, max, label, format, unit }: { items: BarItem[]
               >
                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
                   <span className={cn('machine text-caption [overflow-wrap:anywhere]', item.emphasis ? 'font-semibold text-fg' : 'text-fg-secondary')}>{item.label}</span>
-                  {item.meta ? <span className="text-[11px] text-fg-tertiary">{item.meta}</span> : null}
+                  {item.meta ? <span className="text-[12px] text-fg-tertiary">{item.meta}</span> : null}
                 </div>
                 <div className="relative h-5">
                   {ticks.map((tick) => (

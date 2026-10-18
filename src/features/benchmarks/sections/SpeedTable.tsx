@@ -70,7 +70,7 @@ function DitCell({ row, align = 'end' }: { row: SpeedRow; align?: 'start' | 'end
   return (
     <span className={cn('inline-grid gap-0.5', align === 'end' ? 'justify-items-end' : 'justify-items-start')}>
       {main}
-      <span className={cn('flex flex-wrap gap-x-1 text-[11px] leading-tight text-fg-tertiary', align === 'end' ? 'justify-end text-right' : 'justify-start')}>
+      <span className={cn('flex flex-wrap gap-x-1 text-[12px] leading-tight text-fg-tertiary', align === 'end' ? 'justify-end text-right' : 'justify-start')}>
         <span>{copy.speed.cols.compute}</span>
         <span className="machine whitespace-nowrap">{fmtSec(locale, row.compute)}</span>
       </span>
@@ -85,7 +85,7 @@ function TotalCell({ row }: { row: SpeedRow }) {
   return (
     <span className="inline-grid justify-items-end gap-0.5">
       <MissingValue kind="notEndToEnd" reason={row.totalReason ?? undefined} />
-      {row.run != null ? <span className="machine text-[11px] whitespace-nowrap text-fg-tertiary">run {fmtSeconds(locale, row.run)}</span> : null}
+      {row.run != null ? <span className="machine text-[12px] whitespace-nowrap text-fg-tertiary">run {fmtSeconds(locale, row.run)}</span> : null}
     </span>
   );
 }
@@ -101,7 +101,7 @@ function VramCell({ row, align = 'end' }: { row: SpeedRow; align?: 'start' | 'en
       <span className="machine whitespace-nowrap">
         <span className="text-fg">{part(v.alloc)}</span> / {part(v.reserved)}
       </span>
-      <span className="text-[11px] whitespace-nowrap text-fg-tertiary">
+      <span className="text-[12px] whitespace-nowrap text-fg-tertiary">
         {copy.speed.vramParts[2]}{' '}
         <span className="machine">{v.card == null && v.cardReason ? <Hint content={<CardReason reason={v.cardReason} />}>—</Hint> : part(v.card)}</span>
       </span>
@@ -123,7 +123,7 @@ function StepsCell({ row }: { row: SpeedRow }) {
       <MiniTimeline steps={row.steps} total={row.total ?? row.run} />
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         {devices.map((device) => (
-          <span key={device} className="inline-flex items-center gap-1 text-[11px] text-fg-secondary">
+          <span key={device} className="inline-flex items-center gap-1 text-[12px] text-fg-secondary">
             <DeviceDot device={device} />
             <span aria-hidden>{DEVICE_SHORT[device]}</span>
             <span className="sr-only">{copy.machines[device]}</span>
@@ -142,16 +142,16 @@ function VariantCell({ row }: { row: SpeedRow }) {
     <div className="grid min-w-0 gap-1">
       {/* keep-all: CJK names break at spaces ("40 ステップ" stays whole), with anywhere as the overflow valve. */}
       <span className="font-semibold [overflow-wrap:anywhere] [word-break:keep-all] text-fg">{variantName(copy, row)}</span>
-      <span className="machine text-[11px] text-fg-secondary">{outputText(copy, row)}</span>
+      <span className="machine text-[12px] text-fg-secondary">{outputText(copy, row)}</span>
       {row.component ? (
-        <code className="machine block truncate text-[11px] text-fg-tertiary" title={row.component}>
+        <code className="machine block truncate text-[12px] text-fg-tertiary" title={row.component}>
           {row.component}
         </code>
       ) : null}
       {tags.length ? (
         <span className="flex flex-wrap gap-1">
           {tags.map((tag) => (
-            <span key={tag} className="rounded border border-line-subtle bg-sunken px-1 font-mono text-[10px] leading-4 text-fg-tertiary">
+            <span key={tag} className="rounded border border-line-subtle bg-sunken px-1 font-mono text-[11px] leading-4 text-fg-tertiary">
               {tag}
             </span>
           ))}
@@ -272,10 +272,10 @@ function SortHeader({ label, unit, hint, active, dir, onClick, children }: { lab
         {label}
         <Icon aria-hidden className={active ? 'text-action-fg' : undefined} />
       </button>
-      <span className="inline-flex items-center gap-1.5 font-mono text-[10px] leading-none font-normal text-fg-tertiary">
+      <span className="inline-flex items-center gap-1.5 font-mono text-[11px] leading-none font-normal text-fg-tertiary">
         {unit}
         <Hint content={hint}>
-          <span aria-label={hint} className="grid size-4 place-items-center rounded-full border border-line-strong font-sans text-[10px] text-fg-tertiary">
+          <span aria-label={hint} className="grid size-4 place-items-center rounded-full border border-line-strong font-sans text-[11px] text-fg-tertiary">
             ?
           </span>
         </Hint>
@@ -393,7 +393,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
           </button>
         ) : null}
         <p className="ml-auto text-caption text-fg-tertiary" aria-live="polite">
-          {f.showing(rows.length, featuredOnly ? FEATURED_ROWS.filter((row) => row.table === kind).length : total)}
+          {featuredOnly ? f.featuredShowing(rows.length, total) : f.showing(rows.length, total)}
           {featuredOnly ? (
             <>
               {' · '}
@@ -464,8 +464,8 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                 </th>
                 <th scope="col" aria-sort={ariaSort('dit')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.dit} unit="s" hint={`${copy.speed.colHints.dit}. ${copy.speed.cols.compute}: ${copy.speed.colHints.compute}`} active={sort?.key === 'dit'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('dit')}>
-                    <span className="text-[10px] leading-snug font-normal whitespace-nowrap text-fg-tertiary">
-                      {copy.speed.wall} / {copy.speed.cols.compute}
+                    <span className="text-[12px] leading-snug font-normal text-fg-tertiary">
+                      <span className="whitespace-nowrap">{copy.speed.wall} /</span> <span className="whitespace-nowrap">{copy.speed.cols.compute}</span>
                     </span>
                   </SortHeader>
                 </th>
@@ -474,10 +474,11 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                 </th>
                 <th scope="col" aria-sort={ariaSort('vram')} className="border-b border-line px-3 py-2.5 text-right align-top font-medium">
                   <SortHeader label={copy.speed.cols.vram} unit="GiB" hint={copy.speed.colHints.vram} active={sort?.key === 'vram'} dir={sort?.dir ?? 'asc'} onClick={() => toggleSort('vram')}>
-                    <span className="font-mono text-[10px] leading-snug font-normal whitespace-nowrap text-fg-tertiary">
-                      {copy.speed.vramParts[0]} / {copy.speed.vramParts[1]}
-                      <br />
-                      {copy.speed.vramParts[2]}
+                    <span className="grid justify-items-end leading-snug font-normal text-fg-tertiary">
+                      <span className="font-mono text-[11px] whitespace-nowrap">
+                        {copy.speed.vramParts[0]} / {copy.speed.vramParts[1]}
+                      </span>
+                      <span className="text-[12px] whitespace-nowrap">{copy.speed.vramParts[2]}</span>
                     </span>
                   </SortHeader>
                 </th>
@@ -504,7 +505,8 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                           <ChevronDown aria-hidden className={cn('mt-0.5 size-4 shrink-0 text-fg-tertiary transition-transform', expanded && 'rotate-180')} />
                           <span className="grid gap-0.5">
                             <span className="text-data font-medium whitespace-nowrap text-fg">{copy.experimentLabel(row.experiment)}</span>
-                            {row.scene || row.tag ? <span className="font-mono text-[11px] leading-snug text-fg-tertiary">{[row.scene ? copy.scenes[row.scene] : null, row.tag].filter(Boolean).join(' · ')}</span> : null}
+                            {row.runId ? <span className="machine text-[12px] leading-snug text-fg-secondary">{row.runId}</span> : null}
+                            {row.scene || row.tag ? <span className="text-[12px] leading-snug text-fg-tertiary">{[row.scene ? copy.scenes[row.scene] : null, row.tag].filter(Boolean).join(' · ')}</span> : null}
                             <span className="sr-only">{expanded ? copy.speed.hideDetails : copy.speed.details}</span>
                           </span>
                         </button>
@@ -567,7 +569,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                     <StatusChip row={row} />
                   </header>
                   <p className="text-caption text-pretty text-fg-secondary">{copy.inputs[row.inputs]}</p>
-                  {row.component ? <code className="machine text-[11px] text-fg-tertiary">{row.component}</code> : null}
+                  {row.component ? <code className="machine text-[12px] text-fg-tertiary">{row.component}</code> : null}
                   <StepsCell row={row} />
                   <dl className="grid grid-cols-2 gap-x-3 gap-y-2.5 border-t border-line-subtle pt-3 text-caption">
                     <div className="grid content-start gap-0.5">
@@ -584,7 +586,7 @@ function SpeedTable({ kind, all, retry }: { kind: TableKind; all: RowsState; ret
                     </div>
                     <div className="col-span-2 grid gap-0.5">
                       <dt className="text-fg-tertiary">
-                        {copy.speed.cols.vram} (GiB) · <span className="font-mono text-[10px]">{copy.speed.vramParts[0]} / {copy.speed.vramParts[1]}</span>
+                        {copy.speed.cols.vram} (GiB) · <span className="font-mono text-[11px]">{copy.speed.vramParts[0]} / {copy.speed.vramParts[1]}</span>
                       </dt>
                       <dd>
                         <VramCell row={row} align="start" />
@@ -650,7 +652,7 @@ function Failures() {
                   <span className="text-fg">
                     <code className="machine text-[12px]">{row.pipeline}</code> · {variantName(copy, row)}
                   </span>
-                  {row.component ? <code className="machine text-[11px] text-fg-tertiary">{row.component}</code> : null}
+                  {row.component ? <code className="machine text-[12px] text-fg-tertiary">{row.component}</code> : null}
                   <span className="text-caption">{copy.inputs[row.inputs]}</span>
                 </span>
               ),

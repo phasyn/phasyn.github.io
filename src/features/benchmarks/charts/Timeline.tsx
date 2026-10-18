@@ -68,12 +68,12 @@ export function Timeline({ runs, label }: { runs: readonly TimelineRun[]; label:
         {ticks.map((tick) => (
           <g key={tick} aria-hidden>
             <line x1={x(tick)} x2={x(tick)} y1={pad.t} y2={height - pad.b + 4} className="stroke-line-subtle" strokeWidth={1} />
-            <text x={x(tick)} y={height - 8} textAnchor="middle" className="fill-fg-tertiary font-mono text-[11px]">
+            <text x={x(tick)} y={height - 8} textAnchor="middle" className="fill-fg-tertiary font-mono text-[12px]">
               {tick}
             </text>
           </g>
         ))}
-        <text aria-hidden x={width - pad.r + 8} y={height - 8} className="fill-fg-tertiary text-[11px]">
+        <text aria-hidden x={width - pad.r + 8} y={height - 8} className="fill-fg-tertiary text-[12px]">
           {copy.references.timelines.axis}
         </text>
         {runs.map((run, r) => (
@@ -81,7 +81,7 @@ export function Timeline({ runs, label }: { runs: readonly TimelineRun[]; label:
             <text x={pad.l} y={pad.t + r * rowH + 13} className="fill-fg-secondary text-[12px]">
               {run.label}
             </text>
-            <text x={x(run.total) + 6} y={pad.t + r * rowH + 30} className="fill-fg font-mono text-[11px] font-semibold">
+            <text x={x(run.total) + 6} y={pad.t + r * rowH + 30} className="fill-fg font-mono text-[12px] font-semibold">
               {fmtSeconds(locale, run.total)}
             </text>
           </g>
@@ -151,7 +151,7 @@ export function Timeline({ runs, label }: { runs: readonly TimelineRun[]; label:
           ) : (
             <>
               <TipRow value={fmtSeconds(locale, active.p.step.seconds ?? 0, active.p.step.approx)} label={copy.steps[active.p.step.kind]} />
-              <span className="machine text-[11px] text-fg-tertiary">
+              <span className="machine text-[12px] text-fg-tertiary">
                 {active.p.step.component}
                 {isDevice(active.p.step.placement) ? ` · ${copy.machines[active.p.step.placement]}` : ''}
               </span>

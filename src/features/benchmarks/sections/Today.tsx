@@ -32,9 +32,9 @@ function ClipCard({ row }: { row: SpeedRow }) {
           </span>
         </header>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-fg-tertiary">
-          <code className="machine rounded bg-sunken px-1.5 py-0.5 text-[11px] text-fg">{row.pipeline}</code>
-          <code className="machine text-[11px]">{row.component}</code>
-          <span className="machine text-[11px]">
+          <code className="machine rounded bg-sunken px-1.5 py-0.5 text-[12px] text-fg">{row.pipeline}</code>
+          <code className="machine text-[12px]">{row.component}</code>
+          <span className="machine text-[12px]">
             {copy.common.seed} {row.seed}
           </span>
         </p>
@@ -76,7 +76,7 @@ export function TodaySection() {
           <ClipCard key={row.id} row={row} />
         ))}
       </div>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <figure className="panel grid content-start gap-3 p-4">
           <img src={img('today-courier-ref.webp')} alt={copy.today.refTitle} width={384} height={512} loading="lazy" decoding="async" className="mx-auto aspect-[3/4] w-full max-w-60 rounded-lg bg-[#fff] object-contain" />
           <figcaption className="grid gap-1">
@@ -98,7 +98,7 @@ export function TodaySection() {
                     <span className="truncate text-fg-secondary">{copy.scenes[row.scene]}</span>
                     <span className="machine text-fg">{row.total != null ? fmtSeconds(locale, row.total) : '—'}</span>
                   </span>
-                  <span className="machine text-[11px] text-fg-tertiary">run {row.runId}</span>
+                  <span className="machine text-[12px] text-fg-tertiary">run {row.runId}</span>
                 </li>
               ) : null,
             )}

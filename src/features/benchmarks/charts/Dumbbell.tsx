@@ -63,7 +63,7 @@ export function Dumbbell({
         {ticks.map((t) => (
           <g key={t} aria-hidden>
             <line x1={x(t)} x2={x(t)} y1={top - 6} y2={height} className="stroke-line-subtle" strokeWidth={1} />
-            <text x={x(t)} y={top - 10} textAnchor="middle" className="fill-fg-tertiary font-mono text-[11px]">
+            <text x={x(t)} y={top - 10} textAnchor="middle" className="fill-fg-tertiary font-mono text-[12px]">
               {t}
               {t === ticks[ticks.length - 1] ? ` ${unit}` : ''}
             </text>
@@ -72,7 +72,7 @@ export function Dumbbell({
         {limit ? (
           <g aria-hidden>
             <line x1={x(limit.value)} x2={x(limit.value)} y1={top - 6} y2={height} className="stroke-warning/80" strokeWidth={1.5} strokeDasharray="4 3" />
-            <text x={x(limit.value) - 4} y={height - 4} textAnchor="end" className="fill-warning text-[11px]">
+            <text x={x(limit.value) - 4} y={height - 4} textAnchor="end" className="fill-warning text-[12px]">
               {limit.label}
             </text>
           </g>
@@ -115,10 +115,10 @@ export function Dumbbell({
               {row.tick != null ? <line x1={x(row.tick)} x2={x(row.tick)} y1={cy - 7} y2={cy + 7} className={tickClass} strokeWidth={2} strokeLinecap="round" style={revealStyle(state, 'fade', index)} /> : null}
               <circle cx={xa} cy={cy} r={4.5} className={cn(aClass, 'stroke-surface')} strokeWidth={2} paintOrder="stroke" style={revealStyle(state, 'dot', index)} />
               <circle cx={xb} cy={cy} r={4} className={cn('fill-surface', bClass)} strokeWidth={2} style={revealStyle(state, 'dot', index + 1)} />
-              <text x={Math.min(xa, xb) - 9} y={cy + 4} textAnchor="end" className="fill-fg-secondary font-mono text-[11px]" style={revealStyle(state, 'fade', index)}>
+              <text x={Math.min(xa, xb) - 9} y={cy + 4} textAnchor="end" className="fill-fg-secondary font-mono text-[12px]" style={revealStyle(state, 'fade', index)}>
                 {xa <= xb ? row.aText : row.bText}
               </text>
-              <text x={Math.max(xa, xb) + 9} y={cy + 4} className="fill-fg font-mono text-[11px] font-semibold" style={revealStyle(state, 'fade', index)}>
+              <text x={Math.max(xa, xb) + 9} y={cy + 4} className="fill-fg font-mono text-[12px] font-semibold" style={revealStyle(state, 'fade', index)}>
                 {xa <= xb ? row.bText : row.aText}
               </text>
               {focused ? <rect x={lo - 10} y={cy - 10} width={hi - lo + 20} height={20} rx={10} className="fill-none stroke-focus" strokeWidth={1.5} /> : null}

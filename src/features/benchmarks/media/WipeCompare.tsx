@@ -118,8 +118,8 @@ export function WipeCompare({ left, right, hud }: { left: Side; right: Side; hud
         <div className="absolute inset-0" style={{ clipPath: `inset(0 0 0 ${pos}%)` }}>
           {media(right, bRef, true)}
         </div>
-        <span className="material-hud pointer-events-none absolute top-2.5 left-2.5 rounded-md px-2 py-0.5 text-[11px] font-semibold text-fg">{left.label}</span>
-        <span className="material-hud pointer-events-none absolute top-2.5 right-2.5 rounded-md px-2 py-0.5 text-[11px] font-semibold text-fg">{right.label}</span>
+        <span className="material-hud pointer-events-none absolute top-2.5 left-2.5 rounded-md px-2 py-0.5 text-[12px] font-semibold text-fg">{left.label}</span>
+        <span className="material-hud pointer-events-none absolute top-2.5 right-2.5 rounded-md px-2 py-0.5 text-[12px] font-semibold text-fg">{right.label}</span>
         <div className="pointer-events-none absolute inset-y-0 w-0.5 -translate-x-1/2 bg-[#fff]/85" style={{ left: `${pos}%` }} />
         <div
           role="slider"
