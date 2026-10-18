@@ -221,9 +221,20 @@
   }
 }
 
+/*
+ * Animates the registered --fx-angle (style recalc and repaint every frame on the main thread). Kept for short hover/focus
+ * effects in page CSS; never for always-on loops: rotate an element with fx-rotate instead (see fx-orbit).
+ */
 @keyframes fx-spin {
   to {
     --fx-angle: 360deg;
+  }
+}
+
+/* Compositor-only turn (transform), for always-on loops such as the orbit light. */
+@keyframes fx-rotate {
+  to {
+    transform: rotate(1turn);
   }
 }
 
@@ -344,7 +355,45 @@
   }
 }
 
-/* Rotating conic light around a rounded box (border drawn with mask; content stays readable). */
+/*
+ * Orbiting light on the 1 px edge of a rounded box (FE-05): put `<span aria-hidden class="fx-orbit" />` inside a positioned
+ * (and isolated) rounded box. The span is the ring (a mask leaves only its 1 px padding); its ::before is a conic-gradient
+ * square at least as large as the box diagonal (container-query units) that turns with `transform`, so the compositor runs
+ * it without style, layout or paint work on the main thread.
+ */
+@utility fx-orbit {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  container-type: size;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100cqw + 100cqh);
+    width: hypot(100cqw, 100cqh);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: conic-gradient(transparent 0deg, var(--color-brand-cyan) 40deg, var(--color-brand-violet) 90deg, transparent 140deg, transparent 360deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: fx-rotate 5s linear infinite;
+    }
+  }
+}
+
+/*
+ * Legacy host-pseudo version of the orbit light (animates --fx-angle on the main thread). Prefer an fx-orbit span; this
+ * stays so existing markup keeps working.
+ */
 @utility fx-orbit-border {
   position: relative;
   isolation: isolate;
@@ -469,4 +518,18 @@
     word-break: auto-phrase;
     overflow-wrap: anywhere;
   }
+}
+
+/*
+ * Page blocks far from the viewport pause their CSS animations (FE-05; the layout sets `data-offscreen` with an
+ * IntersectionObserver, half a viewport ahead). `!important` because utilities and page CSS set play-state through the
+ * `animation` shorthand. Scroll-driven animations pick up the scroll position again when they resume.
+ */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
 }

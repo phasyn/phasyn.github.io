@@ -71,7 +71,7 @@ const twMerge = extendTailwindMerge<PhasynClassGroup>({
       eyebrow: ['eyebrow'],
       reveal: ['reveal'],
       'site-effect': ['grain', 'glow-backdrop'],
-      fx: ['fx-chars', 'fx-sweep-text', 'fx-orbit-border', 'fx-ticker-track', 'fx-scanline', 'fx-intro'],
+      fx: ['fx-chars', 'fx-sweep-text', 'fx-orbit', 'fx-orbit-border', 'fx-ticker-track', 'fx-scanline', 'fx-intro'],
     },
   },
 });
