@@ -2,7 +2,7 @@ import { useId, type CSSProperties } from 'react';
 import { cn } from '../../../../lib/cn.ts';
 import type { HomeCopy } from '../../copy.ts';
 
-type DiagramCopy = HomeCopy['architecture']['diagram'];
+type DiagramCopy = HomeCopy['hood']['diagram'];
 
 interface Box {
   x: number;

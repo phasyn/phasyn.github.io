@@ -3,10 +3,12 @@
 //   node scripts/import-showcase.ts [--source <dir>] [--seed <file>] [--no-seed] [--force] [--dry-run]
 //
 // Reads the seed entries (scripts/showcase-seed.json, item.json-equivalent records of the 2026-10-18 studio/gen runs), then
-// every <source>/{farm-*,rec-*}/item.json (default source: <project>/studio/out/final/showcase) and every
-// <films>/<slug>/item.json (default: <project>/studio/out/final/films; kind "film", with film.mp4 and poster.jpg). A folder
-// holds item.json plus still.png and/or clip.mp4, prompt.txt and optionally contact.jpg. A folder item replaces a seed with
-// the same slug. Items not graded "hero" or "usable" are skipped, as is anything that fails validation or the privacy check.
+// every <source>/<folder>/item.json (default source: <project>/studio/out/final/showcase), every <films>/<slug>/item.json
+// (default: <project>/studio/out/final/films; kind "film", with film.mp4 and poster.jpg) and the launch cuts in
+// <cuts>/<slug>/ (default: <project>/studio/out/final/cuts; cut.mp4, poster.jpg, item.json, optional
+// captions.suggested.<locale>.vtt) that scripts/showcase-cuts.json publishes. A folder item replaces a seed with the same
+// slug. Items not graded "hero" or "usable" are skipped, as is anything that fails validation or the privacy check. edit.json
+// files are read for numbers only (shot runs, seeds, lengths, pipelines, whether music was used) and never copied.
 //
 // Output (this script owns these paths and removes stale files in them):
 //   public/images/showcase/items/<slug>-<w>.webp           stills: native width (max 1152), 768, 384 — never upscaled
@@ -17,6 +19,7 @@
 //                                                          Sound is loudness-normalised for the web (lead rule): two-pass
 //                                                          loudnorm I=-16 TP=-1.5 LRA=11, 48 kHz, AAC 192k. Originals are
 //                                                          never touched.
+//   public/captions/showcase/<slug>.<locale>.vtt          producer captions (NOTE blocks stripped), for FilmPlayer
 //   src/features/showcase/items.gen.ts                     typed SHOWCASE_ITEMS (do not edit by hand)
 
 import { spawnSync } from 'node:child_process';
@@ -47,11 +50,14 @@ function projectRoot(): string {
 const ROOT = projectRoot();
 const SOURCE = resolve(option('--source') ?? join(ROOT, 'studio/out/final/showcase'));
 const FILMS = resolve(option('--films') ?? join(ROOT, 'studio/out/final/films'));
+const CUTS = resolve(option('--cuts') ?? join(ROOT, 'studio/out/final/cuts'));
+const CUT_LIST = join(SITE, 'scripts/showcase-cuts.json');
 const SEED = resolve(option('--seed') ?? join(SITE, 'scripts/showcase-seed.json'));
 const DRY = flag('--dry-run');
 const FORCE = flag('--force');
 const IMAGES = join(SITE, 'public/images/showcase/items');
 const MEDIA = join(SITE, 'public/media/showcase');
+const CAPTIONS = join(SITE, 'public/captions/showcase');
 const OUT = join(SITE, 'src/features/showcase/items.gen.ts');
 const CACHE = join(SITE, 'node_modules/.cache/import-showcase.json');
 const FFMPEG = process.env.FFMPEG ?? (existsSync('/opt/homebrew/bin/ffmpeg') ? '/opt/homebrew/bin/ffmpeg' : 'ffmpeg');
@@ -65,6 +71,8 @@ const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'social', 'image', 'vid
 /** A delivered mix inside this window is already web-ready and is kept as is (remuxed only). */
 const MASTERED_LUFS = { min: -18, max: -12 };
 const isEdit = (kind: ShowcaseKind) => EDIT_KINDS.includes(kind);
+/** Order of edited pieces: the trailer leads, then films, the making-of, vertical cuts. */
+const EDIT_ORDER: Record<string, number> = { trailer: 0, film: 1, 'making-of': 2, social: 3 };
 const LOCALE_KEYS = ['zh-hant', 'ja', 'en'] as const;
 const STILL_WIDTHS = [1152, 768, 384];
 const POSTER_WIDTHS = [768, 384];
@@ -84,6 +92,12 @@ interface Candidate {
   folder?: string;
   /** Edited pieces: the edit record had a music track (edit.json is read for this flag only; it never ships). */
   music?: boolean;
+  /** Launch cuts: shots derived from the edit record (run, seed, length on the timeline). */
+  shots?: ShowcaseShot[];
+  /** Producer captions per locale (VTT files in the folder). */
+  captions?: Partial<Record<(typeof LOCALE_KEYS)[number], string>>;
+  /** Largest display factor named by the cut's framing record. */
+  displayScale?: number;
   still?: string;
   clip?: string;
   /** A loudness-normalised web copy made by the producer (web.mp4); used instead of normalising again. */
@@ -387,7 +401,88 @@ function loadCandidates(): Candidate[] {
       bySlug.set(json.slug, candidate);
     }
   }
+  if (existsSync(CUTS)) {
+    const list = existsSync(CUT_LIST)
+      ? (JSON.parse(readFileSync(CUT_LIST, 'utf8')) as { publish: { slug: string; grade: string }[]; skip: Record<string, string> })
+      : { publish: [], skip: {} };
+    for (const name of readdirSync(CUTS).sort()) {
+      const folder = join(CUTS, name);
+      if (name.startsWith('.') || !statSync(folder).isDirectory() || !existsSync(join(folder, 'item.json'))) continue;
+      const origin = `cuts/${name}`;
+      let json: ShowcaseItemJson & { sources?: unknown; notes?: unknown };
+      try {
+        json = JSON.parse(readFileSync(join(folder, 'item.json'), 'utf8')) as ShowcaseItemJson & { sources?: unknown; notes?: unknown };
+      } catch (error) {
+        skipped.push(`${origin}: item.json is not valid JSON (${(error as Error).message})`);
+        continue;
+      }
+      const slug = json.slug || name;
+      if (list.skip[slug]) {
+        skipped.push(`${origin}: ${list.skip[slug]}`);
+        continue;
+      }
+      const entry = list.publish.find((item) => item.slug === slug);
+      if (!entry) {
+        problems.push(`${origin}: not in scripts/showcase-cuts.json (add it to "publish" or "skip")`);
+        continue;
+      }
+      const file = (rel: string) => (existsSync(join(folder, rel)) ? join(folder, rel) : undefined);
+      const candidate: Candidate = { json: { ...json, slug, grade: entry.grade }, origin, folder };
+      const clip = file('cut.mp4') ?? file('web.mp4');
+      const poster = file('poster.jpg') ?? file('poster.png');
+      if (clip) candidate.clip = clip;
+      if (poster) candidate.poster = poster;
+      const contact = file('contact.jpg');
+      if (contact) candidate.contact = contact;
+      const captions: Partial<Record<(typeof LOCALE_KEYS)[number], string>> = {};
+      for (const locale of LOCALE_KEYS) {
+        const vtt = file(`captions.${locale}.vtt`) ?? file(`captions.suggested.${locale}.vtt`);
+        if (vtt) captions[locale] = vtt;
+      }
+      if (Object.keys(captions).length) candidate.captions = captions;
+      // Numbers from the edit record: shots, their pipelines and whether a music bed was used.
+      const editRecord = file('edit.json');
+      if (editRecord) {
+        try {
+          const record = JSON.parse(readFileSync(editRecord, 'utf8')) as { shots?: { runId?: string; seed?: number; pipeline?: string; timeline?: { in?: number; out?: number } }[]; audio?: { music?: unknown } };
+          const shots = (record.shots ?? []).filter((shot) => typeof shot.runId === 'string');
+          candidate.shots = shots.map((shot) => ({
+            runId: shot.runId as string,
+            seed: Number.isInteger(shot.seed) ? (shot.seed as number) : null,
+            seconds: typeof shot.timeline?.in === 'number' && typeof shot.timeline?.out === 'number' ? Math.round((shot.timeline.out - shot.timeline.in) * 1000) / 1000 : null,
+          }));
+          const pipelines = [...new Set(shots.map((shot) => shot.pipeline).filter((value): value is string => typeof value === 'string' && /^[a-z0-9-]+$/.test(value)))];
+          if (!candidate.json.pipeline && pipelines.length) candidate.json.pipeline = pipelines.join(' / ');
+        } catch {
+          problems.push(`${origin}: edit.json is not valid JSON (no shot list)`);
+        }
+      }
+      const notes = json.notes && typeof json.notes === 'object' ? (json.notes as Record<string, unknown>) : {};
+      candidate.music = typeof notes.music === 'string' && /suno/i.test(notes.music);
+      const factors = [...String(notes.framing ?? '').matchAll(/(\d+(?:\.\d+)?)x\b/g)].map((m) => Number(m[1])).filter((n) => n > 1 && n < 4);
+      if (factors.length) candidate.displayScale = Math.max(...factors);
+      // A cut's notes are a record of framing and sound, not prose for the page: never copied.
+      candidate.json.notes = '';
+      if (bySlug.has(slug)) console.log(`import-showcase: ${origin} replaces "${slug}"`);
+      bySlug.set(slug, candidate);
+    }
+  }
   return [...bySlug.values()];
+}
+
+/** Copy a producer caption file without its NOTE blocks (they are production notes). */
+function copyCaptions(source: string, slug: string, locale: string): string {
+  const output = join(CAPTIONS, `${slug}.${locale}.vtt`);
+  produced.add(output);
+  const text = readFileSync(source, 'utf8')
+    .replace(/\r/g, '')
+    .split(/\n{2,}/)
+    .filter((block) => !/^NOTE\b/.test(block.trim()))
+    .join('\n\n')
+    .trim();
+  if (isPrivate(text)) throw new Error(`${source}: caption text mentions private data`);
+  if (!DRY) writeFileSync(output, `${text}\n`);
+  return sitePath(output).replace(/^\/public/, '');
 }
 
 function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, string>): ShowcaseItem | undefined {
@@ -401,7 +496,7 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
   if (!KINDS.includes(json.kind)) return fail(`unknown kind "${String(json.kind)}"`);
   const edit = isEdit(json.kind);
   // Single results name their run; edited pieces list their shots instead.
-  for (const key of edit ? (['pipeline'] as const) : (['pipeline', 'runId', 'model', 'ditEngine', 'createdAt'] as const)) {
+  for (const key of edit ? ([] as const) : (['pipeline', 'runId', 'model', 'ditEngine', 'createdAt'] as const)) {
     if (typeof json[key] !== 'string' || !json[key]) return fail(`missing ${key}`);
   }
   if (!edit && !Number.isInteger(json.seed)) return fail('seed must be an integer');
@@ -422,7 +517,7 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
   }
   const prompt = candidate.prompt ? readFileSync(candidate.prompt, 'utf8').trim() : '';
   if (!prompt && !edit) return fail('prompt.txt is empty');
-  for (const text of [prompt, ...Object.values(title), json.pipeline, json.ditEngine ?? '', json.model ?? '']) {
+  for (const text of [prompt, ...Object.values(title), json.pipeline ?? '', json.ditEngine ?? '', json.model ?? '']) {
     if (isPrivate(text)) return fail('private data (LAN address, absolute path or account name) in public text');
   }
 
@@ -435,7 +530,7 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
     ...(typeof step.component === 'string' && step.component && !isPrivate(step.component) ? { component: step.component } : {}),
   }));
   for (const step of steps) if (step.machines.includes('unknown')) problems.push(`${origin}: step "${step.id}" has no recognised machine (shown as "placement not recorded")`);
-  const shots: ShowcaseShot[] = (json.shots ?? [])
+  const shots: ShowcaseShot[] = (candidate.shots ?? json.shots ?? [])
     .filter((shot) => typeof shot.runId === 'string' && shot.runId && !isPrivate(shot.runId))
     .map((shot) => ({ runId: shot.runId as string, seed: Number.isInteger(shot.seed) ? (shot.seed as number) : null, seconds: num(shot.seconds) }));
 
@@ -453,6 +548,18 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       image = webpSet(candidate.still as string, json.slug, STILL_WIDTHS);
     }
     const contact = candidate.contact ? webpSet(candidate.contact, `${json.slug}-contact`, [1152]) : undefined;
+    let captions: Record<(typeof LOCALE_KEYS)[number], string> | undefined;
+    if (candidate.captions) {
+      const fallback = candidate.captions.en ?? Object.values(candidate.captions)[0];
+      if (fallback) {
+        captions = {} as Record<(typeof LOCALE_KEYS)[number], string>;
+        for (const locale of LOCALE_KEYS) {
+          const source = candidate.captions[locale] ?? fallback;
+          if (!candidate.captions[locale]) problems.push(`${origin}: no ${locale} captions, using ${basename(fallback)}`);
+          captions[locale] = copyCaptions(source, json.slug, locale);
+        }
+      }
+    }
 
     let reference: ShowcaseReference | null = null;
     const ref = json.reference;
@@ -477,7 +584,7 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       title,
       kind: json.kind,
       category: categoryOf(json, Boolean(candidate.clip)),
-      pipeline: json.pipeline,
+      pipeline: typeof json.pipeline === 'string' ? json.pipeline : '',
       runId: typeof json.runId === 'string' ? json.runId : '',
       outputId: typeof json.outputId === 'string' && json.outputId ? json.outputId : null,
       seed: Number.isInteger(json.seed) ? (json.seed as number) : null,
@@ -501,6 +608,8 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
         image,
         ...(clip ? { clip: clip.path, ...(clip.rawLufs !== undefined && !edit ? { rawLufs: clip.rawLufs } : {}), ...(clip.rawSampleRate && !edit ? { rawSampleRate: clip.rawSampleRate } : {}), ...(clip.mixLufs !== undefined ? { mixLufs: clip.mixLufs } : {}) } : {}),
         ...(contact ? { contact } : {}),
+        ...(captions ? { captions } : {}),
+        ...(candidate.displayScale ? { displayScale: candidate.displayScale } : {}),
       },
     };
   } catch (error) {
@@ -529,6 +638,7 @@ function folderBytes(dir: string): number {
 if (!DRY) {
   mkdirSync(IMAGES, { recursive: true });
   mkdirSync(MEDIA, { recursive: true });
+  mkdirSync(CAPTIONS, { recursive: true });
   mkdirSync(dirname(CACHE), { recursive: true });
 }
 
@@ -559,7 +669,12 @@ const farmed = items
 // Edited pieces lead (the owner's #1 asset): hero first, then longest first. Then the curated seeds, then new results.
 const edits = farmed
   .filter((item) => isEdit(item.kind))
-  .sort((a, b) => (a.grade === b.grade ? (b.seconds ?? 0) - (a.seconds ?? 0) : a.grade === 'hero' ? -1 : 1));
+  .sort(
+    (a, b) =>
+      (EDIT_ORDER[a.kind] ?? 9) - (EDIT_ORDER[b.kind] ?? 9) ||
+      (a.grade === b.grade ? 0 : a.grade === 'hero' ? -1 : 1) ||
+      (b.seconds ?? 0) - (a.seconds ?? 0),
+  );
 const ordered = [...edits, ...seeded, ...farmed.filter((item) => !isEdit(item.kind))];
 
 // Each entry is labelled with where it came from. item.json `notes` are production notes (agent names, caveats): they stay in
@@ -583,6 +698,7 @@ if (!DRY) {
 }
 removeStale(IMAGES);
 removeStale(MEDIA);
+removeStale(CAPTIONS);
 rmSync(TEMP, { recursive: true, force: true });
 
 const megabytes = (folderBytes(IMAGES) + folderBytes(MEDIA)) / 1024 / 1024;

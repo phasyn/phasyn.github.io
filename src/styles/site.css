@@ -30,8 +30,23 @@
   --site-header-h: 3.5rem;
   --site-gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
   --site-max: 76rem;
-  /* Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. */
-  --fx-intro-delay: 1450ms;
+  /*
+   * Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. Equals HOLD_MS
+   * in IntroSplash.tsx (FE-04): entrances start at 0.7 s and the overlay is gone at 1 s, so a CTA whose own entrance
+   * offset is ≤ ~300 ms is usable by ~1.2 s.
+   */
+  --fx-intro-delay: 700ms;
+}
+
+/*
+ * Large desktops (≥ 1920 px, FE-17): the content column widens and the lead grows a step. Both start from their 1920 px
+ * values and grow with the viewport (column 76 → 84 rem at ~2430 px, lead 21 → 24 px at 2240 px), so nothing jumps.
+ */
+@media (min-width: 120rem) {
+  :root {
+    --site-max: min(84rem, 76rem + (100vw - 120rem) / 4);
+    --text-lead: min(1.5rem, 0.1875rem + 0.9375vw);
+  }
 }
 
 :root.fx-intro-skip {
@@ -78,8 +93,9 @@
   padding-inline: var(--site-gutter);
 }
 
+/* Section rhythm (FE-17): 64 px on phones up to 128 px from ~1600 px, so a desktop screen is not half empty nebula. */
 @utility site-section {
-  padding-block: clamp(5rem, 3rem + 9vw, 11rem);
+  padding-block: clamp(4rem, 2rem + 6vw, 8rem);
 }
 
 /* Short wide-tracked Latin labels only (PHASE · FRAME · SYNTHESIS); never on CJK text. */
@@ -89,6 +105,16 @@
   font-weight: 600;
   letter-spacing: 0.24em;
   text-transform: uppercase;
+}
+
+/*
+ * Copy over the nebula or other FX (FE-02): a soft canvas-coloured halo that is invisible on dark areas and keeps text
+ * readable when a bright aurora band passes behind it. For solid-colour text only (it would darken gradient-clipped text).
+ */
+@utility text-on-fx {
+  text-shadow:
+    0 1px 2px rgb(7 11 20 / 0.85),
+    0 0 24px rgb(7 11 20 / 0.7);
 }
 
 /* Soft brand glow behind hero objects (brand moment only). */
@@ -114,7 +140,9 @@
 
 /*
  * Reveal on scroll without JavaScript: content is visible in the prerendered HTML and only animates
- * where scroll-driven animations exist and motion is allowed.
+ * where scroll-driven animations exist and motion is allowed. The range is a fixed 240 px of travel after the top edge
+ * enters (FE-09), so a tall card is fully opaque as soon as its top is 240 px into the viewport instead of staying
+ * half-transparent until it reaches the middle of the screen.
  */
 @keyframes site-reveal {
   from {
@@ -132,7 +160,7 @@
     @media (prefers-reduced-motion: no-preference) {
       animation: site-reveal linear both;
       animation-timeline: view();
-      animation-range: entry 0% cover 28%;
+      animation-range: entry 0% entry 240px;
     }
   }
 }
@@ -194,9 +222,20 @@
   }
 }
 
+/*
+ * Animates the registered --fx-angle (style recalc and repaint every frame on the main thread). Kept for short hover/focus
+ * effects in page CSS; never for always-on loops: rotate an element with fx-rotate instead (see fx-orbit).
+ */
 @keyframes fx-spin {
   to {
     --fx-angle: 360deg;
+  }
+}
+
+/* Compositor-only turn (transform), for always-on loops such as the orbit light. */
+@keyframes fx-rotate {
+  to {
+    transform: rotate(1turn);
   }
 }
 
@@ -273,6 +312,14 @@
   }
 }
 
+/* The visitor dismissed the splash during its hold (pointer, key, wheel or touch): a short fade instead of a cut. */
+@keyframes fx-intro-leave {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
 /* Per-character reveal: `fx-chars` holds spans with --d (delay). `data-fx-play` starts it. */
 @utility fx-chars {
   & .fx-char {
@@ -309,7 +356,45 @@
   }
 }
 
-/* Rotating conic light around a rounded box (border drawn with mask; content stays readable). */
+/*
+ * Orbiting light on the 1 px edge of a rounded box (FE-05): put `<span aria-hidden class="fx-orbit" />` inside a positioned
+ * (and isolated) rounded box. The span is the ring (a mask leaves only its 1 px padding); its ::before is a conic-gradient
+ * square at least as large as the box diagonal (container-query units) that turns with `transform`, so the compositor runs
+ * it without style, layout or paint work on the main thread.
+ */
+@utility fx-orbit {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  container-type: size;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100cqw + 100cqh);
+    width: hypot(100cqw, 100cqh);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: conic-gradient(transparent 0deg, var(--color-brand-cyan) 40deg, var(--color-brand-violet) 90deg, transparent 140deg, transparent 360deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: fx-rotate 5s linear infinite;
+    }
+  }
+}
+
+/*
+ * Legacy host-pseudo version of the orbit light (animates --fx-angle on the main thread). Prefer an fx-orbit span; this
+ * stays so existing markup keeps working.
+ */
 @utility fx-orbit-border {
   position: relative;
   isolation: isolate;
@@ -358,7 +443,66 @@
   }
 }
 
-/* First-visit splash (see components/fx/IntroSplash.tsx). Skipped by an inline script when already seen this session. */
+/*
+ * Film player seek bar (FilmPlayer): a 4 px track with the brand progress inside a 20 px hit area, 6 px in a 44 px hit area
+ * with a larger thumb on touch screens (FE-16). `--film-progress` (0–100 %) is set inline; progress is linear, no springs.
+ */
+@utility film-range {
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  --film-track: linear-gradient(90deg, var(--color-brand-cyan), var(--color-brand-blue) var(--film-progress, 0%), rgb(255 255 255 / 0.16) var(--film-progress, 0%));
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  @media (pointer: coarse) {
+    height: 2.75rem;
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+    }
+    &::-moz-range-track {
+      height: 6px;
+    }
+    &::-webkit-slider-thumb {
+      width: 20px;
+      height: 20px;
+      margin-top: -7px;
+    }
+    &::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/*
+ * First-visit splash (see components/fx/IntroSplash.tsx): 1 s in all, holding 700 ms (= --fx-intro-delay) before the
+ * fade. Hidden before paint when seen in the last 7 days; `fx-intro-leaving` is the visitor's skip during the hold.
+ */
 @utility fx-intro {
   position: fixed;
   inset: 0;
@@ -366,10 +510,14 @@
   display: grid;
   place-items: center;
   background: radial-gradient(60% 50% at 50% 50%, rgb(23 33 57 / 0.95), var(--color-stage) 70%);
-  animation: fx-intro-out 1700ms var(--ease-exit) forwards;
+  animation: fx-intro-out 1000ms var(--ease-exit) forwards;
   pointer-events: none;
   :root.fx-intro-skip & {
     display: none;
+  }
+  :root.fx-intro-skip.fx-intro-leaving & {
+    display: grid;
+    animation: fx-intro-leave 160ms var(--ease-exit) forwards;
   }
   @media (prefers-reduced-motion: reduce) {
     display: none;
@@ -378,6 +526,11 @@
 
 @layer base {
   html {
+    /*
+     * Safety net (FE-01): decorative overflow (light sweeps, glows) must never widen the mobile layout viewport.
+     * `clip` on the root is applied to the viewport as `hidden`; body keeps its own `clip` below.
+     */
+    overflow-x: clip;
     scroll-padding-top: calc(var(--site-header-h) + 1rem);
   }
 
@@ -408,9 +561,32 @@
     line-break: strict;
   }
 
+  /*
+   * Japanese running text breaks between phrases (同じ, 記録 never split) where the browser supports auto-phrase (FE-07);
+   * `break-word` only splits a phrase that cannot fit a line at all and leaves min-content sizes alone.
+   */
+  :root:lang(ja) main :is(p, li, dd, figcaption) {
+    word-break: auto-phrase;
+    overflow-wrap: break-word;
+  }
+
   /* Japanese card and section headings outside RevealText keep phrases whole where the browser supports it. */
   :root:lang(ja) main :is(h3, h4) {
     word-break: auto-phrase;
     overflow-wrap: anywhere;
   }
+}
+
+/*
+ * Page blocks far from the viewport pause their CSS animations (FE-05; the layout sets `data-offscreen` with an
+ * IntersectionObserver, half a viewport ahead). `!important` because utilities and page CSS set play-state through the
+ * `animation` shorthand. Scroll-driven animations pick up the scroll position again when they resume.
+ */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
 }

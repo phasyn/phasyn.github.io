@@ -4,14 +4,14 @@ import { DecodeText } from '../../components/fx/index.ts';
 /*
  * Page-local timing around the shared FX kit (src/components/fx, lead-owned, not edited here).
  *
- * The layout shows a first-visit splash for ~1.7 s (IntroSplash). Hero entrances wait for it on a first visit; when
+ * The layout shows a first-visit splash for ~1 s (IntroSplash, 700 ms hold). Hero entrances wait for it on a first visit; when
  * the splash is skipped (later visits, reduced motion) its inline script puts `fx-intro-skip` on <html> before paint,
  * and the same entrances start almost at once. CSS reads that class directly (see AboutHero), so the timing is right
  * on first paint without JavaScript.
  */
 
 /** Milliseconds the hero waits on a first visit, so its entrances start as the splash fades. */
-export const SPLASH_MS = 1500;
+export const SPLASH_MS = 750;
 
 function splashSkipped(): boolean {
   return document.documentElement.classList.contains('fx-intro-skip');

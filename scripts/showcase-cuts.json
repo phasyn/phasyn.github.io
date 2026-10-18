@@ -1,0 +1,18 @@
+{
+  "$comment": "Which launch cuts in studio/out/final/cuts/<slug>/ the Showcase publishes (cut.mp4, poster.jpg, item.json, optional captions.suggested.<locale>.vtt). Cut records carry no grade, so publishing is an explicit decision here. Owner-approved 2026-10-19: the 30 s trailer, the native 9:16 verticals and the making-of. Center-third verticals (a 16:9 clip in the middle third of a 9:16 canvas) are not published. scripts/import-showcase.ts reports any cut folder that is in neither list.",
+  "publish": [
+    { "slug": "trailer-30s", "grade": "hero" },
+    { "slug": "making-of", "grade": "hero" },
+    { "slug": "social-dragon-night-market-9x16", "grade": "usable" },
+    { "slug": "social-courier-night-to-dawn", "grade": "usable" },
+    { "slug": "social-glass-ocean-9x16", "grade": "usable" },
+    { "slug": "social-night-wonders", "grade": "usable" }
+  ],
+  "skip": {
+    "social-dragon-night-market": "center-third framing; the native 9:16 version is published",
+    "social-rooftop-leap": "center-third framing",
+    "social-glass-ocean": "center-third framing; the native 9:16 version is published",
+    "social-highlights": "center-third framing",
+    "social-nine-worlds": "center-third framing"
+  }
+}

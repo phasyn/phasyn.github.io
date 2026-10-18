@@ -45,7 +45,8 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
   const film = useFilmControl(reducedMotion);
   const [nearRef, near] = useInView<HTMLElement>({ rootMargin: '600px 0px' });
   const anchors = spec.steps.map((step) => step.anchor);
-  const times = useStepTimes(chapterTimingPath(spec), anchors, near, locale === 'en' ? playerCues : undefined);
+  // Unrecorded chapters have no timing file yet: never request it.
+  const times = useStepTimes(chapterTimingPath(spec), anchors, near && spec.recorded === true, locale === 'en' ? playerCues : undefined);
   const current = film.time === null ? null : currentStep(times, film.time);
   const number = chapterNumber(spec);
   const label = t.chapter.label(spec.number);
@@ -94,6 +95,9 @@ export function ChapterSection({ spec, t, active }: ChapterSectionProps) {
               captions={chapterCaptions(spec)}
               poster={spec.poster}
               title={t.chapter.playerTitle(spec.number, copy.title)}
+              // Screen recordings of the app show generated images and clips (licence-required disclosure).
+              badge="mixed"
+              available={spec.recorded === true}
               className="rounded-[1.15rem]"
             />
           </div>

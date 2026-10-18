@@ -1,14 +1,17 @@
-import { Outlet, useParams } from 'react-router';
+import { Outlet, useLocation, useParams } from 'react-router';
 import { CursorAura, IntroSplash, NebulaField } from '../components/fx/index.ts';
 import { SiteFooter } from '../components/layout/SiteFooter.tsx';
 import { SiteHeader } from '../components/layout/SiteHeader.tsx';
 import { NotFoundPage } from '../components/layout/NotFoundPage.tsx';
 import { commonCopy } from '../i18n/common.ts';
 import { LocaleProvider } from '../i18n/locale.tsx';
+import { useOffscreenPause } from '../lib/hooks.ts';
 import { isLocale } from '../site/config.ts';
 
 export default function LocaleLayout() {
   const { lang } = useParams();
+  const { pathname } = useLocation();
+  useOffscreenPause('main-content', pathname);
   if (!isLocale(lang)) return <NotFoundPage />;
   return (
     <LocaleProvider locale={lang}>

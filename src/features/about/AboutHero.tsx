@@ -34,8 +34,8 @@ const at = (ms: number) => ({ '--hero-at': `${ms}ms` }) as CSSProperties;
 export function AboutHero({ copy, personalProject }: { copy: AboutCopy['hero']; personalProject: string }) {
   const display = useDisplayBreak();
   return (
-    // Literal class names only (Tailwind scans source): 1450ms = SPLASH_MS − 50, 1500ms = SPLASH_MS.
-    <header className="relative isolate flex min-h-[max(36rem,100svh)] flex-col overflow-hidden pt-(--site-header-h) [--hero-base:1450ms] [:root.fx-intro-skip_&]:[--hero-base:0ms]">
+    // The splash hold is the FX kit's --fx-intro-delay (0 when skipped or under reduced motion).
+    <header className="relative isolate flex min-h-[max(36rem,100svh)] flex-col overflow-hidden pt-(--site-header-h) [--hero-base:var(--fx-intro-delay)]">
       {/* Living nebula (WebGL, pauses offscreen; a still frame under reduced motion, the brand space gradient without WebGL). */}
       <NebulaField position="absolute" intensity={1.3} particles={180} className="-z-30" />
       {/* The glass-frame art is screen-blended: its dark centre leaves the nebula alone, its frames add light. */}

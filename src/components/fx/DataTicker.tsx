@@ -33,7 +33,11 @@ export function DataTicker({ items, label, className, duration = 48 }: { items: 
   return (
     <section
       aria-label={label}
-      className={cn('relative overflow-hidden border-y border-line-subtle bg-sunken/70 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]', className)}
+      className={cn(
+        // The band is translucent over the nebula: text-on-fx keeps the 12 px labels readable under a bright band (FE-02).
+        'text-on-fx relative overflow-hidden border-y border-line-subtle bg-sunken/70 py-3 [mask-image:linear-gradient(90deg,transparent,#000_8%,#000_92%,transparent)]',
+        className,
+      )}
     >
       <div className="fx-ticker-track" style={{ ['--fx-ticker-duration' as string]: `${duration}s` }}>
         {row(false)}

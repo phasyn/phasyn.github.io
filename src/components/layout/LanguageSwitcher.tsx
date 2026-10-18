@@ -31,7 +31,9 @@ export function LanguageSwitcher({ className, full = false }: { className?: stri
             aria-current={active ? 'true' : undefined}
             onClick={() => remember(locale)}
             className={cn(
-              'pressable inline-flex min-h-7 items-center rounded-full px-2.5 text-caption font-medium no-underline',
+              'pressable inline-flex items-center rounded-full text-caption font-medium no-underline',
+              // The full switcher (mobile menu, footer) is a touch target: 44 px tall (FE-14). The header's short one stays compact.
+              full ? 'min-h-11 px-4' : 'min-h-7 px-2.5',
               active ? 'bg-overlay text-fg shadow-edge' : 'text-fg-tertiary hover:text-fg',
             )}
           >

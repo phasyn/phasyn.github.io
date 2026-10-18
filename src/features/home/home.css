@@ -49,7 +49,7 @@
      */
     @media (min-height: 560px) {
       .home-hero {
-        height: 185vh;
+        height: 130vh;
       }
 
       .home-hero-pin {
@@ -523,7 +523,7 @@
   white-space: nowrap;
   border-radius: 9999px;
   padding: 0.25rem 0.625rem;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   line-height: 1.3;
   color: var(--color-fg);
@@ -569,9 +569,9 @@
  * prerendered HTML, reduced motion and short viewports. Continuous effects run only while the stage is on screen ([data-live]).
  * ---------------------------------------------------------------------------------------------------------------- */
 .home-mf {
-  /* Scroll budget per beat; ManifestoScene's TOTAL (6.5) beats of it. */
-  --home-mf-unit: 56vh;
-  height: calc(100svh + 6.5 * var(--home-mf-unit));
+  /* Scroll budget per beat; ManifestoScene sets --mf-units (pain beats + the turn). */
+  --home-mf-unit: 27vh;
+  height: calc(100svh + var(--mf-units, 3.3) * var(--home-mf-unit));
 }
 
 .home-mf-stage {
@@ -592,27 +592,15 @@
   background:
     radial-gradient(55% 52% at 74% 50%, rgb(244 135 146 / 0.17), transparent 72%),
     radial-gradient(45% 40% at 8% 94%, rgb(235 192 122 / 0.11), transparent 70%);
-  opacity: 0.3;
+  opacity: 0.5;
   transition: opacity 800ms var(--ease-standard);
 }
 
 .home-mf-stage[data-beat="1"] .home-mf-heat {
-  opacity: 0.5;
+  opacity: 0.9;
 }
 
-.home-mf-stage[data-beat="2"] .home-mf-heat {
-  opacity: 0.66;
-}
-
-.home-mf-stage[data-beat="3"] .home-mf-heat {
-  opacity: 0.82;
-}
-
-.home-mf-stage[data-beat="4"] .home-mf-heat {
-  opacity: 1;
-}
-
-.home-mf-stage[data-beat="5"] .home-mf-heat {
+.home-mf-stage[data-final] .home-mf-heat {
   opacity: 0;
 }
 
@@ -636,7 +624,7 @@
     transform 900ms var(--ease-spring-smooth);
 }
 
-.home-mf-stage[data-beat="5"] .home-mf-play {
+.home-mf-stage[data-final] .home-mf-play {
   opacity: 0;
   filter: blur(8px);
   transform: scale(0.97);
@@ -729,6 +717,7 @@
 
 .home-mf-visual {
   align-self: center;
+  justify-self: stretch;
   transition:
     opacity 420ms var(--ease-standard),
     transform 620ms var(--ease-spring-smooth),
@@ -754,16 +743,10 @@
 /* Combat log: spent beats stack from the bottom, newest last; older lines scroll out of the top. */
 .home-mf-log ol {
   display: flex;
-  height: 7.75rem;
+  height: 2.875rem;
   flex-direction: column;
   justify-content: flex-end;
   overflow: hidden;
-}
-
-@media (max-width: 63.99rem) {
-  .home-mf-log ol {
-    height: 2.875rem;
-  }
 }
 
 .home-mf-log-item {
@@ -996,7 +979,7 @@
 /* ---- HUD pain visuals ---------------------------------------------------------------------------------------------- */
 .home-pain-label {
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1.2;
   letter-spacing: 0.18em;
@@ -1004,42 +987,7 @@
   color: var(--color-fg-tertiary);
 }
 
-/* Segmented stat bars (01). */
-.home-seg-track {
-  position: relative;
-  display: block;
-  height: 0.875rem;
-  overflow: hidden;
-  border-radius: 3px;
-  background: rgb(52 68 108 / 0.45);
-  -webkit-mask-image: repeating-linear-gradient(90deg, #000 0 calc(100% / 24 - 2px), transparent calc(100% / 24 - 2px) calc(100% / 24));
-  mask-image: repeating-linear-gradient(90deg, #000 0 calc(100% / 24 - 2px), transparent calc(100% / 24 - 2px) calc(100% / 24));
-}
-
-.home-seg-fill {
-  position: absolute;
-  inset: 0;
-  transform-origin: left center;
-  transition: transform 200ms linear;
-}
-
-.home-qp-quality {
-  transform: scaleX(calc(0.68 - 0.5 * var(--vp, 1)));
-}
-
-.home-qp-price {
-  transform: scaleX(calc(0.36 + 0.6 * var(--vp, 1)));
-}
-
-.home-fill-danger {
-  background: linear-gradient(90deg, rgb(244 135 146 / 0.45), var(--color-danger));
-}
-
-.home-fill-warning {
-  background: linear-gradient(90deg, rgb(235 192 122 / 0.45), var(--color-warning));
-}
-
-/* Credit meter (02). */
+/* Credit meter (beat 1). */
 .home-credit-cell {
   height: 1.375rem;
   border-radius: 2px;
@@ -1109,180 +1057,7 @@
   }
 }
 
-/* Re-roll slot and queue (03). */
-.home-slot {
-  display: inline-flex;
-  overflow: clip;
-  align-items: center;
-  gap: 0.12em;
-  font-size: clamp(2.25rem, 1.6rem + 2.2vw, 3.25rem);
-  font-weight: 650;
-  line-height: 1;
-  color: var(--color-fg);
-}
-
-.home-slot-x {
-  margin-right: 0.08em;
-  font-size: 0.55em;
-  color: var(--color-warning);
-}
-
-.home-reel {
-  display: inline-block;
-  width: 0.7em;
-  height: 1em;
-  overflow: hidden;
-  border-radius: 0.12em;
-  text-align: center;
-  background: linear-gradient(180deg, rgb(4 6 12 / 0.95), rgb(18 26 45 / 0.95) 50%, rgb(4 6 12 / 0.95));
-  box-shadow: inset 0 0 0 1px rgb(52 68 108 / 0.85);
-}
-
-.home-reel-strip {
-  display: flex;
-  flex-direction: column;
-  transform: translateY(calc(var(--n, 0) * -1em));
-  transition: transform 460ms var(--ease-spring-snappy);
-}
-
-.home-reel-strip > span {
-  height: 1em;
-  line-height: 1;
-}
-
-.home-eta-track {
-  position: relative;
-  display: block;
-  height: 0.75rem;
-  overflow: hidden;
-  border-radius: 9999px;
-  background: rgb(52 68 108 / 0.4);
-  box-shadow: inset 0 0 0 1px rgb(52 68 108 / 0.6);
-}
-
-.home-eta-fill {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  width: calc(30% + 70% * var(--vp, 1));
-  border-radius: inherit;
-  background: repeating-linear-gradient(-45deg, rgb(235 192 122 / 0.55) 0 8px, rgb(235 192 122 / 0.22) 8px 16px);
-  background-size: 22.63px 22.63px;
-  box-shadow: 0 0 12px -2px rgb(235 192 122 / 0.6);
-}
-
-.home-eta-done {
-  position: absolute;
-  inset-block: 0;
-  left: 0;
-  width: 5%;
-  border-radius: 9999px;
-  background: var(--color-brand-cyan);
-  box-shadow: 0 0 10px rgb(73 207 255 / 0.8);
-}
-
-/* Low-effort outputs (04): three procedural "renders" with artifacts — built from tokens, not from any real product. */
-.home-thumb {
-  position: relative;
-  aspect-ratio: 16 / 11;
-  overflow: hidden;
-  border: 1px solid rgb(244 135 146 / 0.3);
-  border-radius: 0.6rem;
-  background: var(--color-stage);
-  opacity: clamp(0.12, calc(var(--shown, 3) - var(--i, 0)), 1);
-  transition: opacity 360ms var(--ease-standard);
-}
-
-.home-thumb-scene,
-.home-thumb-fx {
-  position: absolute;
-  inset: 0;
-}
-
-.home-thumb-scene {
-  background:
-    radial-gradient(20% 30% at 52% 60%, rgb(146 158 192 / 0.6), transparent 72%),
-    radial-gradient(60% 40% at 50% 100%, rgb(217 89 38 / 0.32), transparent 72%),
-    linear-gradient(180deg, var(--color-overlay) 0%, var(--color-clip-video) 47%, var(--color-clip-audio) 53%, var(--color-sunken) 100%);
-  filter: saturate(0.7) contrast(0.92);
-}
-
-.home-thumb[data-kind="blocks"] .home-thumb-fx {
-  background-image:
-    linear-gradient(90deg, rgb(238 243 255 / 0.07) 50%, transparent 50%),
-    linear-gradient(rgb(2 4 9 / 0.4) 50%, transparent 50%),
-    linear-gradient(90deg, transparent 58%, rgb(114 125 255 / 0.35) 58% 74%, transparent 74%);
-  background-size:
-    12px 12px,
-    12px 12px,
-    100% 18%;
-  background-position:
-    0 0,
-    0 0,
-    0 62%;
-  background-repeat: repeat, repeat, no-repeat;
-}
-
-.home-thumb[data-kind="flicker"] .home-thumb-fx {
-  background:
-    radial-gradient(20% 30% at 52% 60%, rgb(146 158 192 / 0.5), transparent 72%),
-    linear-gradient(180deg, var(--color-overlay), var(--color-clip-video) 47%, var(--color-clip-audio) 53%, var(--color-sunken));
-  mix-blend-mode: screen;
-  opacity: 0.35;
-  transform: translateX(7px);
-}
-
-.home-thumb[data-kind="smear"] .home-thumb-scene {
-  transform: scaleX(1.35) skewX(-12deg);
-  filter: blur(2.5px) saturate(0.5);
-}
-
-.home-thumb[data-kind="smear"] .home-thumb-fx {
-  background: repeating-linear-gradient(90deg, transparent 0 9px, rgb(146 158 192 / 0.14) 9px 11px);
-  -webkit-mask-image: linear-gradient(180deg, transparent 35%, #000 100%);
-  mask-image: linear-gradient(180deg, transparent 35%, #000 100%);
-}
-
-/* A glitch band that jumps across each frame. */
-.home-thumb::after {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 38%;
-  height: 12%;
-  background: linear-gradient(90deg, rgb(73 207 255 / 0.2), rgb(244 135 146 / 0.26));
-  mix-blend-mode: screen;
-  opacity: 0;
-}
-
-.home-thumb-tag,
-.home-thumb-cost {
-  position: absolute;
-  z-index: 1;
-  border-radius: 0.25rem;
-  font-size: 9px;
-  line-height: 1;
-  letter-spacing: 0.12em;
-}
-
-.home-thumb-tag {
-  top: 0.35rem;
-  left: 0.35rem;
-  padding: 0.2rem 0.3rem;
-  background: rgb(2 4 9 / 0.75);
-  color: var(--color-danger);
-}
-
-.home-thumb-cost {
-  right: 0.35rem;
-  bottom: 0.35rem;
-  padding: 0.22rem 0.3rem;
-  background: var(--color-danger);
-  color: var(--color-on-accent);
-  font-weight: 700;
-}
-
-/* Acceleration gauge (05). */
+/* Acceleration gauge (beat 2). */
 .home-gauge-track {
   fill: none;
   stroke: rgb(52 68 108 / 0.9);
@@ -1342,23 +1117,6 @@
     animation: home-alert 1.6s steps(1, end) infinite;
   }
 
-  .home-mf-stage[data-live] [data-state="on"] .home-eta-fill {
-    animation: home-stripes 900ms linear infinite;
-  }
-
-  .home-mf-stage[data-live] [data-state="on"] .home-thumb::after {
-    animation: home-glitch-band 2.4s steps(1, end) infinite;
-    animation-delay: calc(var(--i, 0) * -0.7s);
-  }
-
-  .home-mf-stage[data-live] [data-state="on"] .home-thumb[data-kind="flicker"] .home-thumb-scene {
-    animation: home-flicker 2.2s steps(1, end) infinite;
-  }
-
-  .home-mf-stage[data-live] [data-state="on"] .home-thumb[data-kind="blocks"] .home-thumb-fx {
-    animation: home-blocks 1.8s steps(1, end) infinite;
-  }
-
   .home-mf-stage[data-live] [data-state="on"] .home-gauge-needle {
     animation: home-needle-try 3.2s var(--ease-standard) infinite;
   }
@@ -1373,82 +1131,6 @@
 @keyframes home-alert {
   50% {
     opacity: 0.45;
-  }
-}
-
-@keyframes home-stripes {
-  to {
-    background-position: 22.63px 0;
-  }
-}
-
-@keyframes home-glitch-band {
-  0%,
-  70% {
-    opacity: 0;
-    transform: none;
-  }
-  72% {
-    opacity: 1;
-    top: 22%;
-    transform: translateX(-6px);
-  }
-  76% {
-    opacity: 0.7;
-    top: 58%;
-    transform: translateX(8px);
-  }
-  80% {
-    opacity: 1;
-    top: 41%;
-    transform: translateX(-3px);
-  }
-  84% {
-    opacity: 0;
-  }
-}
-
-@keyframes home-flicker {
-  0%,
-  100% {
-    filter: saturate(0.7) contrast(0.92);
-  }
-  12% {
-    filter: saturate(0.7) brightness(1.7);
-  }
-  14% {
-    filter: saturate(0.7) brightness(0.45);
-  }
-  18% {
-    filter: saturate(0.7) brightness(1.25);
-  }
-  56% {
-    filter: saturate(0.7) brightness(0.7);
-  }
-  58% {
-    filter: saturate(0.7) contrast(0.92);
-  }
-}
-
-@keyframes home-blocks {
-  0%,
-  100% {
-    background-position:
-      0 0,
-      0 0,
-      0 62%;
-  }
-  40% {
-    background-position:
-      6px 0,
-      0 6px,
-      12px 30%;
-  }
-  60% {
-    background-position:
-      0 6px,
-      6px 0,
-      -10px 78%;
   }
 }
 
@@ -1536,5 +1218,63 @@
 @container screen (max-width: 30rem) {
   .home-real-badge {
     display: none;
+  }
+}
+
+/* Home chapters breathe less than the site default, so the page stays near 10–12 screens at 1440. */
+.home-section {
+  padding-block: clamp(3rem, 1rem + 4.5vw, 5.5rem);
+}
+
+
+/* Enlarge hint on real screens: on hover or keyboard focus with a fine pointer, always on touch screens. */
+.home-enlarge {
+  opacity: 0;
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.group\/screen:hover .home-enlarge,
+.group\/screen:focus-visible .home-enlarge {
+  opacity: 1;
+}
+
+@media (pointer: coarse) {
+  .home-enlarge {
+    opacity: 1;
+  }
+}
+
+@container screen (max-width: 24rem) {
+  .home-enlarge-text {
+    display: none;
+  }
+}
+
+/* Real-screen lightbox (same treatment as the Tour's). */
+.home-dialog[open] {
+  animation: dialog-in var(--duration-spring-smooth) var(--ease-spring-smooth) both;
+}
+
+.home-dialog::backdrop {
+  background: rgb(2 4 10 / 0.72);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* Poster-only hero (touch-first, Save-Data, small memory, no WebGL): no pinned scroll — the poster has no camera to drive. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) and (min-height: 560px) {
+    .home-hero[data-static] {
+      height: auto;
+    }
+
+    .home-hero[data-static] .home-hero-pin {
+      position: relative;
+      height: auto;
+    }
+
+    .home-hero[data-static] .home-hero-copy {
+      animation-range: exit 0% exit 52%;
+    }
   }
 }

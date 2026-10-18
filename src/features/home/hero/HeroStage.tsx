@@ -28,6 +28,18 @@ interface HeroStageProps {
   className?: string;
 }
 
+/**
+ * Light devices keep the poster and never download the three.js chunk: touch-first (coarse pointer), Save-Data, or 4 GB of
+ * memory or less. Checked once on the client; the server render and first paint are the poster either way.
+ */
+export function prefersPoster(): boolean {
+  if (typeof window === 'undefined') return true;
+  const nav = navigator as Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
+  if (window.matchMedia('(pointer: coarse)').matches) return true;
+  if (nav.connection?.saveData) return true;
+  return typeof nav.deviceMemory === 'number' && nav.deviceMemory <= 4;
+}
+
 function useIdleArm(enabled: boolean): boolean {
   const [armed, setArmed] = useState(false);
   useEffect(() => {
@@ -59,7 +71,7 @@ export function HeroStage({ sectionRef, userPaused, onLiveChange, className }: H
   const progressRef = useRef(0);
   const pointerRef = useRef<PointerState>({ x: 0, y: 0 });
 
-  const capable = hydrated && !reduced && !failed && supportsWebGL();
+  const capable = hydrated && !reduced && !failed && !prefersPoster() && supportsWebGL();
   const armed = useIdleArm(capable);
   const live = capable && armed;
 

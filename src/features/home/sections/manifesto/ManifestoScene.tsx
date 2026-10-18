@@ -1,13 +1,13 @@
 import { X } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { HudFrame } from '../../../../components/fx/index.ts';
 import { cn } from '../../../../lib/cn.ts';
 import type { Updater } from './PainVisuals.tsx';
 import { BEATS, BeatText, FinalStatement, TONE_TEXT, type ManifestoCopy } from './shared.tsx';
 
-/** Scroll budget per beat in units of `--home-mf-unit` (home.css): five pain beats, then the longer turn. */
-const PAIN = 5;
-const FINAL_UNITS = 1.5;
+/** Scroll budget per beat in units of `--home-mf-unit` (home.css): the pain beats, then the longer turn. */
+const PAIN = BEATS.length;
+const FINAL_UNITS = 1;
 const TOTAL = PAIN + FINAL_UNITS;
 /** A beat's visual finishes at this share of its scroll, so the end state holds for a moment before the next beat. */
 const HOLD = 0.82;
@@ -129,14 +129,20 @@ export function ManifestoScene({ t }: { t: ManifestoCopy }) {
     if (!section || !stage || beatRef.current === PAIN) return;
     const top = window.scrollY + section.getBoundingClientRect().top;
     const distance = section.offsetHeight - stage.offsetHeight;
-    window.scrollTo({ top: top + distance * ((PAIN + 0.9) / TOTAL), behavior: 'instant' });
+    window.scrollTo({ top: top + distance * ((PAIN + 0.8) / TOTAL), behavior: 'instant' });
   };
 
   const current = BEATS[Math.min(beat, PAIN - 1)]!;
 
   return (
-    <section ref={sectionRef} aria-labelledby="manifesto-title" className="home-mf relative">
-      <div ref={stageRef} className="home-mf-stage sticky top-0 isolate h-svh overflow-hidden" data-beat={beat} data-tone={beat < PAIN ? current.tone : 'brand'}>
+    <section ref={sectionRef} aria-labelledby="manifesto-title" className="home-mf relative overflow-x-clip" style={{ ['--mf-units' as string]: TOTAL } as CSSProperties}>
+      <div
+        ref={stageRef}
+        className="home-mf-stage sticky top-0 isolate h-svh overflow-hidden"
+        data-beat={beat}
+        data-tone={beat < PAIN ? current.tone : 'brand'}
+        {...(beat === PAIN ? { 'data-final': '' } : {})}
+      >
         <div aria-hidden className="absolute inset-0 -z-10">
           <span className="home-mf-grid absolute inset-0" />
           <span className="home-mf-heat absolute inset-0" />

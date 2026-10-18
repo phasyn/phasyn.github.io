@@ -7,7 +7,7 @@ interface HudFrameProps {
   label?: string;
   /** Moving scan line over the content. */
   scan?: boolean;
-  /** Rotating conic light around the frame. */
+  /** Rotating conic light around the frame (compositor-only, see `fx-orbit` in site.css). */
   orbit?: boolean;
   className?: string;
   innerClassName?: string;
@@ -22,7 +22,8 @@ const CORNER = 'pointer-events-none absolute size-4 border-brand-cyan/80';
  */
 export function HudFrame({ children, label, scan = false, orbit = false, className, innerClassName }: HudFrameProps) {
   return (
-    <div className={cn('relative rounded-2xl p-2', orbit && 'fx-orbit-border', className)}>
+    <div className={cn('relative rounded-2xl p-2', orbit && 'isolate', className)}>
+      {orbit ? <span aria-hidden className="fx-orbit" /> : null}
       <span aria-hidden className={cn(CORNER, '-top-px -left-px rounded-tl-lg border-t-2 border-l-2')} />
       <span aria-hidden className={cn(CORNER, '-top-px -right-px rounded-tr-lg border-t-2 border-r-2')} />
       <span aria-hidden className={cn(CORNER, '-bottom-px -left-px rounded-bl-lg border-b-2 border-l-2')} />
