@@ -120,9 +120,7 @@ export function PipelineSection() {
                       <DecodeText text={`0${index + 1}`} className="machine text-fg-tertiary" />
                       {step.label}
                     </span>
-                    <h3 className="max-w-[18ch] text-headline tracking-display text-balance-cjk text-fg">
-                      <RevealText text={step.title} on="view" />
-                    </h3>
+                    <RevealText as="h3" text={step.title} on="view" className="max-w-[18ch] text-headline tracking-display text-balance-cjk text-fg" />
                     <p className="max-w-[40ch] text-reading text-fg-secondary md:text-[1.0625rem] md:leading-[1.7]">{step.body}</p>
                     <ul className="flex flex-wrap gap-2">
                       {step.points.map((point) => (

@@ -154,7 +154,8 @@ export function HeroStage({ sectionRef, userPaused, onLiveChange, className }: H
           fetchPriority="high"
           className={cn(
             'absolute inset-0 size-full object-cover object-[72%_50%] transition-opacity duration-700 [@media(max-aspect-ratio:1/1)]:object-[50%_0%]',
-            live && !showCanvas ? 'opacity-35' : 'opacity-100',
+            // Dim only while the scene boots; as a fallback (lost context, no WebGL, reduced motion) the poster is at full strength.
+            live && !ready && !lost ? 'opacity-35' : 'opacity-100',
           )}
         />
       </picture>

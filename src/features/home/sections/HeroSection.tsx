@@ -33,7 +33,7 @@ export function HeroSection() {
       if (!target) return;
       event.preventDefault();
       target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block: 'start' });
-      document.getElementById('film-title')?.focus({ preventScroll: true });
+      target.focus({ preventScroll: true });
       history.replaceState(null, '', '#film');
     },
     [reduced],
@@ -47,17 +47,15 @@ export function HeroSection() {
 
       <div className="site-container relative flex flex-1 flex-col justify-center pt-[calc(var(--site-header-h)+2.5rem)] pb-20 [@media(max-aspect-ratio:1/1)]:justify-end [@media(max-aspect-ratio:1/1)]:pb-14">
         <div className="home-hero-copy grid max-w-[38rem] justify-items-start gap-6 [@media(max-aspect-ratio:1/1)]:max-w-[34rem]">
-          <p aria-hidden lang="en" className="home-hero-in eyebrow flex items-center gap-3 text-fg-secondary" style={{ '--home-in': '1500ms' } as CSSProperties}>
+          <p aria-hidden lang="en" className="home-hero-in eyebrow flex items-center gap-3 text-fg-secondary" style={{ '--home-in': '0ms' } as CSSProperties}>
             <span className="home-eyebrow-line w-10" />
-            <DecodeText text={t.eyebrow} duration={1100} />
+            <DecodeText text={t.eyebrow} duration={1100} afterIntro />
           </p>
-          <h1 id="hero-title" className="home-hero-title text-hero tracking-display text-balance-cjk text-fg">
-            <RevealText text={t.title} on="load" delay={1700} />
-          </h1>
-          <p className="home-hero-in max-w-[34ch] text-lead text-fg-secondary" style={{ '--home-in': '2250ms' } as CSSProperties}>
+          <RevealText as="h1" id="hero-title" text={t.title} on="load" delay={150} className="text-hero tracking-display text-balance-cjk text-fg" />
+          <p className="home-hero-in max-w-[34ch] text-lead text-fg-secondary" style={{ '--home-in': '700ms' } as CSSProperties}>
             {t.lead}
           </p>
-          <div className="home-hero-in mt-2 flex flex-wrap items-center gap-3" style={{ '--home-in': '2450ms' } as CSSProperties}>
+          <div className="home-hero-in mt-2 flex flex-wrap items-center gap-3" style={{ '--home-in': '900ms' } as CSSProperties}>
             <a href="#film" onClick={onWatch} className={buttonClass('primary', 'lg', 'home-cta')}>
               <Play className="fill-current" aria-hidden />
               {t.watch}
@@ -67,7 +65,7 @@ export function HeroSection() {
               <ArrowRight aria-hidden />
             </ButtonLink>
           </div>
-          <div className="home-hero-in flex flex-wrap items-center gap-2" style={{ '--home-in': '2650ms' } as CSSProperties}>
+          <div className="home-hero-in flex flex-wrap items-center gap-2" style={{ '--home-in': '1100ms' } as CSSProperties}>
             <Chip icon={<UserRound aria-hidden />}>{common.personalProject}</Chip>
             <SourceSoon />
           </div>

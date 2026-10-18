@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { SpotlightCard } from '../../../components/fx/index.ts';
 import { AppWindow, IllustrativeBadge, MockChip, TimelineStrip, useMockPlayback } from '../../../components/mock/index.ts';
 import { Chip } from '../../../components/ui/Chip.tsx';
+import { commonCopy } from '../../../i18n/common.ts';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
 import { HTML_LANG, LOCALES } from '../../../site/config.ts';
@@ -156,6 +157,7 @@ function LanguagesVisual() {
 /** Feature bento: six tiles with real output and labelled illustrative UI. */
 export function FeaturesSection() {
   const t = useCopy(HOME).features;
+  const common = commonCopy(useLocale());
   return (
     <section aria-labelledby="features-title" className="site-section relative">
       <div className="site-container">
@@ -181,7 +183,7 @@ export function FeaturesSection() {
             <div className="mt-2 grid gap-3">
               <TileHeading title={t.swap.title}>
                 <Chip tone="warning" icon={<FlaskConical aria-hidden />}>
-                  {t.swap.status}
+                  {common.inTesting}
                 </Chip>
               </TileHeading>
               <p className="text-reading text-fg-secondary">{t.swap.body}</p>
@@ -229,7 +231,7 @@ export function FeaturesSection() {
               ))}
               <li>
                 <Chip tone="info">
-                  {t.imageStudio.removeBackground} · {t.imageStudio.coming}
+                  {t.imageStudio.removeBackground} · {common.coming}
                 </Chip>
               </li>
             </ul>

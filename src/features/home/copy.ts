@@ -50,10 +50,10 @@ export interface HomeCopy {
   };
   features: SectionHeading & {
     reverse: TextBlock & { note: string };
-    swap: TextBlock & { status: string };
+    swap: TextBlock;
     advisor: TextBlock & { sources: string };
     timeline: TextBlock;
-    imageStudio: TextBlock & { caption: string; chips: string[]; removeBackground: string; coming: string };
+    imageStudio: TextBlock & { caption: string; chips: string[]; removeBackground: string };
     languages: TextBlock;
     mockLabels: { reverse: string; swap: string; advisor: string; timeline: string };
   };
@@ -258,7 +258,6 @@ export const HOME: Copy<HomeCopy> = {
       swap: {
         title: '一鍵替換角色',
         body: '五個步驟：來源影片、角色、場景切點偵測、分段規劃、輸出。設計目標是把約 1 分鐘的影片分批轉換，並保留原本的聲音。',
-        status: '測試中',
       },
       advisor: {
         title: 'Prompt Advisor',
@@ -275,7 +274,6 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Phasyn Studio 實際輸出 · Qwen-Image 2.1 · 1152×672 · 每張在 RTX 5080 上端到端約 27 秒',
         chips: ['文字生成圖片', '圖生圖', '遮罩編輯'],
         removeBackground: '去背',
-        coming: '即將加入',
       },
       languages: {
         title: '三種語言',
@@ -479,7 +477,6 @@ export const HOME: Copy<HomeCopy> = {
       swap: {
         title: 'ワンクリックでキャラクター置換',
         body: '元の映像、キャラクター、カット検出、セグメント計画、出力の 5 ステップです。約 1 分の映像をバッチに分けて変換し、元の音声を残すように設計しています。',
-        status: 'テスト中',
       },
       advisor: {
         title: 'Prompt Advisor',
@@ -496,7 +493,6 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Phasyn Studio の実際の出力 · Qwen-Image 2.1 · 1152×672 · RTX 5080 で 1 枚あたりエンドツーエンド約 27 秒',
         chips: ['テキストから画像', '画像から画像', 'マスク編集'],
         removeBackground: '背景除去',
-        coming: '近日追加予定',
       },
       languages: {
         title: '3 つの言語',
@@ -700,7 +696,6 @@ export const HOME: Copy<HomeCopy> = {
       swap: {
         title: 'One-Click Character Swap',
         body: 'Five steps: source video, characters, scene-cut detection, segment plan, output. Designed to convert a video of about a minute in batches and keep its original audio.',
-        status: 'In testing',
       },
       advisor: {
         title: 'Prompt Advisor',
@@ -717,7 +712,6 @@ export const HOME: Copy<HomeCopy> = {
         caption: 'Real Phasyn Studio output · Qwen-Image 2.1 · 1152×672 · about 27 s each end to end on the RTX 5080',
         chips: ['Text to image', 'Image to image', 'Masked edit'],
         removeBackground: 'Remove background',
-        coming: 'Coming',
       },
       languages: {
         title: 'Three Languages',

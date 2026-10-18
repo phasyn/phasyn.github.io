@@ -47,7 +47,8 @@ export const hairlineFragment = /* glsl */ `
     float d = abs(fract(vPerimeter - uHead + 0.5) - 0.5);
     float head = exp(-(d * d) / 0.0009);
     float behind = fract(uHead - vPerimeter);
-    float tail = behind < 0.26 ? pow(1.0 - behind / 0.26, 2.0) * 0.6 : 0.0;
+    float trail = 1.0 - behind / 0.26;
+    float tail = behind < 0.26 ? trail * trail * 0.6 : 0.0;
     float light = uIntensity * (1.0 + uFlash) + uPulse * (head + tail);
     gl_FragColor = vec4(color * light * uFade, 1.0);
     #include <tonemapping_fragment>
@@ -86,7 +87,8 @@ export const ribbonFragment = /* glsl */ `
     // max(): float error can push the base a hair below 0, and pow() of a negative base is NaN (which the transmission
     // buffer's mip chain would smear into dark blocks).
     float filament = pow(max(0.0, 0.5 + 0.5 * sin(vUv.x * 61.0 - uTime * uSpeed * 2.3 + across * 3.0)), 6.0) * 0.5;
-    float ends = smoothstep(0.02, 0.3, vUv.x) * smoothstep(1.0, 0.72, vUv.x);
+    // smoothstep needs edge0 < edge1 (reversed edges are undefined and can return NaN on some GPUs).
+    float ends = smoothstep(0.02, 0.3, vUv.x) * (1.0 - smoothstep(0.72, 1.0, vUv.x));
     float c = vUv.x - uComet;
     float comet = exp(-c * c / 0.0016) + (c < 0.0 ? exp(c / 0.08) * 0.35 : 0.0);
     vec3 color = brandPalette(vUv.x * 0.85 + uHue);
@@ -167,16 +169,18 @@ export const gridFragment = /* glsl */ `
   varying vec2 vWorld;
   varying float vDepth;
   float gridLine(vec2 coord) {
-    vec2 g = abs(fract(coord - 0.5) - 0.5) / fwidth(coord);
+    vec2 g = abs(fract(coord - 0.5) - 0.5) / max(fwidth(coord), vec2(1e-4));
     return 1.0 - min(min(g.x, g.y), 1.0);
   }
   void main() {
     vec2 local = vWorld - uCenter;
     float fine = gridLine(local * 1.6);
     float major = gridLine(local * 0.4);
-    float fade = exp(-pow(length(local * vec2(0.17, 0.26)), 2.0));
+    vec2 spread = local * vec2(0.17, 0.26);
+    float fade = exp(-dot(spread, spread));
     float left = smoothstep(-7.0, -1.5, local.x);
-    float band = exp(-pow((local.y - uScan) * 1.4, 2.0));
+    float scan = (local.y - uScan) * 1.4;
+    float band = exp(-scan * scan);
     vec3 color = brandPalette(0.3 + 0.12 * local.x);
     float light = (fine * 0.22 + major * 0.55) * fade * left * (0.55 + 1.8 * band);
     gl_FragColor = vec4(color * light * uIntensity, 1.0);

@@ -24,9 +24,7 @@ export function ClosingSection() {
           <BrandMark size={176} glow className="relative" />
         </div>
         <Wordmark width={248} gradient tagline decorative className="reveal justify-items-center" />
-        <h2 id="closing-title" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg">
-          <RevealText text={t.title} on="view" />
-        </h2>
+        <RevealText as="h2" id="closing-title" text={t.title} on="view" className="max-w-[20ch] text-display tracking-display text-balance-cjk text-fg" />
         <p className="reveal max-w-[48ch] text-lead text-fg-secondary">{t.lead}</p>
         <SourceSoon className="reveal" />
         <div className="reveal flex flex-wrap justify-center gap-3">

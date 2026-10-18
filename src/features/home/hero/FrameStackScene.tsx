@@ -172,8 +172,14 @@ function createAssets() {
         uComet: { value: 0 },
         uCometGain: { value: stream.comet.gain },
       },
-      // Opaque list (refracted by the glass) + additive blending (three applies it whenever blending isn't Normal).
-      blending: THREE.AdditiveBlending,
+      // Opaque list (refracted by the glass) + additive colour. Alpha must stay 1: three's transmission buffer is half
+      // float, and accumulated alpha > 1 there is multiplied into the glass's own alpha, which then darkens what's behind.
+      blending: THREE.CustomBlending,
+      blendEquation: THREE.AddEquation,
+      blendSrc: THREE.OneFactor,
+      blendDst: THREE.OneFactor,
+      blendSrcAlpha: THREE.ZeroFactor,
+      blendDstAlpha: THREE.OneFactor,
       transparent: false,
       depthWrite: false,
     });
@@ -206,10 +212,10 @@ function createAssets() {
     return new THREE.MeshPhysicalMaterial({
       color: new THREE.Color('#e6eeff'),
       metalness: 0,
-      roughness: 0.18,
+      roughness: 0.2,
       transmission: 1,
-      thickness: 0.34,
-      ior: 1.38,
+      thickness: 0.45,
+      ior: 1.42,
       attenuationColor: paletteColor(0.15 + shift * 0.85, tint.clone()),
       attenuationDistance: 1.6,
       clearcoat: 1,
@@ -525,6 +531,8 @@ export function FrameStackScene({ tier, progressRef, pointerRef, onReady }: Fram
       if (!isTriangle) {
         const still = assets.stillMaterials[i]!;
         still.opacity = still.map ? 0.94 * smoother(clamp01((e - 0.5) / 0.42)) : 0;
+        // Skip the draw entirely until the still starts to appear.
+        still.visible = still.opacity > 0.002;
       }
       const sweep = ((time * 0.085) % 1) * 1.7 - 0.35;
       const glow = Math.exp(-((sweep - order / PANES) ** 2) / 0.018);
