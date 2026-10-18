@@ -1,14 +1,14 @@
-import { Maximize, Pause, Play, Volume2, VolumeX } from 'lucide-react';
+import { Clock, Maximize, Pause, Play, Volume2, VolumeX } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from 'react';
 import { cn } from '../../lib/cn.ts';
 import { useInView, useReducedMotion } from '../../lib/hooks.ts';
 import { mediaUrl } from '../../lib/media.ts';
 import { useLocale, type Copy } from '../../i18n/locale.tsx';
 
-const UI: Copy<{ play: string; pause: string; mute: string; unmute: string; fullscreen: string; unavailable: string; seek: string }> = {
-  'zh-hant': { play: '播放', pause: '暫停', mute: '靜音', unmute: '取消靜音', fullscreen: '全螢幕', unavailable: '影片準備中', seek: '播放進度' },
-  ja: { play: '再生', pause: '一時停止', mute: 'ミュート', unmute: 'ミュート解除', fullscreen: 'フルスクリーン', unavailable: '映像を準備中です', seek: '再生位置' },
-  en: { play: 'Play', pause: 'Pause', mute: 'Mute', unmute: 'Unmute', fullscreen: 'Full Screen', unavailable: 'Video in preparation', seek: 'Playback position' },
+const UI: Copy<{ play: string; pause: string; mute: string; unmute: string; fullscreen: string; unavailable: string; unavailableHint: string; seek: string }> = {
+  'zh-hant': { play: '播放', pause: '暫停', mute: '靜音', unmute: '取消靜音', fullscreen: '全螢幕', unavailable: '影片準備中', unavailableHint: '渲染完成後就能在這裡播放。', seek: '播放進度' },
+  ja: { play: '再生', pause: '一時停止', mute: 'ミュート', unmute: 'ミュート解除', fullscreen: 'フルスクリーン', unavailable: '映像を準備中です', unavailableHint: 'レンダリングが終わり次第、ここで再生できます。', seek: '再生位置' },
+  en: { play: 'Play', pause: 'Pause', mute: 'Mute', unmute: 'Unmute', fullscreen: 'Full Screen', unavailable: 'Video in preparation', unavailableHint: 'It will play here as soon as rendering finishes.', seek: 'Playback position' },
 };
 
 export interface FilmPlayerProps {
@@ -116,7 +116,8 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
         ref={videoRef}
         className="absolute inset-0 size-full object-cover"
         poster={poster}
-        preload={ambient ? 'metadata' : 'none'}
+        // Metadata loads up front so a missing or unplayable file shows its state instead of a dead play button.
+        preload="metadata"
         playsInline
         muted={muted}
         loop={ambientActive}
@@ -132,8 +133,12 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
       </video>
 
       {failed ? (
-        <div className="absolute inset-x-0 bottom-0 grid place-items-center p-4">
-          <span className="material-hud rounded-full px-3 py-1.5 text-caption text-fg">{ui.unavailable}</span>
+        <div role="status" className="absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0.15),rgb(2_4_9_/_0.6))] p-6">
+          <div className="material-hud grid max-w-sm justify-items-center gap-2 rounded-2xl px-6 py-5 text-center">
+            <Clock className="size-6 text-warning" aria-hidden />
+            <p className="text-section font-semibold text-fg">{ui.unavailable}</p>
+            <p className="text-data text-fg">{ui.unavailableHint}</p>
+          </div>
         </div>
       ) : null}
 
