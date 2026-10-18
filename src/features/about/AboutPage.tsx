@@ -103,8 +103,9 @@ export function AboutPage() {
 
             <StorySection id="benchmarks" title={copy.titles.benchmarks}>
               <Prose paragraphs={copy.benchmarks.body} />
-              {/* The page's one primary action: an orbiting light on its frame (kit utility; static under reduced motion). */}
-              <div className="reveal fx-orbit-border mt-8 grid gap-5 rounded-xl border border-line bg-surface p-5 shadow-edge sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:p-6">
+              {/* The page's one primary action: an orbiting light on its frame (kit `fx-orbit` ring; static under reduced motion). */}
+              <div className="reveal relative isolate mt-8 grid gap-5 rounded-xl border border-line bg-surface p-5 shadow-edge sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center md:p-6">
+                <span aria-hidden className="fx-orbit" />
                 <AreaArt area="records" size={52} />
                 <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-6">
                   <p className={cn('text-body text-fg-secondary [text-wrap:pretty]', display)}>{copy.benchmarks.note}</p>
