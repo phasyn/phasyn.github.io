@@ -7,7 +7,8 @@ import './styles/app.css';
 export function Layout({ children }: { children: ReactNode }) {
   const locale = localeFromPath(useLocation().pathname);
   return (
-    <html lang={locale ? HTML_LANG[locale] : 'en'} data-theme="noir" style={{ backgroundColor: '#070b14', colorScheme: 'dark' }}>
+    // suppressHydrationWarning: IntroSplash's pre-paint script may add `fx-intro-skip` to <html> before hydration.
+    <html lang={locale ? HTML_LANG[locale] : 'en'} data-theme="noir" style={{ backgroundColor: '#070b14', colorScheme: 'dark' }} suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
