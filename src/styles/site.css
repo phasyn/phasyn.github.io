@@ -32,7 +32,8 @@
   --site-max: 76rem;
   /*
    * Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. Equals HOLD_MS
-   * in IntroSplash.tsx (FE-04: the hero and its CTA are usable within ~1.2 s).
+   * in IntroSplash.tsx (FE-04): entrances start at 0.7 s and the overlay is gone at 1 s, so a CTA whose own entrance
+   * offset is ≤ ~300 ms is usable by ~1.2 s.
    */
   --fx-intro-delay: 700ms;
 }

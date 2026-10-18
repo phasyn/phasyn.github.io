@@ -231,7 +231,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
   const start = useCallback(
     (from: number) => {
       const video = videoRef.current;
-      if (!video || !available) return;
+      if (!video || preparing) return;
       if (!activated) {
         setActivated(true);
         video.muted = false;
@@ -245,7 +245,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
       video.currentTime = from;
       void video.play().catch(() => {});
     },
-    [activated, available, near],
+    [activated, preparing, near],
   );
 
   const toggle = useCallback(() => {
@@ -266,7 +266,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
     () => ({
       seek: (seconds: number) => {
         const video = videoRef.current;
-        if (!video || !available) return;
+        if (!video || preparing) return;
         if (!near) {
           pendingRef.current = { from: Math.max(0, seconds), play: pendingRef.current?.play ?? false };
           setNear(true);
@@ -280,7 +280,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, captions, clas
         start(Math.max(0, seconds));
       },
     }),
-    [available, preparing, near, start],
+    [preparing, near, start],
   );
 
   const seekBy = (delta: number) => {
