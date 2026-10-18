@@ -413,6 +413,15 @@
     line-break: strict;
   }
 
+  /*
+   * Japanese running text breaks between phrases (同じ, 記録 never split) where the browser supports auto-phrase (FE-07);
+   * `break-word` only splits a phrase that cannot fit a line at all and leaves min-content sizes alone.
+   */
+  :root:lang(ja) main :is(p, li, dd, figcaption) {
+    word-break: auto-phrase;
+    overflow-wrap: break-word;
+  }
+
   /* Japanese card and section headings outside RevealText keep phrases whole where the browser supports it. */
   :root:lang(ja) main :is(h3, h4) {
     word-break: auto-phrase;
