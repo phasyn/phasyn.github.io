@@ -140,7 +140,8 @@ function VariantCell({ row }: { row: SpeedRow }) {
   const tags = configTags(copy, row);
   return (
     <div className="grid min-w-0 gap-1">
-      <span className="font-semibold text-fg">{variantName(copy, row)}</span>
+      {/* keep-all: CJK names break at spaces ("40 ステップ" stays whole), with anywhere as the overflow valve. */}
+      <span className="font-semibold [overflow-wrap:anywhere] [word-break:keep-all] text-fg">{variantName(copy, row)}</span>
       <span className="machine text-[11px] text-fg-secondary">{outputText(copy, row)}</span>
       {row.component ? (
         <code className="machine block truncate text-[11px] text-fg-tertiary" title={row.component}>
