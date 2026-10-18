@@ -4,7 +4,7 @@
 // `ShowcaseItemJson` mirrors the recording agents' `item.json` (studio/out/final/showcase/{farm-*,rec-*}/item.json) and the
 // seed entries in scripts/showcase-seed.json. `ShowcaseItem` is what the importer writes into items.gen.ts: the same fields,
 // normalised (machines as keys, unknown values as null), plus the prompt text and the web media it produced. item.json's
-// `notes` stay internal: the importer writes them as comments in items.gen.ts, so they never reach the bundle.
+// `notes` stay internal: the importer never copies them into the site (items.gen.ts only names each item's origin).
 
 import type { Locale } from '../../site/config.ts';
 

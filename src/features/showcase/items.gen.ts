@@ -3,7 +3,7 @@
 import type { ShowcaseItem } from './types.ts';
 
 export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
-  // showreel: Bonus (not in the brief): a 31-second reel with the strongest moment of eleven of tonight's films, one bar per shot, every cut on a downbeat of a Suno track (launch-film-b from 20.0 s, a section no other film uses; credit: Music generated with Suno). It opens in the music's dip on the glass-sphere storm and the beat kicks in on the dragon's fireball; it ends on the Courier's frame shattering into the aurora. Each shot's own H3 sound (raw -12.7, -28.9, -23.4, -29.8, -41.8, -14.8, -42.7, -19.4, -35.7, -41.4, -40.6, -36.3 LUFS) is normalised to -24 LUFS under the music so the fireball, fist slam and lantern whoosh still punch through. Mastered to -14.1 LUFS integrated / -2.4 dBTP. Every shot is an unaltered Phasyn Studio render at native 768x448 (one is mirrored).
+  // films/showreel
   {
     "slug": "showreel",
     "title": {
@@ -111,7 +111,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // dragon-night-market: Six FL2VA shots (each first frame is a Qwen-Image 2.1 still from t2i-pc) cut as one tiny story: the dragon lights the cold grill (the fireball lands on the music's lift), flips the skewers with its tail, steals a soup dumpling and freezes when the vendor turns, is forgiven with a skewer, then puffs a golden ember ring that rises into the lanterns, and the camera cranes up over the whole glowing market as the music's final chord rings out. H3's own sound events are in sync with the picture (flame whoosh, skewer landings, the gulp) and stay on top of a Suno bed (launch-film-a, back-timed so its final chord resolves over the ending; credit: Music generated with Suno). Raw H3 audio per shot: -28.7, -35.3, -46.6, -35.4, -35.2, -48.8 LUFS; each shot normalised to -20 LUFS with light compression, mix mastered to -14.1 LUFS integrated / -1.2 dBTP. Caveat: the dragon's design varies slightly between shots because every shot starts from its own t2i still.
+  // films/dragon-night-market
   {
     "slug": "dragon-night-market",
     "title": {
@@ -189,7 +189,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // penguin-rocket: Four FL2VA shots (first frames from Qwen-Image 2.1; prompts by 03-promptlab) cut as a fail → win → oops comedy: goggles down, the fuse fizzles out with a puff of black smoke, a silent beat, then ignition; a sea-skimming flight with a corkscrew smoke ring; a belly-slide that bowls over the whole colony, who then cheer. H3 made every comic sound in sync (fizz, pfft, the silence, the roar, the crash, the cheers; raw -34.0, -20.3, -24.7, -25.5 LUFS). A Suno bed (tour-bed-b; credit: Music generated with Suno) drops in hard on the ignition frame, entering on the downbeat right after a breakdown, and fades under the cheers. Mastered to -14.0 LUFS integrated / -1.2 dBTP.
+  // films/penguin-rocket
   {
     "slug": "penguin-rocket",
     "title": {
@@ -257,7 +257,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // origami-flight: Four FL2VA shots: a paper crane wakes up on a letter, flies out of the window and over a neon city, becomes a glowing ribbon of cranes and climbs into the moonlight. Shot 2 is a chained render (re-rendered tonight on film-a's request) that starts from the last frame of shot 1, so that cut is seamless; the hard cut to the full moon lands on a downbeat. Suno bed (launch-film-a intro, credit: Music generated with Suno) placed so its first downbeat hits the lift-off; the later cuts land on beats. Raw H3 audio per shot: -36.9, -44.7, -30.3, -35.0 LUFS (paper creases, wing flaps); normalised to -21 LUFS with light compression under the music, mastered to -14.1 LUFS integrated / -1.3 dBTP.
+  // films/origami-flight
   {
     "slug": "origami-flight",
     "title": {
@@ -325,7 +325,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // through-the-frame: Four Ref2VA shots of the Courier, the project's original character (reference images: her character sheet, plus a face sheet in shots 3-4; prompts by 03-promptlab): she lifts a small glass frame to the sunset sky, the sky inside it is an aurora night with a floating glass city, the frame grows into a glowing door and she walks through, and on the aurora coast beyond, the frame shatters into shards that rise into the sky. The layered glass frame is the Phasyn mark, so this is the brand's own little myth. Each shot is exactly two bars of a Suno track (launch-film-b; credit: Music generated with Suno) and every cut is on a downbeat; H3's chime, hum, whoosh and shard sounds (raw -48.0, -41.6, -37.7, -35.9 LUFS) sit under it. Mastered to -14.1 LUFS integrated / -1.4 dBTP. Shots 1-2 use single-reference renders (character sheet only) because the two-reference takes drew a second hair ornament; shots 3-4 are two-reference takes where the extra ornament is never visible, so her look is consistent across the film.
+  // films/through-the-frame
   {
     "slug": "through-the-frame",
     "title": {
@@ -393,7 +393,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // sky-whale: Three FL2VA shots (first frames from Qwen-Image 2.1 t2i-pc) cut as wide → closer → under it: a colossal whale crosses a sunset hillside city, street lamps light up as its shadow passes, birds scatter, and the tail glides out of frame. No music on purpose: H3's own soundtrack carries a tonal whale call over wind and birds (visible as sustained harmonics in the spectrogram), and a music bed would fight it. Shot 1 is mirrored to keep screen direction. Raw H3 audio per shot: -24.2, -19.7, -23.6 LUFS; each normalised to -20 LUFS with light compression, mastered to -14.1 LUFS integrated / -2.0 dBTP.
+  // films/sky-whale
   {
     "slug": "sky-whale",
     "title": {
@@ -456,7 +456,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // snow-fox: Four photoreal FL2VA shots (first frames from Qwen-Image 2.1; prompts by 03-promptlab) in wildlife-documentary style: a red fox hears something under the snow, tilts its head, dives in headfirst so only its wagging tail sticks out, then pops up with a snowy face, sneezes and trots off. The cut follows a Suno track (tour-bed-a; credit: Music generated with Suno) through a breakdown so the dive lands exactly on the beat coming back. H3's crunch, thump and sneeze (raw -49.1, -48.5, -44.5, -30.7 LUFS) are kept under the music; mastered to -14.1 LUFS integrated / -1.1 dBTP.
+  // films/snow-fox
   {
     "slug": "snow-fox",
     "title": {
@@ -524,7 +524,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // mecha-in-the-rain: Two chained FL2VA renders (the second starts from the last frame of the first, so the join is invisible; first frame from a Qwen-Image 2.1 still) play as one 15-second shot: a ten-storey mecha stomps toward the lens through a flooded neon street in heavy rain, then raises its fist and slams it into the water; a wall of spray hits the camera and steam blasts from its vents. No music: the sound is all H3, and its footfalls and the fist impact land exactly on the picture, with rain, hydraulics and steam in between (raw -15.9, -16.1 LUFS). Left uncompressed to keep the impacts punchy; mastered to -14.1 LUFS integrated / -1.3 dBTP. Faint pseudo-glyph strokes on small vertical neon signs at the frame edges (rain-blurred).
+  // films/mecha-in-the-rain
   {
     "slug": "mecha-in-the-rain",
     "title": {
@@ -582,7 +582,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // glass-ocean: A single 14.4-second FL2VA generation (345 frames, first frame from a Qwen-Image 2.1 still) that contains its own cut: a calm lamp-lit desk with a full storm inside a glass sphere, then a close-up through the curved glass where the tiny ship climbs a wave under forked lightning. The two halves stay one world because they come from one generation. No music: the soundtrack is H3's own muffled thunder, waves and lightning crackle (raw -16.2 LUFS), lightly compressed and mastered to -14.1 LUFS integrated / -1.4 dBTP. Seeds 5211/5212 (10 s) also passed QA but 5212 is a different ship and lighthouse layout, so it is not intercut.
+  // films/glass-ocean
   {
     "slug": "glass-ocean",
     "title": {
@@ -635,7 +635,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // lantern-fpv: A single 14.4-second FL2VA generation (345 frames, first frame from a Qwen-Image 2.1 still) that plays like one continuous FPV drone flight through a valley of thousands of rising sky lanterns: a dive, close passes that sweep across the lens, a skim over the river reflections and a climb into the stars. H3 generated the wind whooshes in sync with every close pass (raw -20.5 LUFS); they sit on top of a Suno bed (tour-bed-b, entering from its breakdown so the beat lands on the first lantern pass and fading out as the camera rises into the quiet sky; credit: Music generated with Suno). Mastered to -14.2 LUFS integrated / -1.4 dBTP.
+  // films/lantern-fpv
   {
     "slug": "lantern-fpv",
     "title": {
@@ -688,7 +688,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // snow-fox-one-prompt: Bonus companion to Snow Fox: one prompt, one FL2VA generation, no editing. The prompt (by 03-promptlab) gave H3 shot timestamps at 3.5, 7.0 and 10.5 s, and the model cut between four camera set-ups by itself, keeping the same fox across all of them: a wide trot and sudden stop, a close-up of its face, the pounce with only the tail sticking out of the snow, and the snowy face pulling out before it trots away. Nothing was trimmed or re-ordered; only fades and a Suno bed were added (tour-bed-a, placed so a downbeat lands on the first cut; credit: Music generated with Suno). Raw H3 audio -38.0 LUFS (crunching snow, a thump, a sneeze); mastered to -14.1 LUFS integrated / -1.2 dBTP.
+  // films/snow-fox-one-prompt
   {
     "slug": "snow-fox-one-prompt",
     "title": {
@@ -741,7 +741,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // zero-g-cat: One 10-second FL2VA take (first frame: a Qwen-Image 2.1 still, re-rendered tonight so the milk looks liquid): an orange tabby floating in a space-station module does a slow somersault, licks a wobbling sphere of milk, the sphere bursts into floating blobs and the cat chases and licks the droplets before rolling upside down, pleased with itself. H3's soft beeps and lapping sounds (raw -41.9 LUFS, a very quiet bed) are kept under the gentle outro of a Suno track (tour-bed-a, back-timed so it resolves at the end; credit: Music generated with Suno). Mastered to -14.1 LUFS integrated / -1.3 dBTP.
+  // films/zero-g-cat
   {
     "slug": "zero-g-cat",
     "title": {
@@ -794,7 +794,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // neon-koi-alley: One Ref2VA take of the Courier, the project's original character (from her reference image), re-rendered tonight with a prompt that bans signboards: she walks through a rainy alley lit only by bent neon tubes, paper lanterns and warm windows while glowing koi swim through the air around her, one gliding past her raised hand. Her face, silver hair, glass-frame hair ornament and the cyan-violet cloak trim stay consistent through the shot. H3's soft rain and water-like whooshes (raw -41.7 LUFS) sit under the intro of a Suno track (tour-bed-a; credit: Music generated with Suno); mastered to -14.1 LUFS integrated / -3.0 dBTP. Shorter than the 10-15 s target on purpose: the take is cut before a sign with fake glyphs enters the frame; two tiny, distant plaques in the background still carry unreadable marks.
+  // films/neon-koi-alley
   {
     "slug": "neon-koi-alley",
     "title": {
@@ -847,7 +847,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // fl2va-ocean: studio/gen/clips/fl2va-ocean; first frame from the ocean still (768x448).
+  // seed:fl2va-ocean
   {
     "slug": "fl2va-ocean",
     "title": {
@@ -946,7 +946,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // ref2va-rooftop: studio/gen/clips/ref2va-rooftop; one reference image (the character sheet).
+  // seed:ref2va-rooftop
   {
     "slug": "ref2va-rooftop",
     "title": {
@@ -1054,7 +1054,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // fl2va-rain: studio/gen/clips/fl2va-rain; run record captured in work/real-ui/records-run-steps (created 15:35:41, elapsed 57.156 s).
+  // seed:fl2va-rain
   {
     "slug": "fl2va-rain",
     "title": {
@@ -1153,7 +1153,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // ref2va-meadow: studio/gen/clips/ref2va-meadow; one reference image (the character sheet).
+  // seed:ref2va-meadow
   {
     "slug": "ref2va-meadow",
     "title": {
@@ -1261,7 +1261,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // fl2va-cliff: studio/gen/clips/fl2va-cliff; first FL2VA run of the session.
+  // seed:fl2va-cliff
   {
     "slug": "fl2va-cliff",
     "title": {
@@ -1360,7 +1360,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // fl2va-portrait: studio/gen/clips/fl2va-portrait.
+  // seed:fl2va-portrait
   {
     "slug": "fl2va-portrait",
     "title": {
@@ -1459,7 +1459,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       "rawSampleRate": 32000
     }
   },
-  // still-cliff: studio/gen/stills/cliff; step times are the session's rounded readings, shared by all four stills.
+  // seed:still-cliff
   {
     "slug": "still-cliff",
     "title": {
@@ -1527,7 +1527,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // still-rain: studio/gen/stills/rain; first frame of the rain clip.
+  // seed:still-rain
   {
     "slug": "still-rain",
     "title": {
@@ -1595,7 +1595,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // still-ocean: studio/gen/stills/ocean.
+  // seed:still-ocean
   {
     "slug": "still-ocean",
     "title": {
@@ -1663,7 +1663,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // still-portrait: studio/gen/stills/portrait.
+  // seed:still-portrait
   {
     "slug": "still-portrait",
     "title": {
@@ -1731,7 +1731,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // char-courier: studio/gen/char/courier-ref-768x1024.png; picked from seeds 7 (67cec92f), 42 (c6404b02) and 2026 (d8ca891e), each ~30 s. Step times not recorded in RUNS.md.
+  // seed:char-courier
   {
     "slug": "char-courier",
     "title": {
@@ -1807,7 +1807,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // rooftop-courier-s1: Film shot S1 (shot list by the lead). 243 frames Ref2VA from the Courier reference sheet: identity, hair ornament, cloak trim and satchel hold through a slow push-in from a wide dusk view to a night profile; face and hand crops clean. Audio: AAC 32000 Hz; raw -48.4 LUFS, TP -25.4 dBFS. web.mp4 = loudness-normalised copy (-16.0 LUFS, TP -2.4 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  // showcase/farm-rooftop-courier-s1
   {
     "slug": "rooftop-courier-s1",
     "title": {
@@ -1928,7 +1928,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // rooftop-courier-s3: Film shot S3. 243 frames Ref2VA: a 10 s side-tracking sprint across wet rooftops with synced splashes; running poses hold in 1:1 crops (slight motion smear on the trailing leg). Background neon signs carry pseudo-CJK glyphs (one resembles real characters); no brands. Audio: AAC 32000 Hz; raw -37.2 LUFS, TP -12.3 dBFS. web.mp4 = loudness-normalised copy (-17.9 LUFS, TP -2.0 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  // showcase/farm-rooftop-courier-s3
   {
     "slug": "rooftop-courier-s3",
     "title": {
@@ -2049,7 +2049,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // rooftop-courier-s4: Film shot S4. 124 frames Ref2VA, low angle from the gap: she jumps from the far roof toward the camera and lands in a crouch with a splash; landing crops (face, hand, boots) are clean. The leap reads as a jump down toward the camera rather than strictly across the gap. Audio: AAC 32000 Hz; raw -28.9 LUFS, TP -8.1 dBFS. web.mp4 = loudness-normalised copy (-15.7 LUFS, TP -2.2 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  // showcase/farm-rooftop-courier-s4
   {
     "slug": "rooftop-courier-s4",
     "title": {
@@ -2170,7 +2170,7 @@ export const SHOWCASE_ITEMS: readonly ShowcaseItem[] = [
       }
     }
   },
-  // rooftop-courier-s6: Film shot S6. 124 frames Ref2VA: she drops in from above onto the roof of a fast train and steadies herself as the neon city streaks past. The drop happens within ~0.5 s (hair streaks during the fall); the train reads as a commuter train rather than a maglev. Background signs show pseudo-glyphs. Audio: AAC 32000 Hz; raw -32.9 LUFS, TP -9.6 dBFS. web.mp4 = loudness-normalised copy (-16.3 LUFS, TP -2.3 dBFS; video stream copied, audio two-pass loudnorm + limiter, 48 kHz AAC 192k). clip.mp4 = original remuxed with +faststart (no re-encode). Native 768x448, not upscaled.
+  // showcase/farm-rooftop-courier-s6
   {
     "slug": "rooftop-courier-s6",
     "title": {
