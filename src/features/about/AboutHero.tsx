@@ -13,8 +13,8 @@ import { useDisplayBreak, withBalance } from './parts.tsx';
  */
 export const ABOUT_HERO_BACKGROUND = { src: '/images/about/b02-about-header-2560.webp', width: 2560, height: 1440 } as const;
 
-/** The title reveal starts as the splash fades (BRIEF §4.1); see motion.tsx for the skip-aware timing. */
-const TITLE_DELAY_MS = 1700;
+/** Extra delay after the splash; RevealText `on="load"` already waits for it (`--fx-intro-delay`, 0 when skipped). */
+const TITLE_DELAY_MS = 250;
 
 // Canvas-coloured scrim: keeps the centre quiet behind the type and fades the scene into the page below.
 const SCRIM = [
@@ -65,10 +65,7 @@ export function AboutHero({ copy, personalProject }: { copy: AboutCopy['hero']; 
           id="about-title"
           aria-label={copy.title.join('')}
           className={withBalance(
-            cn(
-              'mt-5 max-w-[15em] text-display tracking-display text-fg md:text-hero',
-              '[:root.fx-intro-skip_&_.fx-char]:[animation-delay:calc(var(--d)_-_1500ms)]',
-            ),
+            cn('mt-5 max-w-[15em] text-display tracking-display text-fg md:text-hero'),
           )}
         >
           {copy.title.map((line, index) => (
