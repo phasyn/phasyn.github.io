@@ -1,9 +1,20 @@
 import { clsx, type ClassValue } from 'clsx';
 import { extendTailwindMerge } from 'tailwind-merge';
 
-// Brand utilities from tokens.css plus the site's display type scale (site.css)
-// must be registered, or tailwind-merge treats them as colours and drops them.
-type PhasynClassGroup = 'border-brand-gradient' | 'text-brand-gradient' | 'material' | 'pressable' | 'stagger';
+// Brand utilities from tokens.css plus the site layer (site.css: display type, layout, FX) must be registered,
+// or tailwind-merge treats them as colours and drops them.
+type PhasynClassGroup =
+  | 'border-brand-gradient'
+  | 'text-brand-gradient'
+  | 'material'
+  | 'pressable'
+  | 'stagger'
+  | 'text-balance-cjk'
+  | 'site-layout'
+  | 'eyebrow'
+  | 'reveal'
+  | 'site-effect'
+  | 'fx';
 
 const twMerge = extendTailwindMerge<PhasynClassGroup>({
   extend: {
@@ -44,6 +55,7 @@ const twMerge = extendTailwindMerge<PhasynClassGroup>({
         'rise-in',
       ],
       ease: ['standard', 'enter', 'exit', 'spring-smooth', 'spring-snappy', 'spring-bouncy'],
+      tracking: ['display'],
     },
     classGroups: {
       'bg-image': ['bg-brand-gradient', 'bg-brand-gradient-soft', 'bg-action-gradient'],
@@ -52,6 +64,12 @@ const twMerge = extendTailwindMerge<PhasynClassGroup>({
       material: ['material-sidebar', 'material-popover', 'material-sheet', 'material-hud'],
       pressable: ['pressable'],
       stagger: ['stagger'],
+      'text-balance-cjk': ['text-balance-cjk'],
+      'site-layout': ['site-container', 'site-section'],
+      eyebrow: ['eyebrow'],
+      reveal: ['reveal'],
+      'site-effect': ['grain', 'glow-backdrop'],
+      fx: ['fx-chars', 'fx-sweep-text', 'fx-orbit-border', 'fx-ticker-track', 'fx-scanline', 'fx-intro'],
     },
   },
 });

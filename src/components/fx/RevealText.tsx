@@ -26,9 +26,13 @@ const CJK = /[　-鿿가-힯＀-￯]/;
 export interface RevealTextProps {
   text: string;
   as?: ElementType;
-  /** `load` plays on first paint with pure CSS (use above the fold); `view` plays when scrolled into view. */
+  id?: string;
+  /**
+   * `load` plays on first paint with pure CSS (above the fold) and automatically waits for the first-visit splash
+   * (`--fx-intro-delay`, 0 when the splash is skipped); `view` plays when scrolled into view.
+   */
   on?: 'load' | 'view';
-  /** Delay before the first character, ms. */
+  /** Extra delay before the first character, ms (after the splash for `load`). */
   delay?: number;
   /** Per-character step, ms (total stagger is capped at ~1 s). */
   step?: number;
@@ -39,7 +43,7 @@ export interface RevealTextProps {
  * Headline reveal: characters rise out of a blur with a cyan→iris glow that settles, staggered. The final text is in the
  * prerendered HTML; the heading keeps its accessible name; reduced motion shows it statically.
  */
-export function RevealText({ text, as = 'span', on = 'view', delay = 0, step, className }: RevealTextProps) {
+export function RevealText({ text, as = 'span', id, on = 'view', delay = 0, step, className }: RevealTextProps) {
   const ref = useRef<HTMLElement>(null);
   const lang = HTML_LANG[useLocale()];
   const parts = useMemo(() => {
@@ -80,10 +84,16 @@ export function RevealText({ text, as = 'span', on = 'view', delay = 0, step, cl
     return () => observer.disconnect();
   }, [on, text]);
 
+  const charDelay = (i: number) => {
+    const ms = delay + Math.min(i, parts.cap) * parts.stride;
+    return on === 'load' ? `calc(var(--fx-intro-delay, 0ms) + ${ms}ms)` : `${ms}ms`;
+  };
+
   return createElement(
     as,
     {
       ref,
+      id,
       className: cn('fx-chars', className),
       'aria-label': text,
       ...(on === 'load' ? { 'data-fx-state': 'play' } : {}),
@@ -95,7 +105,7 @@ export function RevealText({ text, as = 'span', on = 'view', delay = 0, step, cl
         ) : (
           <span key={w} className="inline-block whitespace-nowrap">
             {word.chars.map(({ ch, i }) => (
-              <span key={i} className="fx-char" style={{ ['--d' as string]: `${delay + Math.min(i, parts.cap) * parts.stride}ms` }}>
+              <span key={i} className="fx-char" style={{ ['--d' as string]: charDelay(i) }}>
                 {ch}
               </span>
             ))}

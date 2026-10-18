@@ -22,6 +22,9 @@ interface CommonCopy {
   illustrative: string;
   planned: string;
   inDevelopment: string;
+  inTesting: string;
+  designGoal: string;
+  coming: string;
 }
 
 export const COMMON: Copy<CommonCopy> = {
@@ -46,6 +49,9 @@ export const COMMON: Copy<CommonCopy> = {
     illustrative: '介面示意',
     planned: '規劃中',
     inDevelopment: '開發中',
+    inTesting: '測試中',
+    designGoal: '設計目標',
+    coming: '即將加入',
   },
   ja: {
     languageName: '日本語',
@@ -68,6 +74,9 @@ export const COMMON: Copy<CommonCopy> = {
     illustrative: 'UI イメージ',
     planned: '計画中',
     inDevelopment: '開発中',
+    inTesting: 'テスト中',
+    designGoal: '設計目標',
+    coming: '近日追加予定',
   },
   en: {
     languageName: 'English',
@@ -90,6 +99,9 @@ export const COMMON: Copy<CommonCopy> = {
     illustrative: 'Illustrative UI',
     planned: 'Planned',
     inDevelopment: 'In development',
+    inTesting: 'In testing',
+    designGoal: 'Design goal',
+    coming: 'Coming',
   },
 };
 
