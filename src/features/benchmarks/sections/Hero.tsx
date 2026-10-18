@@ -26,10 +26,10 @@ function HeroTile({ rows, label, detail, runs, note, hud, devices, index }: { ro
       <HudFrame label={hud} className="h-full" innerClassName="h-full">
         <div className="@container grid h-full content-start gap-3 bg-[rgb(6_10_18_/_0.82)] p-5 backdrop-blur-md sm:p-6">
           <p className="text-data font-medium text-fg-secondary">{label}</p>
-          <p className="flex flex-wrap items-baseline gap-x-1.5 text-fg">
+          <p className="flex items-baseline gap-x-1.5 whitespace-nowrap text-fg">
             <span className="sr-only">{hi !== lo ? `${fmt(lo)}–${fmt(hi)} s` : `${fmt(lo)} s`}</span>
-            {/* Sized to the tile (container units) so a range like 26.5–27.9 stays on one line in every locale. */}
-            <span aria-hidden className="relative text-[clamp(1.875rem,15cqi,3.5rem)] leading-none font-semibold whitespace-nowrap tabular-nums tracking-display">
+            {/* Sized to the tile (container units) so a range like 105.0–108.0 s stays on one line in every locale. */}
+            <span aria-hidden className="relative text-[clamp(1.5rem,12.5cqi,3.25rem)] leading-none font-semibold whitespace-nowrap tabular-nums tracking-display">
               {range(<span className="px-0.5 text-fg-tertiary">–</span>)}
               <span className="fx-sweep-text absolute inset-0" style={{ ['--fx-sweep-delay' as string]: `${350 + index * 260}ms` }}>
                 {range(<span className="px-0.5">–</span>)}
