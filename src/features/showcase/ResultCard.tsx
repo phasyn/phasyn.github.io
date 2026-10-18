@@ -3,7 +3,7 @@ import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { itemBySlug, type ShowcaseItem } from './data.ts';
+import { itemBySlug, shortRun, type ShowcaseItem } from './data.ts';
 import { AiBadge, PipelineChip, PromptDisclosure, StepLanes, useSecondsText } from './parts.tsx';
 
 /** Every card frames its media at the H3 / Qwen-Image landscape ratio (768×448 = 1152×672), so rows line up. */
@@ -78,9 +78,20 @@ export function ResultCard({ item, size = 'regular', className }: { item: Showca
 
           <PromptDisclosure prompt={item.prompt} summary={copy.showPrompt} />
 
-          <p lang="en" className="machine text-[11px] text-fg-tertiary">
-            {item.model} · {item.ditEngine} · {copy.run} {item.runId}
-            {item.outputId ? ` · ${copy.output} ${item.outputId}` : ''}
+          <p className="machine flex flex-wrap gap-x-2 gap-y-0.5 text-[11px] text-fg-tertiary">
+            {[item.model, item.ditEngine].filter(Boolean).map((part) => (
+              <span key={part} lang="en" className="after:ml-2 after:content-['·']">
+                {part}
+              </span>
+            ))}
+            <span className="whitespace-nowrap">
+              {copy.run} <span lang="en">{shortRun(item.runId)}</span>
+            </span>
+            {item.outputId ? (
+              <span className="whitespace-nowrap before:mr-2 before:content-['·']">
+                {copy.output} <span lang="en">{shortRun(item.outputId)}</span>
+              </span>
+            ) : null}
           </p>
         </div>
       </article>
