@@ -1,5 +1,5 @@
 import { Menu, X } from 'lucide-react';
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { cn } from '../../lib/cn.ts';
 import { commonCopy } from '../../i18n/common.ts';
@@ -17,14 +17,32 @@ export function SiteHeader() {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const panelId = useId();
+  const toggleRef = useRef<HTMLButtonElement>(null);
 
-  // Close the mobile panel on navigation and with Escape.
+  // Close the mobile panel on navigation.
   useEffect(() => setOpen(false), [pathname]);
+
+  // While the panel is open (FE-14): Escape closes it and returns focus to the toggle, the page behind does not scroll,
+  // and widening past the mobile breakpoint closes it.
   useEffect(() => {
     if (!open) return;
-    const onKey = (event: KeyboardEvent) => event.key === 'Escape' && setOpen(false);
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    const root = document.documentElement;
+    const previousOverflow = root.style.overflow;
+    root.style.overflow = 'hidden';
+    const wide = window.matchMedia('(min-width: 52.5rem)');
+    const onWide = () => wide.matches && setOpen(false);
     window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
+    wide.addEventListener('change', onWide);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      wide.removeEventListener('change', onWide);
+      root.style.overflow = previousOverflow;
+    };
   }, [open]);
 
   return (
@@ -79,8 +97,9 @@ export function SiteHeader() {
               <GitHubMark className="size-[18px]" />
             </a>
             <button
+              ref={toggleRef}
               type="button"
-              className="pressable inline-flex size-10 items-center justify-center rounded-md text-fg-secondary hover:bg-raised hover:text-fg md:hidden"
+              className="pressable inline-flex size-11 items-center justify-center rounded-md text-fg-secondary hover:bg-raised hover:text-fg md:hidden"
               aria-expanded={open}
               aria-controls={panelId}
               aria-label={open ? copy.menuClose : copy.menuOpen}
@@ -95,7 +114,8 @@ export function SiteHeader() {
       <div
         id={panelId}
         hidden={!open}
-        className="material-sheet border-b border-[rgb(255_255_255_/_0.06)] md:hidden motion-safe:animate-pop-in"
+        // The page behind is scroll-locked while open, so a panel taller than a landscape phone scrolls by itself.
+        className="material-sheet max-h-[calc(100dvh-var(--site-header-h))] overflow-y-auto overscroll-contain border-b border-[rgb(255_255_255_/_0.06)] md:hidden motion-safe:animate-pop-in"
       >
         <nav aria-label={copy.navLabel} className="site-container py-4">
           <ul className="grid gap-1">
@@ -118,7 +138,7 @@ export function SiteHeader() {
           </ul>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <LanguageSwitcher full />
-            <a href={LINKS.github} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-data text-fg-secondary no-underline hover:text-fg">
+            <a href={LINKS.github} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 text-data text-fg-secondary no-underline hover:text-fg">
               <GitHubMark className="size-4" />
               GitHub
             </a>
