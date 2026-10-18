@@ -4,7 +4,7 @@ import { useLocale } from '../../i18n/locale.tsx';
 import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
 import { itemBySlug, shortRun, type ShowcaseItem } from './data.ts';
-import { AiBadge, PipelineChip, PromptDisclosure, StepLanes, useSecondsText } from './parts.tsx';
+import { MediaBadge, PipelineChip, PromptDisclosure, StepLanes, useSecondsText } from './parts.tsx';
 
 /** Every card frames its media at the H3 / Qwen-Image landscape ratio (768×448 = 1152×672), so rows line up. */
 const CARD_ASPECT = 768 / 448;
@@ -38,20 +38,18 @@ export function ResultCard({ item, size = 'regular', className }: { item: Showca
               {item.seconds.toFixed(2)} s · {item.frames} f · {item.fps} fps
             </span>
           ) : null}
-          <div className="pointer-events-none absolute top-3 left-3 flex flex-wrap gap-1.5">
-            <AiBadge />
-            <span className="inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption font-medium text-fg-secondary backdrop-blur-sm">
-              {copy.kind[item.kind]}
-            </span>
-          </div>
+          <MediaBadge item={item} />
         </div>
 
         <div className="grid gap-4 p-4 md:p-5">
-          <header className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
-            <h3 id={titleId} className="text-section font-semibold text-balance-cjk text-fg">
-              {item.title[locale]}
-            </h3>
-            <PipelineChip pipeline={item.pipeline} />
+          <header className="grid gap-1">
+            <p className="text-caption text-fg-tertiary">{copy.kind[item.kind]}</p>
+            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+              <h3 id={titleId} className="text-section font-semibold text-balance-cjk text-fg">
+                {item.title[locale]}
+              </h3>
+              <PipelineChip pipeline={item.pipeline} />
+            </div>
           </header>
 
           <dl className="grid grid-cols-3 gap-3 text-caption">

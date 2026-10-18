@@ -7,7 +7,7 @@ import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
 import { FEATURED, ITEMS, isEdit, machinesOf, shortRun, totals, type ShowcaseItem } from './data.ts';
 import { MusicChip, PipelineChips, ShotStrip } from './Films.tsx';
-import { AiBadge, MachineDot, MachineName, StepLanes, useSecondsText } from './parts.tsx';
+import { MachineDot, MachineName, MediaBadge, StepLanes, useSecondsText } from './parts.tsx';
 
 const at = (ms: number) => ({ '--sc-at': `${ms}ms` }) as CSSProperties;
 
@@ -87,7 +87,7 @@ export function ShowcaseHero() {
             <HudFrame label={hudLabel(current)} orbit innerClassName="bg-stage">
               <div key={current.slug} className="sc-swap" id="sc-theatre">
                 <ClipPlayer item={current} sizes="(min-width: 1024px) 58vw, 100vw" variant="full" priority className="rounded-xl" />
-                <AiBadge className="absolute top-3 left-3" />
+                <MediaBadge item={current} />
               </div>
             </HudFrame>
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-start">

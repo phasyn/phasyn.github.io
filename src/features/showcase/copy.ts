@@ -48,7 +48,6 @@ export interface ShowcaseCopy {
     clipLabel: (title: string) => string;
   };
   card: {
-    ai: string;
     kind: Record<ShowcaseKind, string>;
     seed: string;
     resolution: string;
@@ -170,7 +169,6 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title}（AI 生成影片，靜音循環）`,
     },
     card: {
-      ai: 'AI 生成',
       kind: { film: '短片', trailer: '預告', social: '直式短片', 'making-of': '幕後', still: '圖片', fl2va: '首幀 → 影片', ref2va: '參考圖 → 影片', multishot: '多鏡頭', roundtrip: '往返' },
       seed: '種子',
       resolution: '解析度',
@@ -351,7 +349,6 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title}（AI 生成の映像、無音でループ）`,
     },
     card: {
-      ai: 'AI 生成',
       kind: { film: 'ショートフィルム', trailer: 'トレーラー', social: '縦型ショート', 'making-of': 'メイキング', still: '画像', fl2va: '先頭フレーム → 映像', ref2va: '参照画像 → 映像', multishot: 'マルチショット', roundtrip: 'ラウンドトリップ' },
       seed: 'シード',
       resolution: '解像度',
@@ -532,7 +529,6 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title} (AI-generated clip, muted loop)`,
     },
     card: {
-      ai: 'AI-generated',
       kind: { film: 'Film', trailer: 'Trailer', social: 'Social Cut', 'making-of': 'Making Of', still: 'Image', fl2va: 'First Frame → Video', ref2va: 'Reference → Video', multishot: 'Multi-Shot', roundtrip: 'Round Trip' },
       seed: 'Seed',
       resolution: 'Resolution',

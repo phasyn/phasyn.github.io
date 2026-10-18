@@ -9,7 +9,7 @@ import { SHOWCASE } from './copy.ts';
 import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHORT, MAKING_OF, formatSeconds, itemBySlug, laneOf, shortRun, type MachineKey, type ShowcaseItem } from './data.ts';
 import { MakingOf } from './Films.tsx';
 import { useViewTrigger } from './hooks.ts';
-import { AiBadge, MachineDot, MachineName, PromptDisclosure, SectionHeading, useSecondsText, useStepName, useStepShort } from './parts.tsx';
+import { MachineDot, MachineName, MediaBadge, PromptDisclosure, SectionHeading, useSecondsText, useStepName, useStepShort } from './parts.tsx';
 
 /** Seconds of animation for the whole run (the playhead moves linearly; DESIGN_GUIDE §11.5). */
 const PLAY_SECONDS = 5.2;
@@ -40,7 +40,7 @@ export function Breakdown() {
             <StageLabel index={1} label={copy.breakdown.stages.still} />
             <div className="relative overflow-hidden rounded-2xl border border-line shadow-raised">
               <ClipPlayer item={still} sizes="(min-width: 1024px) 44vw, 100vw" />
-              <AiBadge className="absolute top-3 left-3" />
+              <MediaBadge item={still} />
             </div>
             <p className="machine text-caption text-fg-secondary">{copy.breakdown.stillMeta(still.seed, formatSeconds(still.endToEndSeconds ?? 0))}</p>
             <PromptDisclosure prompt={still.prompt} summary={copy.breakdown.stillPrompt} />
@@ -56,8 +56,8 @@ export function Breakdown() {
             <StageLabel index={2} label={copy.breakdown.stages.clip} />
             <div className="relative overflow-hidden rounded-2xl border border-line shadow-raised">
               <ClipPlayer item={clip} sizes="(min-width: 1024px) 44vw, 100vw" variant="full" />
-              <AiBadge className="absolute top-3 left-3" />
-              <span className="pointer-events-none absolute top-3 right-3 inline-flex min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption text-fg-secondary backdrop-blur-sm">
+              <MediaBadge item={clip} />
+              <span className="pointer-events-none absolute bottom-3 left-3 hidden max-w-[calc(100%-13rem)] min-h-6 items-center rounded-full border border-[rgb(255_255_255_/_0.14)] bg-[rgb(7_11_20_/_0.72)] px-2.5 text-caption text-fg-secondary backdrop-blur-sm sm:inline-flex">
                 {copy.breakdown.stages.frame}
                 {locale === 'en' ? ': ' : '：'}
                 {copy.breakdown.frameMeta}
