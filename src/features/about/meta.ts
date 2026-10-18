@@ -7,10 +7,10 @@ export const ABOUT_META: Copy<{ title: string; description: string }> = {
   },
   ja: {
     title: 'このプロジェクトについて — Phasyn Studio',
-    description: 'なぜ自分で AI 映像システムを作るのか。高くて使いにくいクレジット制サービスへの不満から、エンジニアリングの最適化、分散コンポーネント、計測できるワークフローを優先しています。',
+    description: 'なぜ自分で AI 映像システムを作るのか。高くて使いにくいクレジット制サービスへの不満から生まれた Phasyn Studio は、エンジニアリングの最適化、分散コンポーネント、計測できるパイプラインを優先しています。',
   },
   en: {
     title: 'About — Phasyn Studio',
-    description: 'Why build an AI video system from scratch: fed up with expensive credit-based tools, Phasyn Studio puts engineering, distributed components and measurable pipelines first.',
+    description: 'Fed up with costly, credit-based video tools, DennySORA built his own AI filmmaking workbench — engineering, distributed components and measurement first.',
   },
 };

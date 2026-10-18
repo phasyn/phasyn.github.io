@@ -401,4 +401,16 @@
   main li {
     text-wrap: pretty;
   }
+
+  /* CJK running text: no small kana, prolonged sound marks or closing punctuation at a line start (kinsoku). */
+  :root:lang(ja) main :is(p, li, dd, figcaption),
+  :root:lang(zh-Hant) main :is(p, li, dd, figcaption) {
+    line-break: strict;
+  }
+
+  /* Japanese card and section headings outside RevealText keep phrases whole where the browser supports it. */
+  :root:lang(ja) main :is(h3, h4) {
+    word-break: auto-phrase;
+    overflow-wrap: anywhere;
+  }
 }

@@ -4,6 +4,8 @@ import { cn } from '../../lib/cn.ts';
 import { useInView, useReducedMotion } from '../../lib/hooks.ts';
 import { mediaUrl } from '../../lib/media.ts';
 import { useLocale, type Copy } from '../../i18n/locale.tsx';
+import { HTML_LANG } from '../../site/config.ts';
+import { activeCue, parseVtt, type Cue } from './captions.ts';
 
 const UI: Copy<{ play: string; pause: string; mute: string; unmute: string; fullscreen: string; unavailable: string; unavailableHint: string; seek: string }> = {
   'zh-hant': { play: '播放', pause: '暫停', mute: '靜音', unmute: '取消靜音', fullscreen: '全螢幕', unavailable: '影片準備中', unavailableHint: '渲染完成後就能在這裡播放。', seek: '播放進度' },
@@ -20,6 +22,11 @@ export interface FilmPlayerProps {
   title: string;
   /** Loop silently while on screen (never with reduced motion); click unmutes and restarts. */
   ambient?: boolean;
+  /**
+   * Site-relative WebVTT file per locale (e.g. `/captions/tour/01-text-image-video.en.vtt`). Rendered as brand-styled
+   * subtitles over the video while it plays with sound; the files ship with the site, so no cross-origin request.
+   */
+  captions?: Copy<string>;
   className?: string;
   aspect?: string;
 }
@@ -35,7 +42,7 @@ function formatTime(seconds: number): string {
  * Branded video player: poster first, media loads on demand, linear progress (no springs on
  * playheads, DESIGN_GUIDE §11.5), HUD controls, keyboard shortcuts (Space/K, ←/→, M, F).
  */
-export function FilmPlayer({ src, poster, title, ambient = false, className, aspect = '16 / 9' }: FilmPlayerProps) {
+export function FilmPlayer({ src, poster, title, ambient = false, captions, className, aspect = '16 / 9' }: FilmPlayerProps) {
   const locale = useLocale();
   const ui = UI[locale];
   const reducedMotion = useReducedMotion();
@@ -50,11 +57,29 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
   const path = typeof src === 'string' ? src : src[locale];
   const url = mediaUrl(path);
   const ambientActive = ambient && !activated && !reducedMotion;
+  const [cues, setCues] = useState<Cue[]>([]);
+  const captionPath = captions?.[locale];
+
+  useEffect(() => {
+    if (!captionPath) return;
+    let alive = true;
+    fetch(captionPath)
+      .then((response) => (response.ok ? response.text() : ''))
+      .then((text) => alive && setCues(parseVtt(text)))
+      .catch(() => alive && setCues([]));
+    return () => {
+      alive = false;
+    };
+  }, [captionPath]);
+
+  const cue = activated ? activeCue(cues, time) : undefined;
 
   // The prerendered <video> may fail (missing file) before hydration, when React is not listening yet: check on mount.
   useEffect(() => {
     const video = videoRef.current;
     if (video && (video.error || video.networkState === HTMLMediaElement.NETWORK_NO_SOURCE)) setFailed(true);
+    // Metadata may also have loaded before hydration, so onLoadedMetadata never fired: read the duration now.
+    else if (video && video.readyState >= HTMLMediaElement.HAVE_METADATA && Number.isFinite(video.duration)) setDuration(video.duration);
   }, [url]);
 
   // Ambient preview plays only while visible; it never runs under reduced motion.
@@ -75,6 +100,8 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
     if (!video) return;
     if (!activated) {
       setActivated(true);
+      // The play overlay that had focus unmounts now: keep focus inside the player so Space/K/←/→/M/F keep working.
+      frameRef.current?.focus({ preventScroll: true });
       video.muted = false;
       setMuted(false);
       video.currentTime = 0;
@@ -117,6 +144,7 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
       className={cn('group relative isolate overflow-hidden rounded-3xl bg-stage shadow-window', className)}
       style={{ aspectRatio: aspect }}
       onKeyDown={onKeyDown}
+      tabIndex={-1}
     >
       <video
         ref={videoRef}
@@ -133,10 +161,22 @@ export function FilmPlayer({ src, poster, title, ambient = false, className, asp
         onEnded={() => setPlaying(false)}
         onTimeUpdate={(event) => setTime(event.currentTarget.currentTime)}
         onLoadedMetadata={(event) => setDuration(event.currentTarget.duration)}
+        onDurationChange={(event) => Number.isFinite(event.currentTarget.duration) && setDuration(event.currentTarget.duration)}
         // `src` on the element itself: a failed <source> child fires its error on the child, which the video never sees.
         src={url}
         onError={() => setFailed(true)}
       />
+
+      {cue ? (
+        <div className="pointer-events-none absolute inset-x-4 bottom-16 flex justify-center md:bottom-20" aria-live="off">
+          <p
+            lang={HTML_LANG[locale]}
+            className="material-hud max-w-[min(92%,52rem)] rounded-xl px-4 py-2 text-center text-[clamp(0.875rem,0.7rem+0.7vw,1.375rem)] leading-snug font-medium whitespace-pre-line text-fg shadow-popover"
+          >
+            {cue.text}
+          </p>
+        </div>
+      ) : null}
 
       {failed ? (
         <div role="status" className="absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0.15),rgb(2_4_9_/_0.6))] p-6">
