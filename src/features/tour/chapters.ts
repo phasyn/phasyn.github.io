@@ -85,10 +85,13 @@ export const CHAPTERS: readonly ChapterSpec[] = [
     number: 2,
     media: '02-references-advisor',
     poster: '/images/tour/v2.webp',
-    length: 85,
+    // Final master studio/out/final/tour/02-references-advisor.mp4: 53.5 s, 1920×1080, 30 fps (ffprobe).
+    length: 53.5,
+    recorded: true,
     steps: [
       { anchor: 'Bring your own references.' },
-      { anchor: 'Every @mention maps to an H3 tag.' },
+      // The @name line comes before the template on screen; anchors must follow cue order.
+      { anchor: 'Each one gets an @name.' },
       { anchor: 'Start from the official 6-section format.' },
       { anchor: '74 rules check the prompt as you type.' },
       { anchor: 'Preview the fix, then apply it.' },
