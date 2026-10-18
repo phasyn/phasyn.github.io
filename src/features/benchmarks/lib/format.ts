@@ -1,7 +1,6 @@
 import { HTML_LANG, type Locale } from '../../../site/config.ts';
 
-// Number formatting for the benchmark page. Precision follows the value: seconds under 10 keep two decimals
-// (0.97 s, 1.62 s), larger values one (37.8 s, 1,515.5 s); a value logged as "70" stays "70".
+// Number formatting for the benchmark page. Seconds always carry one decimal (0.3 s, 32.0 s, 1,515.5 s); GiB two.
 
 const cache = new Map<string, Intl.NumberFormat>();
 
@@ -19,9 +18,9 @@ export function fmtNumber(locale: Locale, value: number, max = 1, min = 0): stri
   return formatter(locale, min, max).format(value);
 }
 
-/** Seconds without the unit. */
+/** Seconds without the unit, always with one decimal (32.0, 5.3, 1,515.5), so values in one column read alike. */
 export function fmtSec(locale: Locale, value: number): string {
-  return fmtNumber(locale, value, Math.abs(value) < 10 ? 2 : 1);
+  return fmtNumber(locale, value, 1, 1);
 }
 
 /** Seconds with the unit, e.g. "37.8 s" (joined by a no-break space so the unit never wraps alone). */

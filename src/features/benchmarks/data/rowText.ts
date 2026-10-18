@@ -58,6 +58,7 @@ export function ditCompleted(row: SpeedRow): boolean {
 
 export function runLabel(copy: BenchCopy, row: SpeedRow): string {
   const parts = [copy.experimentLabel(row.experiment)];
+  if (row.runId) parts.push(row.runId);
   if (row.scene) parts.push(copy.scenes[row.scene]);
   if (row.tag) parts.push(row.tag);
   return parts.join(' · ');

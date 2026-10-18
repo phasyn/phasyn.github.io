@@ -62,7 +62,7 @@ function VariantBars() {
           {v.dit != null ? <TipRow value={fmtSeconds(locale, v.dit)} label={`${b.wall} · ${copy.machines['pc-rtx5080']}`} /> : null}
           {v.compute != null ? <TipRow value={fmtSeconds(locale, v.compute)} label={b.compute} keyClass="bg-series-1" /> : null}
           {v.reserved != null ? <TipRow value={`${fmtGiB(locale, v.alloc ?? 0)} / ${fmtGiB(locale, v.reserved)} GiB`} label="allocated / reserved" /> : null}
-          <span className="machine text-[11px] text-fg-tertiary">{v.runId ? `run ${v.runId}` : copy.status.loadFailed}</span>
+          <span className="machine text-[12px] text-fg-tertiary">{v.runId ? `run ${v.runId}` : copy.status.loadFailed}</span>
         </>
       ),
     };
@@ -83,7 +83,12 @@ function VariantBars() {
           <Segmented label={b.title} value={scenario} onChange={setScenario} options={[{ value: 't2va', label: 't2va' }, { value: 'ref2va', label: 'ref2va' }]} />
         </div>
       }
-      note={b.note}
+      note={
+        <>
+          {b.note}
+          <span className="mt-1.5 block text-fg-secondary">{b.cold}</span>
+        </>
+      }
       table={
         <SimpleTable
           label={b.title}
@@ -147,7 +152,7 @@ export function DitSection() {
       <MediaPanel title={copy.dit.media.title} desc={copy.dit.media.desc}>
         <GridPlayer />
       </MediaPanel>
-      <MediaPanel title={copy.dit.wipe.title} desc={copy.dit.wipe.desc}>
+      <MediaPanel title={copy.dit.wipe.title} desc={`${copy.dit.wipe.desc} ${copy.common.loudnessShort}`}>
         <WipeCompare
           hud="WIPE · T2VA · RTX 5080"
           left={{ video: video('t2va-fp8-pai8.mp4'), poster: img('t2va-fp8-pai8.webp'), label: `${copy.dit.wipe.left}${pai8?.dit != null ? ` · ${fmtSeconds(locale, pai8.dit)}` : ''}` }}

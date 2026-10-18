@@ -9,10 +9,8 @@ import { cn } from '../../../lib/cn.ts';
 export function Section({ id, eyebrow, title, lead, children, className, wide = false }: { id: string; eyebrow: string; title: string; lead?: ReactNode; children: ReactNode; className?: string; wide?: boolean }) {
   return (
     <section id={id} className={cn('relative isolate scroll-mt-(--site-header-h)', className)}>
-      <div
-        aria-hidden
-        className="absolute inset-0 -z-10 bg-canvas/92 [mask-image:linear-gradient(to_bottom,transparent,#000_80px,#000_calc(100%-44px),transparent)]"
-      />
+      {/* Solid page surface: the site background never shows through behind data (no faded veil edges). */}
+      <div aria-hidden className="absolute inset-0 -z-10 bg-canvas" />
       <div className="site-container grid gap-10 pt-[clamp(4.5rem,2.5rem+6vw,8.5rem)] pb-[clamp(3rem,2rem+2vw,4.5rem)] md:gap-14">
         <header className={cn('grid gap-4', wide ? 'max-w-[64rem]' : 'max-w-[52rem]')}>
           <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-brand-cyan">

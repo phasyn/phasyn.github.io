@@ -1,5 +1,6 @@
 import { HudFrame } from '../../../components/fx/index.ts';
 import { FilmPlayer } from '../../../components/media/FilmPlayer.tsx';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
 import { useLocale } from '../../../i18n/locale.tsx';
 import { useBenchCopy } from '../copy.ts';
 import { img, todayClip, todayStill } from '../data/media.ts';
@@ -20,8 +21,9 @@ function ClipCard({ row }: { row: SpeedRow }) {
   const captionId = `today-sound-${row.id}`;
   return (
     <article className="panel grid min-w-0 content-start gap-4 p-3 sm:p-4">
-      <HudFrame label={`${row.pipeline.toUpperCase()} · ${row.runId ?? ''}`}>
-        <FilmPlayer src={clip.video} poster={clip.poster} title={copy.today.clipAria(scene)} aspect="768 / 448" className="rounded-xl shadow-none" />
+      {/* The HUD tag is upper-cased by the kit, so it carries the date; the lowercase run ID is in the line below. */}
+      <HudFrame label={`MEASURED · ${row.date}`}>
+        <FilmPlayer src={clip.video} poster={clip.poster} title={copy.today.clipAria(scene)} aspect="768 / 448" badge="h3" className="rounded-xl shadow-none" />
       </HudFrame>
       <div className="grid gap-3 px-1 pb-1">
         <header className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -32,9 +34,10 @@ function ClipCard({ row }: { row: SpeedRow }) {
           </span>
         </header>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-caption text-fg-tertiary">
-          <code className="machine rounded bg-sunken px-1.5 py-0.5 text-[11px] text-fg">{row.pipeline}</code>
-          <code className="machine text-[11px]">{row.component}</code>
-          <span className="machine text-[11px]">
+          <code className="machine rounded bg-sunken px-1.5 py-0.5 text-[12px] text-fg">{row.pipeline}</code>
+          {row.runId ? <code className="machine text-[12px] text-fg-secondary">run {row.runId}</code> : null}
+          <code className="machine text-[12px]">{row.component}</code>
+          <span className="machine text-[12px]">
             {copy.common.seed} {row.seed}
           </span>
         </p>
@@ -70,14 +73,16 @@ export function TodaySection() {
       <p className="-mt-6 inline-flex flex-wrap items-center gap-2 text-caption text-fg-secondary">
         <span className="rounded-full border border-brand-cyan/40 bg-brand-soft px-2.5 py-0.5 font-medium text-fg">{copy.common.measuredToday}</span>
         <span>{copy.common.singleRun}</span>
+        <span>{copy.common.loudness}</span>
       </p>
       <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {clips.map((row) => (
           <ClipCard key={row.id} row={row} />
         ))}
       </div>
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
+      <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,18rem)_minmax(0,1fr)]">
         <figure className="panel grid content-start gap-3 p-4">
+          <AiBadge variant="qwen" className="justify-self-start" />
           <img src={img('today-courier-ref.webp')} alt={copy.today.refTitle} width={384} height={512} loading="lazy" decoding="async" className="mx-auto aspect-[3/4] w-full max-w-60 rounded-lg bg-[#fff] object-contain" />
           <figcaption className="grid gap-1">
             <span className="text-data font-semibold text-fg">{copy.today.refTitle}</span>
@@ -86,7 +91,10 @@ export function TodaySection() {
         </figure>
         <div className="panel grid content-start gap-4 p-4 sm:p-5">
           <div className="grid gap-1">
-            <h3 className="text-section font-semibold text-fg">{copy.today.stillsTitle}</h3>
+            <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <h3 className="text-section font-semibold text-fg">{copy.today.stillsTitle}</h3>
+              <AiBadge variant="qwen" />
+            </div>
             <p className="text-caption text-pretty text-fg-secondary">{copy.today.stillsBody}</p>
           </div>
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
@@ -98,7 +106,7 @@ export function TodaySection() {
                     <span className="truncate text-fg-secondary">{copy.scenes[row.scene]}</span>
                     <span className="machine text-fg">{row.total != null ? fmtSeconds(locale, row.total) : '—'}</span>
                   </span>
-                  <span className="machine text-[11px] text-fg-tertiary">run {row.runId}</span>
+                  <span className="machine text-[12px] text-fg-tertiary">run {row.runId}</span>
                 </li>
               ) : null,
             )}

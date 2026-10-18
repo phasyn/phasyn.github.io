@@ -70,14 +70,15 @@ export function GridPlayer() {
       <div id={`${baseId}-panel`} role="tabpanel" aria-labelledby={`${baseId}-tab-${grid.key}`} className="grid min-w-0 gap-4">
         <HudFrame label={grid.hud}>
           <div className="relative">
-            <FilmPlayer key={grid.key} src={video(`${grid.file}.mp4`)} poster={img(`${grid.file}.webp`)} title={copy.dit.media.tabs[grid.key]} aspect="1540 / 900" className="rounded-xl shadow-none" />
+            <FilmPlayer key={grid.key} src={video(`${grid.file}.mp4`)} poster={img(`${grid.file}.webp`)} title={copy.dit.media.tabs[grid.key]} aspect="1540 / 900" badge="h3" className="rounded-xl shadow-none" />
             <ol aria-hidden className="pointer-events-none absolute inset-0 z-10">
               {grid.tiles.map((tile, index) => {
                 const [left, top] = TILE_ORIGIN[index] ?? [0, 0];
                 const text = tileText(tile);
                 return (
-                  <li key={tile.component + index} className="absolute p-1.5 sm:p-2.5" style={{ left: `${left * 100}%`, top: `${top * 100}%` }}>
-                    <span className="material-hud inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 rounded-md px-1.5 py-0.5 text-[10px] leading-4 text-fg sm:px-2 sm:text-[11px]">
+                  // The first tile's label sits below the player's licence badge (top-left).
+                  <li key={tile.component + index} className={cn('absolute p-1.5 sm:p-2.5', index === 0 && 'pt-11 sm:pt-12 md:pt-[3.25rem]')} style={{ left: `${left * 100}%`, top: `${top * 100}%` }}>
+                    <span className="material-hud inline-flex max-w-full flex-wrap items-baseline gap-x-1.5 rounded-md px-1.5 py-0.5 text-[11px] leading-4 text-fg sm:px-2 sm:text-[12px]">
                       <span className="font-semibold">{text.name}</span>
                       {text.time ? <span className="machine text-fg">{text.time}</span> : null}
                     </span>
@@ -94,13 +95,15 @@ export function GridPlayer() {
               <li key={tile.component + index} className="flex min-w-0 flex-wrap items-baseline gap-x-2">
                 <span className="text-fg-tertiary">{['↖', '↗', '↙', '↘'][index]}</span>
                 <span className="text-fg">{text.name}</span>
-                <code className="machine text-[11px] text-fg-tertiary">{tile.component}</code>
+                <code className="machine text-[12px] text-fg-tertiary">{tile.component}</code>
                 {text.time ? <span className="machine text-fg">{text.time}</span> : null}
               </li>
             );
           })}
         </ol>
-        <p className="text-caption text-fg-tertiary">{copy.dit.media.audioNote}</p>
+        <p className="text-caption text-fg-tertiary">
+          {copy.dit.media.audioNote} {copy.common.loudnessShort}
+        </p>
       </div>
     </div>
   );

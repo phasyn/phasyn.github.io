@@ -21,7 +21,7 @@ export function StepTicker() {
     (row?.steps ?? []).flatMap((step): TickerItem[] => {
       const label = labels[step.kind];
       if (!label || step.seconds == null || !isDevice(step.placement)) return [];
-      return [{ label: `${label} · ${step.component ?? ''}`, value: fmtSeconds(locale, step.seconds, step.approx), device: TICKER_DEVICE[step.placement] }];
+      return [{ label: `${row?.pipeline ?? ''} · ${label} · ${step.component ?? ''}`, value: fmtSeconds(locale, step.seconds, step.approx), device: TICKER_DEVICE[step.placement] }];
     });
   const t = copy.ticker.items;
   const items = [
@@ -44,11 +44,15 @@ const JUMP = [
 export function JumpNav() {
   const copy = useBenchCopy();
   return (
-    <nav aria-label={copy.jump.label} className="relative isolate">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-canvas/92" />
-      <ul className="site-container flex flex-wrap gap-2 py-6">
+    // Narrow screens: a sticky chip strip under the site header (as on the Tour page), so the long page stays navigable.
+    <nav aria-label={copy.jump.label} className="relative isolate max-lg:sticky max-lg:top-(--site-header-h) max-lg:z-30">
+      <div
+        aria-hidden
+        className="absolute inset-0 -z-10 bg-canvas max-lg:border-b max-lg:border-line-subtle max-lg:bg-[rgb(7_11_20_/_0.88)] max-lg:backdrop-blur-xl supports-[not(backdrop-filter:blur(1px))]:max-lg:bg-[rgb(7_11_20_/_0.97)]"
+      />
+      <ul className="site-container flex gap-2 py-6 max-lg:overflow-x-auto max-lg:py-2.5 max-lg:[scrollbar-width:none] lg:flex-wrap [&::-webkit-scrollbar]:hidden">
         {JUMP.map(([key, href]) => (
-          <li key={key}>
+          <li key={key} className="shrink-0">
             <a
               href={href}
               className="pressable inline-flex min-h-9 items-center rounded-full border border-line-subtle bg-surface px-3.5 text-caption text-fg-secondary no-underline hover:border-action/50 hover:bg-raised hover:text-fg"

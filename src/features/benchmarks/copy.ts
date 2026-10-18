@@ -36,7 +36,7 @@ export interface BenchCopy {
     eyebrow: string;
     title: string;
     lead: string;
-    tiles: { label: string; detail: string; runs: string }[];
+    tiles: { label: string; detail: string; runs: string; note?: string }[];
     stripTitle: string;
     stripNote: string;
     stages: { te: string; encode: string; dit: string; decode: string; mux: string };
@@ -74,6 +74,9 @@ export interface BenchCopy {
     mute: string;
     unmute: string;
     soundPrefix: string;
+    /** Shown wherever a clip carries sound: the web copies are loudness-normalized. */
+    loudness: string;
+    loudnessShort: string;
     runId: string;
     seed: string;
     date: string;
@@ -98,9 +101,16 @@ export interface BenchCopy {
       featured: string;
       allRows: (n: number) => string;
       showing: (shown: number, total: number) => string;
+      /** "32 featured rows of 77" (featured view). */
+      featuredShowing: (shown: number, total: number) => string;
       reset: string;
       empty: string;
     };
+    downloads: { label: string; runs: string; steps: string; json: string; note: string };
+    /** Edge cue on a table that scrolls sideways. */
+    scrollCue: string;
+    /** Per-step column headers on very wide screens. */
+    stepCols: Record<'te' | 'encode' | 'aenc' | 'video' | 'audio' | 'mux' | 'vae' | 'compose', string>;
     cols: { run: string; pipeline: string; variant: string; steps: string; dit: string; compute: string; total: string; vram: string; status: string };
     colHints: { dit: string; compute: string; total: string; vram: string };
     /** Header sub-label for the DiT column's main number (its secondary line is labelled with cols.compute). */
@@ -117,7 +127,7 @@ export interface BenchCopy {
   };
   today: SectionHead & { refTitle: string; refBody: string; stillsTitle: string; stillsBody: string; clipAria: (scene: string) => string; total: string; stepsBreak: string };
   dit: SectionHead & {
-    bars: ChartText & { wall: string; compute: string; note: string; tags: Record<'sdpa' | 'adalnOff' | 'adalnOnline' | 'drop' | 'subblock' | 'exact', string> };
+    bars: ChartText & { wall: string; compute: string; note: string; cold: string; tags: Record<'sdpa' | 'adalnOff' | 'adalnOnline' | 'drop' | 'subblock' | 'exact', string> };
     media: ChartText & { tabs: Record<'t2vaFp8' | 't2vaPai8' | 'ref2vaFp8', string>; officialPrecision: string; audioNote: string };
     wipe: ChartText & { left: string; right: string; handle: string; reduced: string };
     findings: string;
@@ -127,7 +137,13 @@ export interface BenchCopy {
     dumbbell: ChartText & { memNote: (alloc768: string, alloc448: string, seq768: string, seq448: string) => string; ref768: string; ref448: string; metrics: Record<Ref448Key, string> };
     noMedia: string;
   };
-  method: SectionHead & { defs: { term: string; body: string }[]; caveats: string[]; exclusions: string };
+  method: SectionHead & {
+    defs: { term: string; body: string }[];
+    caveats: string[];
+    exclusions: string;
+    glossary: { title: string; lead: string; items: { term: string; body: string }[]; source: string };
+    env: { title: string; lead: string; groups: { title: string; rows: { term: string; value: string }[] }[] };
+  };
   experiments: SectionHead & { rows: (n: number) => string; findings: string; caveats: string; items: Record<ExpNum, ExperimentCopy> };
 }
 

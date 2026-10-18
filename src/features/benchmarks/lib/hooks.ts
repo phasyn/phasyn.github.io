@@ -105,18 +105,24 @@ export function drawStyle(state: RevealState, delayMs = 0, durationMs = 1200): C
   };
 }
 
-/*
- * Time left on the layout's first-visit splash, ms. The kit's `--fx-intro-delay` counts from first paint and is 0 on
- * repeat visits and under reduced motion, so load reveals that run in script line up with the CSS ones.
- */
-export function splashRemaining(): number {
-  if (typeof document === 'undefined') return 0;
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--fx-intro-delay').trim();
-  const value = Number.parseFloat(raw);
-  const delay = Number.isFinite(value) ? (raw.endsWith('ms') ? value : value * 1000) : 0;
-  if (delay <= 0) return 0;
-  const paint = performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? 0;
-  return Math.max(0, Math.round(delay + paint - performance.now()));
+/** Whether a horizontal scroller has more content to its right (drives an edge cue). False until mounted. */
+export function useScrollEdge<T extends HTMLElement>(): [RefObject<T | null>, boolean] {
+  const ref = useRef<T>(null);
+  const [more, setMore] = useState(false);
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
+    const update = () => setMore(element.scrollLeft + element.clientWidth < element.scrollWidth - 2);
+    update();
+    element.addEventListener('scroll', update, { passive: true });
+    const observer = new ResizeObserver(update);
+    observer.observe(element);
+    return () => {
+      element.removeEventListener('scroll', update);
+      observer.disconnect();
+    };
+  }, []);
+  return [ref, more];
 }
 
 /*

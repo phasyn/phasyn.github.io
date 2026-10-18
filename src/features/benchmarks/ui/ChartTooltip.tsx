@@ -5,7 +5,21 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
  * the anchor point, flipped below near the top and clamped to the wrapper's width so it never causes overflow at 390 px.
  * Values lead (strong, mono); the label follows in secondary ink.
  */
-export function ChartTooltip({ anchor, containerWidth, children }: { anchor: { x: number; y: number } | null; containerWidth: number; children: ReactNode }) {
+export function ChartTooltip({
+  anchor,
+  containerWidth,
+  placement = 'above',
+  children,
+}: {
+  anchor: { x: number; y: number } | null;
+  containerWidth: number;
+  /**
+   * `above`: centred over the anchor. `right-up`: to the right of the anchor, growing upward from it — for charts sorted
+   * shortest-first, where the rows above have shorter bars, so the readout only covers their empty right side.
+   */
+  placement?: 'above' | 'right-up';
+  children: ReactNode;
+}) {
   const ref = useRef<HTMLDivElement>(null);
   const [box, setBox] = useState<{ left: number; top: number } | null>(null);
 
@@ -16,10 +30,15 @@ export function ChartTooltip({ anchor, containerWidth, children }: { anchor: { x
       return;
     }
     const { width, height } = element.getBoundingClientRect();
-    const left = Math.min(Math.max(anchor.x - width / 2, 0), Math.max(0, containerWidth - width));
+    const maxLeft = Math.max(0, containerWidth - width);
+    if (placement === 'right-up') {
+      setBox({ left: Math.min(anchor.x + 12, maxLeft), top: Math.max(0, anchor.y - height) });
+      return;
+    }
+    const left = Math.min(Math.max(anchor.x - width / 2, 0), maxLeft);
     const top = anchor.y - height - 10 < 0 ? anchor.y + 14 : anchor.y - height - 10;
     setBox({ left, top });
-  }, [anchor, containerWidth, children]);
+  }, [anchor, containerWidth, placement, children]);
 
   if (!anchor) return null;
   return (

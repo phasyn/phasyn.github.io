@@ -2945,7 +2945,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "te",
     "component": "qimg-te-5080",
     "placement": "pc-rtx5080",
-    "seconds": 2,
+    "seconds": 1,
     "approx": true,
     "status": "ok"
    },
@@ -2953,7 +2953,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "dit",
     "component": "qimg-dit-bf16-5080-stream",
     "placement": "pc-rtx5080",
-    "seconds": 23,
+    "seconds": 23.5,
     "approx": true,
     "status": "ok"
    },
@@ -2965,7 +2965,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
      "pc-rtx5080",
      "pc-cpu"
     ],
-    "seconds": 2,
+    "seconds": 1.4,
     "approx": true,
     "status": "ok"
    }
@@ -2973,8 +2973,8 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
   "dit": 23,
   "ditApprox": true,
   "compute": null,
-  "total": 27.1,
-  "run": 27.1,
+  "total": 26,
+  "run": 26,
   "vram": {
    "alloc": null,
    "reserved": null,
@@ -3012,7 +3012,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "te",
     "component": "qimg-te-5080",
     "placement": "pc-rtx5080",
-    "seconds": 2,
+    "seconds": 1,
     "approx": true,
     "status": "ok"
    },
@@ -3020,7 +3020,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "dit",
     "component": "qimg-dit-bf16-5080-stream",
     "placement": "pc-rtx5080",
-    "seconds": 23,
+    "seconds": 23.5,
     "approx": true,
     "status": "ok"
    },
@@ -3032,7 +3032,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
      "pc-rtx5080",
      "pc-cpu"
     ],
-    "seconds": 2,
+    "seconds": 1.4,
     "approx": true,
     "status": "ok"
    }
@@ -3079,7 +3079,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "te",
     "component": "qimg-te-5080",
     "placement": "pc-rtx5080",
-    "seconds": 2,
+    "seconds": 1,
     "approx": true,
     "status": "ok"
    },
@@ -3087,7 +3087,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "dit",
     "component": "qimg-dit-bf16-5080-stream",
     "placement": "pc-rtx5080",
-    "seconds": 23,
+    "seconds": 23.5,
     "approx": true,
     "status": "ok"
    },
@@ -3099,7 +3099,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
      "pc-rtx5080",
      "pc-cpu"
     ],
-    "seconds": 2,
+    "seconds": 1.4,
     "approx": true,
     "status": "ok"
    }
@@ -3107,8 +3107,8 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
   "dit": 23,
   "ditApprox": true,
   "compute": null,
-  "total": 27.9,
-  "run": 27.9,
+  "total": 25.9,
+  "run": 25.9,
   "vram": {
    "alloc": null,
    "reserved": null,
@@ -3146,7 +3146,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "te",
     "component": "qimg-te-5080",
     "placement": "pc-rtx5080",
-    "seconds": 2,
+    "seconds": 1,
     "approx": true,
     "status": "ok"
    },
@@ -3154,7 +3154,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
     "kind": "dit",
     "component": "qimg-dit-bf16-5080-stream",
     "placement": "pc-rtx5080",
-    "seconds": 23,
+    "seconds": 23.5,
     "approx": true,
     "status": "ok"
    },
@@ -3166,7 +3166,7 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
      "pc-rtx5080",
      "pc-cpu"
     ],
-    "seconds": 2,
+    "seconds": 1.4,
     "approx": true,
     "status": "ok"
    }
@@ -3174,8 +3174,8 @@ export const FEATURED_ROWS: readonly SpeedRow[] = [
   "dit": 23,
   "ditApprox": true,
   "compute": null,
-  "total": 26.5,
-  "run": 26.5,
+  "total": 25.8,
+  "run": 25.8,
   "vram": {
    "alloc": null,
    "reserved": null,

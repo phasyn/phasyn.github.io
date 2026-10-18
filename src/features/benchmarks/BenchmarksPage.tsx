@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { ExperimentsSection, MethodSection } from './sections/Closing.tsx';
 import { DitSection } from './sections/DitSection.tsx';
-import { BenchHero } from './sections/Hero.tsx';
+import { BenchHero, DeviceStrip } from './sections/Hero.tsx';
 import { JumpNav, StepTicker, Takeaways } from './sections/Overview.tsx';
 import { ReferencesSection } from './sections/References.tsx';
 import { SpeedSection } from './sections/SpeedTable.tsx';
@@ -17,6 +17,7 @@ export function BenchmarksPage() {
   return (
     <Suspense fallback={<div className="min-h-dvh" />}>
       <BenchHero />
+      <DeviceStrip />
       <StepTicker />
       <JumpNav />
       <Takeaways />

@@ -3,7 +3,7 @@ import { SourceSoon } from '../../../components/ui/SourceSoon.tsx';
 import { useBenchCopy } from '../copy.ts';
 import { EXPERIMENT_ROWS } from '../data/rows.gen.ts';
 import type { ExperimentId } from '../data/types.ts';
-import { Section } from '../ui/Section.tsx';
+import { Section, SubHead } from '../ui/Section.tsx';
 
 export function MethodSection() {
   const copy = useBenchCopy();
@@ -32,6 +32,36 @@ export function MethodSection() {
           <SourceSoon className="justify-self-start" />
         </div>
       </div>
+      <div className="grid gap-5">
+        <SubHead id="glossary" title={m.glossary.title} lead={m.glossary.lead} />
+        <dl className="panel grid gap-x-8 gap-y-5 p-5 sm:p-6 md:grid-cols-2">
+          {m.glossary.items.map((item) => (
+            <div key={item.term} className="grid content-start gap-1">
+              <dt className="text-data font-semibold text-fg">{item.term}</dt>
+              <dd className="text-data text-pretty text-fg-secondary">{item.body}</dd>
+            </div>
+          ))}
+        </dl>
+        <p className="text-caption text-pretty text-fg-tertiary">{m.glossary.source}</p>
+      </div>
+      <div className="grid gap-5">
+        <SubHead id="environment" title={m.env.title} lead={m.env.lead} />
+        <div className="grid gap-4 lg:grid-cols-3">
+          {m.env.groups.map((group) => (
+            <section key={group.title} aria-label={group.title} className="panel grid content-start gap-3 p-5">
+              <h4 className="text-section font-semibold text-fg">{group.title}</h4>
+              <dl className="grid gap-2.5">
+                {group.rows.map((row) => (
+                  <div key={row.term} className="grid gap-0.5">
+                    <dt className="text-caption text-fg-tertiary">{row.term}</dt>
+                    <dd className="text-data text-pretty text-fg">{row.value}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
+        </div>
+      </div>
     </Section>
   );
 }
@@ -54,7 +84,7 @@ export function ExperimentsSection() {
                   <span className="grid min-w-0 flex-1 gap-1">
                     <span className="text-section font-semibold text-balance-cjk text-fg">{item.title}</span>
                     <span className="text-data text-pretty text-fg-secondary">{item.question}</span>
-                    <span className="machine text-[11px] text-fg-tertiary">{EXPERIMENT_ROWS[id]?.date}</span>
+                    <span className="machine text-[12px] text-fg-tertiary">{EXPERIMENT_ROWS[id]?.date}</span>
                   </span>
                   <ChevronDown aria-hidden className="mt-1 size-5 shrink-0 text-fg-tertiary transition-transform group-open:rotate-180" />
                 </summary>
