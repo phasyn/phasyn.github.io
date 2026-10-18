@@ -13,7 +13,7 @@ export function ProofStrip() {
         <dl className="grid grid-cols-2 gap-x-6 gap-y-7 md:grid-cols-4">
           {t.items.map((item) => (
             <div key={item.label} className="reveal grid content-start gap-2">
-              <dt className="order-2 max-w-[24ch] text-data text-fg-secondary">{item.label}</dt>
+              <dt className="order-2 max-w-[24ch] text-data text-balance-cjk text-fg-secondary">{item.label}</dt>
               <dd className="machine order-1 text-[clamp(1.875rem,1.3rem+1.7vw,2.75rem)] leading-none font-semibold whitespace-nowrap text-fg tabular-nums">
                 {item.value}
                 {item.unit ? <span className="ml-1 text-[0.5em] font-medium text-fg-tertiary">{item.unit}</span> : null}

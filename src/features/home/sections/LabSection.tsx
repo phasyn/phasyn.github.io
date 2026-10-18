@@ -38,7 +38,15 @@ export function LabSection({ className }: { className?: string }) {
                   </Chip>
                 </span>
                 <div className="grid gap-1">
-                  <h3 className="text-section font-semibold text-balance-cjk text-fg">{item.title}</h3>
+                  <h3 className="text-section font-semibold text-balance-cjk text-fg">
+                    {item.title.split(' · ').map((part, index, parts) => (
+                      <span key={part} className="whitespace-nowrap">
+                        {part}
+                        {index < parts.length - 1 ? ' ·' : ''}
+                        {index < parts.length - 1 ? ' ' : ''}
+                      </span>
+                    ))}
+                  </h3>
                   <p className="text-body text-fg-secondary">{item.body}</p>
                 </div>
               </li>

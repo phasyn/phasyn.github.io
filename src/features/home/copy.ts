@@ -207,7 +207,7 @@ export const HOME: Copy<HomeCopy> = {
     },
     made: {
       eyebrow: 'MADE WITH PHASYN STUDIO',
-      title: '一個角色，13 個實際輸出。',
+      title: '一個角色，13個實際輸出。',
       lead: '原創角色 The Courier：從角色設定稿、靜態圖，到有聲音的影片片段，全部用 Phasyn Studio 在兩台機器上渲染。總渲染時間大約 11 分鐘。',
       videoTitle: 'Phasyn Studio 介紹影片',
       filmNote: '介紹影片：從文字到圖片，再到有聲影片，約 1 分鐘。',
@@ -456,7 +456,7 @@ export const HOME: Copy<HomeCopy> = {
     },
     made: {
       eyebrow: 'MADE WITH PHASYN STUDIO',
-      title: 'ひとりのキャラクター、13 の実際の出力。',
+      title: 'ひとりのキャラクター、13の実際の出力。',
       lead: 'オリジナルキャラクター The Courier の設定画から、静止画、音付きの動画クリップまで、すべて Phasyn Studio で 2 台のマシンを使って生成しました。レンダリング時間は合計で約 11 分です。',
       videoTitle: 'Phasyn Studio 紹介映像',
       filmNote: 'テキストから画像、そして音声付きの映像になるまでを、約 1 分の映像で紹介します。',
