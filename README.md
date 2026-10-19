@@ -1,7 +1,7 @@
 # phasyn.dev
 
 Official site of **Phasyn Studio** — static React site for GitHub Pages (custom domain `phasyn.dev`).
-Locales: `zh-hant` (source), `ja`, `en`. Project decisions live in `../docs/BRIEF.md`.
+Locales: `zh-hant` (source), `ja`, `en`.
 
 ## Commands
 
@@ -18,11 +18,11 @@ pnpm preview      # GitHub-Pages-like static server for build/client (PORT=4173)
 | Path | Owner / purpose |
 |---|---|
 | `src/site/config.ts` | Locales, pages, URLs, prerender list (no React) |
-| `src/root.tsx`, `src/routes.ts`, `src/entry.server.tsx` | App shell and routing (lead) |
+| `src/root.tsx`, `src/routes.ts`, `src/entry.server.tsx` | App shell and routing |
 | `src/routes/*.tsx` | Thin route modules: `meta` + render the feature page |
 | `src/features/<page>/` | One folder per page: `XxxPage.tsx`, `meta.ts`, `copy.ts`, page-only components |
 | `src/components/{layout,brand,ui,media}` | Shared building blocks (header/footer, Wordmark, BrandMark, Button, Chip, SourceSoon, `AiBadge` (machine-generated media disclosure: `h3` / `qwen` / `mixed`), FilmPlayer) |
-| `src/components/fx/` | **Shared FX kit (lead-owned, BRIEF §4.1)** — `NebulaField` (WebGL aurora + particles; the layout already mounts a fixed one that calms below the first screen; add `position="absolute"` instances for local brand moments), `RevealText` (glowing per-character headline reveal, phrase-aware CJK wrapping; `on="load"` above the fold, `on="view"` below), `DecodeText` (scramble → resolve for short Latin labels/IDs), `CountUp` (measured numbers), `HudFrame` (corner brackets, `scan`, `orbit` (compositor-only `fx-orbit` ring), `label`), `SpotlightCard` (pointer light + tilt), `DataTicker` (HUD ticker of real values with device dots), `CursorAura` (rAF only while catching up with the pointer), `IntroSplash` (1 s, 700 ms hold = `--fx-intro-delay`; remembered 7 days; any pointer/key/wheel/touch input skips it and fires an `fx-intro-skip` event) |
+| `src/components/fx/` | **Shared FX kit** — `NebulaField` (WebGL aurora + particles; the layout already mounts a fixed one that calms below the first screen; add `position="absolute"` instances for local brand moments), `RevealText` (glowing per-character headline reveal, phrase-aware CJK wrapping; `on="load"` above the fold, `on="view"` below), `DecodeText` (scramble → resolve for short Latin labels/IDs), `CountUp` (measured numbers), `HudFrame` (corner brackets, `scan`, `orbit` (compositor-only `fx-orbit` ring), `label`), `SpotlightCard` (pointer light + tilt), `DataTicker` (HUD ticker of real values with device dots), `CursorAura` (rAF only while catching up with the pointer), `IntroSplash` (1 s, 700 ms hold = `--fx-intro-delay`; remembered 7 days; any pointer/key/wheel/touch input skips it and fires an `fx-intro-skip` event) |
 | `src/i18n/` | `Copy<T>` (all locales required by type), `useLocale`, `useCopy`, shared `COMMON` strings |
 | `src/lib/` | `cn()`, `mediaUrl()`, `pageMeta()`, hooks (`useReducedMotion`, `useHydrated`, `useInView`, `useOffscreenPause` (layout: `data-offscreen` pauses CSS animations of blocks far from the viewport), `supportsWebGL`) |
 | `src/styles/tokens.css` | Brand token owner — unchanged copy of the brand system's `tokens.tailwind.css`. Never edit. |
