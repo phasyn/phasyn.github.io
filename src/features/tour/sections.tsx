@@ -1,6 +1,6 @@
 import { ArrowRight, BarChart3, BookOpen, Info, Terminal } from 'lucide-react';
 import { Link } from 'react-router';
-import { DecodeText, HudFrame, NebulaField, RevealText, SpotlightCard } from '../../components/fx/index.ts';
+import { DecodeText, NebulaField, RevealText, SpotlightCard } from '../../components/fx/index.ts';
 import { SourceSoon } from '../../components/ui/SourceSoon.tsx';
 import { commonCopy } from '../../i18n/common.ts';
 import { useLocale } from '../../i18n/locale.tsx';
@@ -8,7 +8,6 @@ import { pagePath } from '../../site/config.ts';
 import type { TourCopy } from './copy.ts';
 import { RichText } from './RichText.tsx';
 import { COUNTS } from './runs.ts';
-import { ScreenViewer } from './screens/ScreenViewer.tsx';
 
 /** Seam between sections: a hairline that opens and a light that sweeps along it while it scrolls past (mirrors Home's). */
 export function TourSeam() {
@@ -22,11 +21,14 @@ export function TourSeam() {
   );
 }
 
-/** The agent skill: the real terminal capture and two lines on what it is (phasynctl + optional MCP server, verified in code). */
+/**
+ * The agent skill: two lines on what it is (phasynctl + optional MCP server, verified in code). The terminal capture is not
+ * shot yet, so the section ships as text only rather than with an in-preparation frame.
+ */
 export function AgentSection({ t }: { t: TourCopy }) {
   return (
     <section id="agent" aria-labelledby="agent-title" className="tour-heading relative scroll-mt-[calc(var(--site-header-h)+1rem)] pt-[clamp(5rem,3rem+9vw,10rem)] pb-[clamp(2rem,1rem+3vw,4rem)]">
-      <div className="site-container grid items-center gap-10 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <div className="site-container grid items-center gap-10">
         <div className="grid content-center justify-items-start gap-5">
           <p aria-hidden lang="en" className="eyebrow flex items-center gap-3 text-brand-cyan">
             <span className="tour-eyebrow-line w-10" />
@@ -51,17 +53,6 @@ export function AgentSection({ t }: { t: TourCopy }) {
             </li>
           </ul>
         </div>
-        <figure className="reveal grid gap-3">
-          <HudFrame label="REAL CAPTURE · TERMINAL" orbit innerClassName="rounded-[1.15rem]">
-            <ScreenViewer
-              capture="terminal-phasynctl"
-              alt={t.screens.captures['terminal-phasynctl']}
-              drift
-              pending={{ title: t.screens.pendingTitle, body: t.screens.pendingBody }}
-            />
-          </HudFrame>
-          <figcaption className="justify-self-start rounded-full bg-[rgb(7_11_20_/_0.82)] px-3 py-1 text-data text-fg-secondary">{t.screens.captures['terminal-phasynctl']}</figcaption>
-        </figure>
       </div>
     </section>
   );
