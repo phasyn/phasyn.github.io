@@ -7,6 +7,8 @@ import { useReducedMotion } from '../../lib/hooks.ts';
 import { CHAPTERS, TOTAL_LENGTH } from './chapters.ts';
 import type { TourCopy } from './copy.ts';
 import { ScreenViewer } from './screens/ScreenViewer.tsx';
+import { CaptureBadge } from '../../components/ui/CaptureBadge.tsx';
+import { captureBadge } from '../../site/captures.ts';
 
 const at = (ms: number) => ({ '--tour-in': `${ms}ms` }) as CSSProperties;
 
@@ -84,8 +86,10 @@ export function TourHero({ t }: { t: TourCopy }) {
       <figure className="site-container tour-hero-in grid justify-items-center gap-4 pb-20 md:pb-28" style={at(500)}>
         <div className="relative w-full max-w-[68rem]">
           <div aria-hidden className="glow-backdrop pointer-events-none absolute -inset-x-[8%] -inset-y-[14%] -z-10 opacity-75" />
-          <HudFrame label="REAL CAPTURE · IMAGE STUDIO" orbit innerClassName="rounded-[1.15rem]">
+          {/* The capture shows a generated still: its AI disclosure is the one real-screen label (src/site/captures.ts). */}
+          <HudFrame label={captureBadge('image-studio-takes') ? 'IMAGE STUDIO' : 'REAL CAPTURE · IMAGE STUDIO'} orbit innerClassName="rounded-[1.15rem]">
             <ScreenViewer capture="image-studio-takes" alt={t.hero.capture} eager drift pending={{ title: t.screens.pendingTitle, body: t.screens.pendingBody }} />
+            <CaptureBadge capture="image-studio-takes" className="top-3 left-3 max-w-[calc(100%-1.5rem)]" />
           </HudFrame>
         </div>
         <figcaption className="rounded-full bg-[rgb(7_11_20_/_0.82)] px-3 py-1 text-data text-fg-secondary">{t.hero.capture}</figcaption>

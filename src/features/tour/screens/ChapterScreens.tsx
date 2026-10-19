@@ -1,6 +1,9 @@
 import { Maximize2, X } from 'lucide-react';
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from 'react';
 import { SpotlightCard } from '../../../components/fx/index.ts';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
+import { CaptureBadge } from '../../../components/ui/CaptureBadge.tsx';
+import { captureBadge } from '../../../site/captures.ts';
 import { cn } from '../../../lib/cn.ts';
 import type { TourCopy } from '../copy.ts';
 import { THUMB_CROP, captureSrc, type UiKey } from '../screens.ts';
@@ -64,9 +67,14 @@ export function ChapterScreens({ keys, title, screens, layout = 'row' }: Chapter
         {open ? (
           <div className="grid">
             <div className="flex min-h-12 items-center gap-3 border-b border-line-subtle bg-rail px-4">
-              <span aria-hidden lang="en" className="machine text-[10px] tracking-[0.18em] text-brand-cyan">
-                REAL CAPTURE
-              </span>
+              {/* A capture that shows generated media is labelled by its AI disclosure (src/site/captures.ts). */}
+              {captureBadge(open) ? (
+                <AiBadge variant="screen" className="shrink-0" />
+              ) : (
+                <span aria-hidden lang="en" className="machine text-[10px] tracking-[0.18em] text-brand-cyan">
+                  REAL CAPTURE
+                </span>
+              )}
               <span className="min-w-0 truncate text-data font-medium text-fg-secondary">{screens.captures[open]}</span>
               <button
                 type="button"
@@ -101,6 +109,8 @@ function ScreenThumb({
 }) {
   const [available, setAvailable] = useState<boolean | null>(null);
   const pending = { title: screens.pendingTitle, body: screens.pendingBody };
+  // Captures that show generated media carry the AI disclosure instead of the small REAL tag (one label per capture).
+  const disclosure = captureBadge(capture);
   const media = (
     <div className="relative overflow-hidden rounded-[0.9rem] border border-line-subtle">
       <ScreenViewer
@@ -111,10 +121,12 @@ function ScreenThumb({
         onAvailability={setAvailable}
         className="transition-transform duration-(--duration-spring-snappy) ease-(--ease-spring-snappy) group-hover/thumb:scale-[1.03]"
       />
-      <span aria-hidden lang="en" className="material-hud absolute top-1.5 left-1.5 inline-flex h-5 items-center gap-1 rounded-full px-1.5 font-mono text-[9px] tracking-[0.14em] text-fg">
-        <span className="size-1 rounded-full bg-brand-cyan shadow-[0_0_6px_rgb(73_207_255)]" />
-        REAL
-      </span>
+      {disclosure ? null : (
+        <span aria-hidden lang="en" className="material-hud absolute top-1.5 left-1.5 inline-flex h-5 items-center gap-1 rounded-full px-1.5 font-mono text-[9px] tracking-[0.14em] text-fg">
+          <span className="size-1 rounded-full bg-brand-cyan shadow-[0_0_6px_rgb(73_207_255)]" />
+          REAL
+        </span>
+      )}
       {available ? (
         <span aria-hidden className="material-hud absolute right-2 bottom-2 inline-flex size-8 items-center justify-center rounded-full text-fg opacity-0 transition-opacity group-hover/thumb:opacity-100 group-focus-visible/thumb:opacity-100 pointer-coarse:opacity-100">
           <Maximize2 className="size-3.5" aria-hidden />
@@ -126,22 +138,26 @@ function ScreenThumb({
   return (
     <SpotlightCard tilt={3} className="h-full rounded-2xl border-line-subtle bg-surface p-2">
       <figure className="grid gap-2">
-        {/* One element either way (no remount): without a capture the link loses its href, role and handler. */}
-        <a
-          {...(available === false
-            ? {}
-            : {
-                href: captureSrc(capture),
-                'aria-label': screens.enlarge(caption),
-                onClick: (event: MouseEvent<HTMLAnchorElement>) => {
-                  event.preventDefault();
-                  onOpen(capture, event.currentTarget);
-                },
-              })}
-          className="group/thumb block rounded-[0.9rem] no-underline focus-visible:outline-offset-2"
-        >
-          {media}
-        </a>
+        <div className="relative">
+          {/* One element either way (no remount): without a capture the link loses its href, role and handler. */}
+          <a
+            {...(available === false
+              ? {}
+              : {
+                  href: captureSrc(capture),
+                  'aria-label': screens.enlarge(caption),
+                  onClick: (event: MouseEvent<HTMLAnchorElement>) => {
+                    event.preventDefault();
+                    onOpen(capture, event.currentTarget);
+                  },
+                })}
+            className="group/thumb block rounded-[0.9rem] no-underline focus-visible:outline-offset-2"
+          >
+            {media}
+          </a>
+          {/* Beside the link so it is read; shown unless the capture turned out to be missing (no-JS readers get it too). */}
+          {disclosure && available !== false ? <CaptureBadge capture={capture} className="top-1.5 left-1.5 max-w-[calc(100%-0.75rem)]" /> : null}
+        </div>
         <figcaption className="px-1.5 pb-1 text-caption text-fg-secondary [text-wrap:pretty]">{caption}</figcaption>
       </figure>
     </SpotlightCard>
