@@ -39,7 +39,7 @@ export function isEdit(item: ShowcaseItem): boolean {
 }
 
 /** The films row (the owner's #1 asset): trailers first, then films, in importer order. */
-export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'trailer' || item.kind === 'film');
+export const FILMS: readonly ShowcaseItem[] = ITEMS.filter((item) => (item.kind === 'trailer' || item.kind === 'film') && item.category === 'film');
 
 /** Making-of cuts: shown with the prompt → still → clip breakdown they illustrate. */
 export const MAKING_OF: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'making-of');
@@ -47,8 +47,8 @@ export const MAKING_OF: readonly ShowcaseItem[] = ITEMS.filter((item) => item.ki
 /** Launch cuts (trailer, making-of, vertical): native clips framed larger on a blurred backdrop. */
 export const CUTS: readonly ShowcaseItem[] = ITEMS.filter((item) => item.media.displayScale !== undefined);
 
-/** Vertical 9:16 cuts: a narrow row of their own. */
-export const SOCIAL: readonly ShowcaseItem[] = ITEMS.filter((item) => item.kind === 'social');
+/** Vertical 9:16 edits (cuts and portrait films): a narrow row of their own. */
+export const SOCIAL: readonly ShowcaseItem[] = ITEMS.filter((item) => item.category === 'social');
 
 /** Single generated results (one run each, with steps, seed and prompt): the filtered grid, the totals and the notes. */
 export const RESULTS: readonly ShowcaseItem[] = ITEMS.filter((item) => !isEdit(item));
@@ -61,17 +61,34 @@ export function itemBySlug(slug: string): ShowcaseItem | undefined {
 const THEATRE = { films: 6, total: 8 };
 
 /**
- * The hero theatre: hero-graded films first (the owner ranks long video highest; the importer orders them longest
- * first), then hero-graded single results with their full run data, longest first; equal lengths keep data order.
+ * The hero theatre: the curated order (scripts/showcase-curation.json → featuredRank). Without one, hero-graded films first
+ * (the importer orders them longest first), then hero-graded single results, longest first.
  */
 export const FEATURED: readonly ShowcaseItem[] = (() => {
+  const ranked = ITEMS.filter((item) => item.featuredRank !== null).sort((a, b) => (a.featuredRank ?? 0) - (b.featuredRank ?? 0));
+  if (ranked.length) return ranked.slice(0, THEATRE.total);
   const films = FILMS.filter((item) => item.grade === 'hero').slice(0, THEATRE.films);
-  const results = RESULTS.filter((item) => item.grade === 'hero' && isClip(item))
-    .map((item, index) => ({ item, index }))
-    .sort((a, b) => (b.item.seconds ?? 0) - (a.item.seconds ?? 0) || a.index - b.index)
-    .map(({ item }) => item);
+  const results = strongestFirst(RESULTS.filter((item) => item.grade === 'hero' && Boolean(item.media.clip)));
   return [...films, ...results].slice(0, THEATRE.total);
 })();
+
+/** Hero grade first, then longer pieces first, then data order (curated seeds, then production order). */
+export function strongestFirst(list: readonly ShowcaseItem[]): ShowcaseItem[] {
+  return list
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => (a.item.grade === b.item.grade ? 0 : a.item.grade === 'hero' ? -1 : 1) || (b.item.seconds ?? 0) - (a.item.seconds ?? 0) || a.index - b.index)
+    .map(({ item }) => item);
+}
+
+/** Single-result groups for the gallery (each strongest first). Ref2VA scenes live in the character section. */
+export const GROUPS = {
+  multishot: strongestFirst(RESULTS.filter((item) => item.kind === 'multishot')),
+  video: strongestFirst(RESULTS.filter((item) => item.kind === 'fl2va')),
+  image: strongestFirst(RESULTS.filter((item) => item.kind === 'still' && item.category === 'image')),
+} as const;
+
+/** Native 9:16 single generations, shown with the vertical edits. */
+export const VERTICALS: readonly ShowcaseItem[] = strongestFirst(RESULTS.filter((item) => item.kind === 'vertical'));
 
 export function isClip(item: ShowcaseItem): boolean {
   return Boolean(item.media.clip);
@@ -199,6 +216,12 @@ export const CHARACTER = {
     { seed: 2026, runId: 'd8ca891e', src: '/images/showcase/page/char-seed-2026-384.webp', picked: true },
   ],
 } as const;
+
+/** Calendar date in Japan time (where the runs happened), from an ISO timestamp; deterministic on the server and client. */
+export function jstDate(iso: string): string {
+  const ms = Date.parse(iso);
+  return Number.isFinite(ms) ? new Date(ms + 9 * 3600 * 1000).toISOString().slice(0, 10) : '';
+}
 
 /** Short run id for display (item.json may carry a full UUID). */
 export function shortRun(id: string): string {

@@ -119,7 +119,7 @@ export function FilmCard({ item, frame, className }: { item: ShowcaseItem; frame
     <article id={`film-${item.slug}`} aria-label={title} className={cn('grid content-start gap-3 scroll-mt-[calc(var(--site-header-h)+1rem)]', className)}>
       <div className="relative">
         {item.media.clip ? (
-          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={aspect} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} aspect={aspect} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
         ) : null}
       </div>
       <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
@@ -208,7 +208,7 @@ export function SocialRow({ items }: { items: readonly ShowcaseItem[] }) {
             <article aria-label={item.title[locale]} className="grid gap-2">
               <div className="relative">
                 {item.media.clip ? (
-                  <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} ambient aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+                  <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={item.title[locale]} aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
                 ) : null}
               </div>
               <p className="text-body font-semibold text-balance-cjk text-fg">{item.title[locale]}</p>
@@ -235,7 +235,7 @@ export function MakingOf({ item, className }: { item: ShowcaseItem; className?: 
     <article aria-labelledby={`making-of-${item.slug}`} className={cn('grid gap-4 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-start lg:gap-8', className)}>
       <div className="relative">
         {item.media.clip ? (
-          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} ambient aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
+          <FilmPlayer src={item.media.clip} poster={item.media.image.src} title={title} aspect={`${item.width} / ${item.height}`} badge={badgeFor(item)} {...(item.media.captions ? { captions: item.media.captions } : {})} />
         ) : null}
       </div>
       <div className="grid content-start gap-3">

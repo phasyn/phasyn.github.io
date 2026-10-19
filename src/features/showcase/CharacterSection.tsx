@@ -1,10 +1,10 @@
 import { Check } from 'lucide-react';
-import { HudFrame, SpotlightCard } from '../../components/fx/index.ts';
+import { HudFrame } from '../../components/fx/index.ts';
 import { cn } from '../../lib/cn.ts';
 import { useLocale } from '../../i18n/locale.tsx';
-import { ClipPlayer } from './ClipPlayer.tsx';
 import { SHOWCASE } from './copy.ts';
-import { CHARACTER, RESULTS, itemBySlug, shortRun } from './data.ts';
+import { CHARACTER, RESULTS, itemBySlug, shortRun, strongestFirst } from './data.ts';
+import { ResultGroup } from './Gallery.tsx';
 import { MediaBadge, SectionHeading, useSecondsText } from './parts.tsx';
 
 /** The prompt's `subject_definitions` block (H3 Ref2VA six-section format), or nothing. */
@@ -22,7 +22,8 @@ export function CharacterSection() {
   const copy = SHOWCASE[locale];
   const secondsText = useSecondsText();
   const sheet = itemBySlug(CHARACTER.sheet);
-  const scenes = RESULTS.filter((item) => item.reference?.slug === CHARACTER.sheet && item.media.clip);
+  // Ref2VA scenes that used the sheet (the native 9:16 one sits with the verticals), strongest first.
+  const scenes = strongestFirst(RESULTS.filter((item) => item.kind === 'ref2va' && item.reference?.slug === CHARACTER.sheet && item.media.clip));
   if (!sheet || !scenes.length) return null;
   const subject = scenes.map((scene) => subjectDefinition(scene.prompt)).find(Boolean);
 
@@ -80,28 +81,7 @@ export function CharacterSection() {
         </figure>
 
         <div className="grid gap-6">
-          <div className="grid gap-2">
-            <h3 className="text-headline tracking-display text-balance-cjk text-fg">{copy.character.scenes(scenes.length)}</h3>
-            <p className="text-body text-fg-secondary">{copy.character.scenesLead}</p>
-          </div>
-          <ul className="grid gap-4 sm:grid-cols-2">
-            {scenes.map((scene) => (
-              <li key={scene.slug}>
-                <SpotlightCard tilt={0} className="h-full">
-                  <div className="relative">
-                    <ClipPlayer item={scene} sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw" className="rounded-t-2xl" />
-                    <MediaBadge item={scene} />
-                  </div>
-                  <div className="grid gap-1 p-4">
-                    <p className="text-body font-semibold text-balance-cjk text-fg">{scene.title[locale]}</p>
-                    <p lang="en" className="machine text-caption text-fg-tertiary">
-                      {copy.card.seed} {scene.seed ?? '–'} · {scene.frames ?? '–'} f · {copy.card.endToEnd} {secondsText(scene.endToEndSeconds, scene.endToEndApprox)}
-                    </p>
-                  </div>
-                </SpotlightCard>
-              </li>
-            ))}
-          </ul>
+          <ResultGroup id="character" title={copy.character.scenes(scenes.length)} lead={copy.character.scenesLead} items={scenes} columns="sm:grid-cols-2" />
 
           {subject ? (
             <figure className="grid gap-2 rounded-xl border border-line-subtle bg-sunken/70 p-4 md:p-5">

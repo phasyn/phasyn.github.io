@@ -27,7 +27,20 @@ import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
 import { EDIT_KINDS } from '../src/features/showcase/types.ts';
-import type { MachineKey, ShowcaseCategory, ShowcaseImage, ShowcaseItem, ShowcaseItemJson, ShowcaseKind, ShowcaseReference, ShowcaseShot, ShowcaseStep } from '../src/features/showcase/types.ts';
+import type {
+  MachineKey,
+  ShowcaseCategory,
+  ShowcaseExtraReference,
+  ShowcaseFirstFrame,
+  ShowcaseImage,
+  ShowcaseItem,
+  ShowcaseItemJson,
+  ShowcaseKind,
+  ShowcaseReference,
+  ShowcaseShot,
+  ShowcaseStep,
+  ShowcaseStepJson,
+} from '../src/features/showcase/types.ts';
 
 const SITE = process.cwd();
 const args = process.argv.slice(2);
@@ -52,6 +65,7 @@ const SOURCE = resolve(option('--source') ?? join(ROOT, 'studio/out/final/showca
 const FILMS = resolve(option('--films') ?? join(ROOT, 'studio/out/final/films'));
 const CUTS = resolve(option('--cuts') ?? join(ROOT, 'studio/out/final/cuts'));
 const CUT_LIST = join(SITE, 'scripts/showcase-cuts.json');
+const CURATION = join(SITE, 'scripts/showcase-curation.json');
 const SEED = resolve(option('--seed') ?? join(SITE, 'scripts/showcase-seed.json'));
 const DRY = flag('--dry-run');
 const FORCE = flag('--force');
@@ -66,8 +80,8 @@ const FFPROBE = process.env.FFPROBE ?? (existsSync('/opt/homebrew/bin/ffprobe') 
 const CWEBP = process.env.CWEBP ?? (existsSync('/opt/homebrew/bin/cwebp') ? '/opt/homebrew/bin/cwebp' : 'cwebp');
 const TEMP = mkdtempSync(join(tmpdir(), 'import-showcase-'));
 
-const KINDS: readonly ShowcaseKind[] = ['film', 'trailer', 'social', 'making-of', 'still', 'fl2va', 'ref2va', 'multishot', 'roundtrip'];
-const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'social', 'image', 'video', 'character', 'multishot'];
+const KINDS: readonly ShowcaseKind[] = ['film', 'trailer', 'social', 'making-of', 'still', 'fl2va', 'ref2va', 'multishot', 'vertical', 'roundtrip'];
+const CATEGORIES: readonly ShowcaseCategory[] = ['film', 'social', 'image', 'video', 'character', 'multishot', 'vertical'];
 /** A delivered mix inside this window is already web-ready and is kept as is (remuxed only). */
 const MASTERED_LUFS = { min: -18, max: -12 };
 const isEdit = (kind: ShowcaseKind) => EDIT_KINDS.includes(kind);
@@ -98,6 +112,11 @@ interface Candidate {
   captions?: Partial<Record<(typeof LOCALE_KEYS)[number], string>>;
   /** Largest display factor named by the cut's framing record. */
   displayScale?: number;
+  /** FL2VA: the first-frame still (first-frame.png) and its prompt text. */
+  firstFrameImage?: string;
+  firstFramePrompt?: string;
+  /** Ref2VA: further reference images in the folder (from `references[].file`). */
+  extraReferenceFiles?: { file: string; label: string }[];
   still?: string;
   clip?: string;
   /** A loudness-normalised web copy made by the producer (web.mp4); used instead of normalising again. */
@@ -315,7 +334,23 @@ function num(value: unknown): number | null {
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
+function normaliseSteps(list: ShowcaseStepJson[], origin: string): ShowcaseStep[] {
+  const steps = list.map((step) => ({
+    id: String(step.id),
+    label: String(step.label ?? step.id),
+    machines: machines(String(step.machine ?? '')),
+    seconds: num(step.seconds),
+    approx: Boolean(step.approx),
+    ...(typeof step.component === 'string' && step.component && !isPrivate(step.component) ? { component: step.component } : {}),
+  }));
+  for (const step of steps) if (step.machines.includes('unknown')) problems.push(`${origin}: step "${step.id}" has no recognised machine (shown as "placement not recorded")`);
+  return steps;
+}
+
 function categoryOf(json: ShowcaseItemJson, hasClip: boolean): ShowcaseCategory {
+  if (json.kind === 'vertical') return 'vertical';
+  // A portrait edit (a 9:16 film or cut) sits with the vertical cuts.
+  if (isEdit(json.kind) && json.height > json.width) return 'social';
   if (json.category && CATEGORIES.includes(json.category)) return json.category;
   if (json.kind === 'social') return 'social';
   if (isEdit(json.kind)) return 'film';
@@ -384,18 +419,33 @@ function loadCandidates(): Candidate[] {
       if (prompt) candidate.prompt = prompt;
       if (contact) candidate.contact = contact;
       if (referenceFile) candidate.referenceFile = referenceFile;
+      // FL2VA receipts: the still the clip started from, with its own prompt file.
+      if (json.firstFrame) {
+        const image = file('first-frame.png');
+        const promptFile = json.firstFrame.prompt ? file(json.firstFrame.prompt) : file('first-frame.prompt.txt');
+        if (image) candidate.firstFrameImage = image;
+        if (promptFile) candidate.firstFramePrompt = readFileSync(promptFile, 'utf8').trim();
+      }
+      // Ref2VA: reference images kept in the folder (a published item is linked by slug instead).
+      const extra = (json.references ?? []).filter((ref) => !ref.slug && ref.file && file(ref.file));
+      if (extra.length) candidate.extraReferenceFiles = extra.map((ref) => ({ file: file(ref.file as string) as string, label: ref.label ?? '' }));
       if (edit) {
         const editRecord = file('edit.json');
-        let music = (json as { music?: unknown }).music === true;
+        const notes = typeof json.notes === 'string' ? json.notes : '';
+        let music = (json as { music?: unknown }).music === true || /\bsuno\b/i.test(notes);
         if (!music && editRecord) {
           try {
-            const record = JSON.parse(readFileSync(editRecord, 'utf8')) as { music?: unknown[] };
-            music = Array.isArray(record.music) && record.music.length > 0;
+            const record = JSON.parse(readFileSync(editRecord, 'utf8')) as { music?: unknown; audio?: { music?: unknown } };
+            const has = (value: unknown) => (Array.isArray(value) ? value.length > 0 : Boolean(value && typeof value === 'object'));
+            music = has(record.music) || has(record.audio?.music);
           } catch {
             problems.push(`${origin}: edit.json is not valid JSON (music flag left off)`);
           }
         }
         candidate.music = music;
+        // A film framed larger on a blurred backdrop says so in its notes ("Framed at 1.75x … no upscaling model").
+        const factors = [...notes.matchAll(/(\d+(?:\.\d+)?)x\b/g)].map((m) => Number(m[1])).filter((n) => n > 1 && n < 4);
+        if (factors.length && /blur/i.test(notes)) candidate.displayScale = Math.max(...factors);
       }
       if (bySlug.has(json.slug)) console.log(`import-showcase: ${origin} replaces "${json.slug}"`);
       bySlug.set(json.slug, candidate);
@@ -521,15 +571,7 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
     if (isPrivate(text)) return fail('private data (LAN address, absolute path or account name) in public text');
   }
 
-  const steps: ShowcaseStep[] = (json.steps ?? []).map((step) => ({
-    id: String(step.id),
-    label: String(step.label ?? step.id),
-    machines: machines(String(step.machine ?? '')),
-    seconds: num(step.seconds),
-    approx: Boolean(step.approx),
-    ...(typeof step.component === 'string' && step.component && !isPrivate(step.component) ? { component: step.component } : {}),
-  }));
-  for (const step of steps) if (step.machines.includes('unknown')) problems.push(`${origin}: step "${step.id}" has no recognised machine (shown as "placement not recorded")`);
+  const steps = normaliseSteps(json.steps ?? [], origin);
   const shots: ShowcaseShot[] = (candidate.shots ?? json.shots ?? [])
     .filter((shot) => typeof shot.runId === 'string' && shot.runId && !isPrivate(shot.runId))
     .map((shot) => ({ runId: shot.runId as string, seed: Number.isInteger(shot.seed) ? (shot.seed as number) : null, seconds: num(shot.seconds) }));
@@ -561,23 +603,46 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       }
     }
 
+    // Linked reference: a published item (by slug, or because the reference file is that item's own source). The record's
+    // English labels are never shown; the page builds localized text from the structured fields.
     let reference: ShowcaseReference | null = null;
     const ref = json.reference;
     if (ref) {
       const slug = typeof ref === 'string' ? ref : ref.slug;
-      const label = typeof ref === 'object' ? ref.label : undefined;
-      reference = {};
-      if (slug && slugs.has(slug)) reference.slug = slug;
-      // A reference file that is another result's own source links to that result instead of a copy.
       const owner = candidate.referenceFile ? sources.get(resolve(candidate.referenceFile)) : undefined;
-      if (owner && owner !== json.slug) reference.slug = owner;
-      else if (candidate.referenceFile) reference.image = webpSet(candidate.referenceFile, `${json.slug}-ref`, [768, 384]);
-      if (label && !isPrivate(label)) reference.label = label;
-      if (!reference.slug && !reference.image && !reference.label) {
+      if (slug && slugs.has(slug)) reference = { slug };
+      else if (owner && owner !== json.slug) reference = { slug: owner };
+      else if (!json.firstFrame && !candidate.extraReferenceFiles?.length && candidate.referenceFile) {
+        reference = { image: webpSet(candidate.referenceFile, `${json.slug}-ref`, [768, 384]) };
+      } else if (!json.firstFrame && !candidate.extraReferenceFiles?.length) {
         problems.push(`${origin}: reference "${typeof ref === 'string' ? ref : JSON.stringify(ref)}" matched no item or file`);
-        reference = null;
       }
     }
+
+    // FL2VA: the Qwen-Image still the clip started from, with its own receipt.
+    let firstFrame: ShowcaseFirstFrame | null = null;
+    if (json.firstFrame && candidate.firstFrameImage) {
+      const ff = json.firstFrame;
+      firstFrame = {
+        runId: typeof ff.runId === 'string' ? ff.runId : '',
+        seed: Number.isInteger(ff.seed) ? (ff.seed as number) : null,
+        width: num(ff.width) ?? 0,
+        height: num(ff.height) ?? 0,
+        ditEngine: typeof ff.ditEngine === 'string' && !isPrivate(ff.ditEngine) ? ff.ditEngine : '',
+        endToEndSeconds: num(ff.endToEndSeconds),
+        steps: normaliseSteps(ff.steps ?? [], `${origin} first frame`),
+        prompt: candidate.firstFramePrompt && !isPrivate(candidate.firstFramePrompt) ? candidate.firstFramePrompt : '',
+        image: webpSet(candidate.firstFrameImage, `${json.slug}-first`, STILL_WIDTHS),
+      };
+    }
+
+    // Ref2VA: further reference images (e.g. a face close-up made with t2i-pc, mirrored left-right before use).
+    const extraReferences: ShowcaseExtraReference[] = (candidate.extraReferenceFiles ?? []).map((extra, index) => ({
+      image: webpSet(extra.file, `${json.slug}-ref-${index + 1}`, [768, 384]),
+      runId: /\brun ([0-9a-f]{8})/i.exec(extra.label)?.[1] ?? null,
+      seed: Number(/\bseed (\d+)/i.exec(extra.label)?.[1]) || null,
+      mirrored: /mirror/i.test(extra.label),
+    }));
 
     return {
       slug: json.slug,
@@ -601,6 +666,10 @@ function build(candidate: Candidate, slugs: Set<string>, sources: Map<string, st
       shots,
       music: Boolean(candidate.music),
       reference,
+      firstFrame,
+      extraReferences,
+      usedIn: [],
+      featuredRank: null,
       grade: json.grade,
       createdAt: typeof json.createdAt === 'string' && json.createdAt ? json.createdAt : new Date(statSync(candidate.clip ?? candidate.still ?? '').mtimeMs).toISOString(),
       prompt,
@@ -642,7 +711,14 @@ if (!DRY) {
   mkdirSync(dirname(CACHE), { recursive: true });
 }
 
-const candidates = loadCandidates();
+const curation = existsSync(CURATION)
+  ? (JSON.parse(readFileSync(CURATION, 'utf8')) as { exclude?: Record<string, string>; featured?: string[] })
+  : {};
+const candidates = loadCandidates().filter((candidate) => {
+  const reason = curation.exclude?.[candidate.json.slug];
+  if (reason) skipped.push(`${candidate.origin}: excluded by scripts/showcase-curation.json (${reason})`);
+  return !reason;
+});
 const slugs = new Set(candidates.map((c) => c.json.slug));
 /** Source file → slug, so a reference given as a path can link to the result made from it. */
 const sources = new Map<string, string>();
@@ -657,7 +733,22 @@ for (const candidate of candidates) {
   }
 }
 // A reference must point at a published item.
-for (const item of items) if (item.reference?.slug && !items.some((other) => other.slug === item.reference?.slug)) delete item.reference.slug;
+for (const item of items) {
+  if (item.reference?.slug && !items.some((other) => other.slug === item.reference?.slug)) delete item.reference.slug;
+  if (item.reference && !item.reference.slug && !item.reference.image) item.reference = null;
+}
+// Single results used in a published film or cut (same run, matched on the 8-character run id).
+const short = (id: string) => id.slice(0, 8).toLowerCase();
+for (const item of items) {
+  if (isEdit(item.kind) || !item.runId) continue;
+  item.usedIn = items.filter((edit) => isEdit(edit.kind) && edit.shots.some((shot) => short(shot.runId) === short(item.runId))).map((edit) => edit.slug);
+}
+// The hero theatre, in the curated order.
+for (const [index, slug] of (curation.featured ?? []).entries()) {
+  const item = items.find((candidate) => candidate.slug === slug);
+  if (item) item.featuredRank = index;
+  else problems.push(`featured "${slug}" is not published`);
+}
 
 // Seeds keep their curated order; folder items follow, hero first, then in production order (a shot series stays in order
 // and new results append instead of reshuffling the top).
@@ -671,6 +762,8 @@ const edits = farmed
   .filter((item) => isEdit(item.kind))
   .sort(
     (a, b) =>
+      // Featured edits lead in the curated order (the strongest film first), then by kind.
+      (a.featuredRank ?? 99) - (b.featuredRank ?? 99) ||
       (EDIT_ORDER[a.kind] ?? 9) - (EDIT_ORDER[b.kind] ?? 9) ||
       (a.grade === b.grade ? 0 : a.grade === 'hero' ? -1 : 1) ||
       (b.seconds ?? 0) - (a.seconds ?? 0),
