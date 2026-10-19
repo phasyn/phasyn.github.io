@@ -1,12 +1,13 @@
 import { useEffect, useRef } from 'react';
 import { cn } from '../../lib/cn.ts';
 import { supportsWebGL, useHydrated, useReducedMotion } from '../../lib/hooks.ts';
+import { isVideoPlaying, onVideoActivity } from '../../lib/videoActivity.ts';
 
 /*
  * Living background: a domain-warped aurora/nebula shader in the brand light (cyan → blue → iris → violet) plus a crisp
  * 2D particle layer drifting through it. Pointer adds parallax and a soft light; scroll shifts the band and hue.
- * Rendered at a reduced internal resolution and ~30 fps; the frame loop stops completely while the field is offscreen or
- * the tab is hidden. Reduced motion draws a still frame: nothing drifts or follows the pointer, but the fixed backdrop is
+ * Rendered at a reduced internal resolution and ~30 fps; the frame loop stops completely while the field is offscreen, the
+ * tab is hidden or a video is playing (the last frame stays up). Reduced motion draws a still frame: nothing drifts or follows the pointer, but the fixed backdrop is
  * redrawn (once per frame at most) when its scroll calm changes, so reading areas get the calm light instead of the
  * hero's brightest frame (FE-03). Purely decorative (aria-hidden).
  */
@@ -248,9 +249,10 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
       if (!stillFrame) stillFrame = requestAnimationFrame(drawStill);
     };
 
-    // Animated: ~30 fps while visible; the loop ends offscreen or in a hidden tab and is restarted by startLoop.
+    // Animated: ~30 fps while visible; the loop ends offscreen, in a hidden tab or while a video plays, and is restarted
+    // by startLoop.
     const loop = (now: number) => {
-      if (!visible || document.hidden) {
+      if (!visible || document.hidden || isVideoPlaying()) {
         frame = 0;
         return;
       }
@@ -260,7 +262,7 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
       draw(now);
     };
     const startLoop = () => {
-      if (!reducedMotion && !frame && visible && !document.hidden) frame = requestAnimationFrame(loop);
+      if (!reducedMotion && !frame && visible && !document.hidden && !isVideoPlaying()) frame = requestAnimationFrame(loop);
     };
 
     const onPointer = (event: PointerEvent) => {
@@ -292,6 +294,7 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
     resizeObserver.observe(wrap);
     window.addEventListener('scroll', onScroll, { passive: true });
     document.addEventListener('visibilitychange', startLoop);
+    const stopVideoActivity = onVideoActivity(startLoop);
 
     if (reducedMotion) {
       requestStill();
@@ -311,6 +314,7 @@ export function NebulaField({ position = 'absolute', intensity = 1, particles = 
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('pointermove', onPointer);
       document.removeEventListener('visibilitychange', startLoop);
+      stopVideoActivity();
       glCanvas.removeEventListener('webglcontextlost', onLost);
       if (gl) {
         if (buffer) gl.deleteBuffer(buffer);
