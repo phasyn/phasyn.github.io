@@ -20,6 +20,19 @@ import { StatusChip } from './status.tsx';
  * on figures) and disappears under prefers-reduced-motion. The only script-driven detail is the
  * current-chapter marker in the index.
  */
+/** The reading veil's gradient (see the article below): solid 84 % canvas under the text, eased fades in the bleeds. */
+const READING_VEIL = [
+  'linear-gradient(90deg',
+  'rgb(7 11 20 / 0)',
+  'rgb(7 11 20 / 0.5) calc(var(--veil-left) * 0.55)',
+  'rgb(7 11 20 / 0.84) var(--veil-left)',
+  'rgb(7 11 20 / 0.84) calc(100% - var(--veil-right))',
+  'rgb(7 11 20 / 0.62) calc(100% - var(--veil-right) * 0.7)',
+  'rgb(7 11 20 / 0.32) calc(100% - var(--veil-right) * 0.4)',
+  'rgb(7 11 20 / 0.1) calc(100% - var(--veil-right) * 0.15)',
+  'rgb(7 11 20 / 0) 100%)',
+].join(', ');
+
 export function AboutPage() {
   const locale = useLocale();
   const copy = ABOUT[locale];
@@ -42,12 +55,14 @@ export function AboutPage() {
           {/*
            * Reading veil: the layout's living nebula frames the column but never sits under body text (BRIEF §4.1
            * guardrail). A canvas-coloured band behind the article, solid under the text and fading only in a bleed
-           * outside it (the page gutter on narrow screens, so it never passes the viewport; 3rem on wide ones).
-           * `isolate` keeps it above the fixed backdrop.
+           * outside it (the page gutter on narrow screens, so it never passes the viewport). On wide screens the right
+           * side fades over 12rem of the empty third column on an eased curve, so it has no hard vertical edge (FE-18);
+           * the left keeps 3rem so it never reaches the chapter index. `isolate` keeps it above the fixed backdrop.
            */}
           <article
             aria-labelledby="about-title"
-            className="relative isolate mx-auto w-full max-w-[42.5rem] [--veil-bleed:var(--site-gutter)] before:pointer-events-none before:absolute before:inset-y-0 before:-right-(--veil-bleed) before:-left-(--veil-bleed) before:-z-10 before:bg-[linear-gradient(90deg,rgb(7_11_20_/_0),rgb(7_11_20_/_0.84)_var(--veil-bleed),rgb(7_11_20_/_0.84)_calc(100%_-_var(--veil-bleed)),rgb(7_11_20_/_0))] lg:col-start-2 lg:row-start-1 lg:[--veil-bleed:3rem]"
+            className="relative isolate mx-auto w-full max-w-[42.5rem] [--veil-left:var(--site-gutter)] [--veil-right:var(--site-gutter)] before:pointer-events-none before:absolute before:inset-y-0 before:-right-(--veil-right) before:-left-(--veil-left) before:-z-10 before:[background-image:var(--veil)] lg:col-start-2 lg:row-start-1 lg:[--veil-left:3rem] lg:[--veil-right:12rem]"
+            style={{ ['--veil' as string]: READING_VEIL }}
           >
             <StorySection id="why" title={copy.titles.why}>
               <Lead>{copy.why.lead}</Lead>

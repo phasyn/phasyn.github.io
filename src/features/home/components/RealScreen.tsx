@@ -1,9 +1,12 @@
 import { Maximize2, ScanLine, X } from 'lucide-react';
 import { useEffect, useRef, useState, type CSSProperties, type MouseEvent } from 'react';
 import { HudFrame } from '../../../components/fx/index.ts';
+import { AiBadge } from '../../../components/ui/AiBadge.tsx';
+import { CaptureBadge } from '../../../components/ui/CaptureBadge.tsx';
 import { useCopy, useLocale } from '../../../i18n/locale.tsx';
 import { cn } from '../../../lib/cn.ts';
 import { useHydrated, useInView, useReducedMotion } from '../../../lib/hooks.ts';
+import { captureBadge } from '../../../site/captures.ts';
 import { HTML_LANG } from '../../../site/config.ts';
 import { HOME } from '../copy.ts';
 import { SCREENS, captureSources, type CropName, type HotspotId, type Rect, type ScreenKey } from '../screens.ts';
@@ -73,6 +76,8 @@ export function RealScreen({
 
   const capture = spec.capture;
   const available = capture !== undefined && !failed;
+  // Captures that show generated media carry the AI disclosure as their one real-screen label (src/site/captures.ts).
+  const disclosure = available ? captureBadge(screen) : null;
   const rect = (crop && available ? spec.crops?.[crop] : undefined) ?? FULL_RECT;
   const [x, y, w, h] = rect;
   const size = capture ?? { width: 1920, height: 1080 };
@@ -198,15 +203,25 @@ export function RealScreen({
     panned
   );
 
+  // The disclosure sits beside the link (read by assistive tech), over the capture's corner; it never pans or drifts.
+  const withDisclosure = disclosure ? (
+    <div className="relative">
+      {frame}
+      <CaptureBadge capture={screen} />
+    </div>
+  ) : (
+    frame
+  );
+
   return (
     <div className={cn('@container/screen min-w-0', className)}>
       {framed ? (
         <div className="relative">
           <HudFrame label={hud ?? spec.hud} orbit={orbit}>
-            {frame}
+            {withDisclosure}
           </HudFrame>
-          {/* On the frame's border, outside the capture, so it never covers what the screen says. */}
-          {available ? (
+          {/* On the frame's border, outside the capture, so it never covers what the screen says (UI-only captures). */}
+          {available && !disclosure ? (
             <span lang={lang} className="home-real-badge absolute -top-3 right-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-success/40 bg-stage px-2.5 py-0.5 text-[12px] font-medium text-fg">
               <span aria-hidden className="size-1.5 rounded-full bg-success" />
               {t.real}
@@ -214,7 +229,7 @@ export function RealScreen({
           ) : null}
         </div>
       ) : (
-        frame
+        withDisclosure
       )}
       {spots.length > 0 ? (
         <ol aria-label={t.callouts} className="mt-3 grid gap-1.5 text-caption text-fg-secondary @min-[34rem]/screen:sr-only">
@@ -241,10 +256,16 @@ export function RealScreen({
         >
           <div className="grid">
             <div className="flex min-h-12 items-center gap-3 border-b border-line-subtle bg-rail px-4">
-              <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-success" />
-              <span lang={lang} className="text-data font-medium text-fg">
-                {t.real}
-              </span>
+              {disclosure ? (
+                <AiBadge variant={disclosure} className="shrink-0" />
+              ) : (
+                <>
+                  <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-success" />
+                  <span lang={lang} className="text-data font-medium text-fg">
+                    {t.real}
+                  </span>
+                </>
+              )}
               <span lang="en" translate="no" className="machine min-w-0 truncate text-[12px] text-fg-tertiary">
                 {spec.area}
               </span>

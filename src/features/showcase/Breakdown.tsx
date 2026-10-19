@@ -10,6 +10,7 @@ import { BREAKDOWN, MACHINE_HOST, MACHINE_HOST_LABEL, MACHINE_ORDER, MACHINE_SHO
 import { MakingOf } from './Films.tsx';
 import { useViewTrigger } from './hooks.ts';
 import { MachineDot, MachineName, MediaBadge, PromptDisclosure, SectionHeading, useSecondsText, useStepName, useStepShort } from './parts.tsx';
+import { CaptureBadge } from '../../components/ui/CaptureBadge.tsx';
 
 /** Seconds of animation for the whole run (the playhead moves linearly; DESIGN_GUIDE §11.5). */
 const PLAY_SECONDS = 5.2;
@@ -83,6 +84,7 @@ export function Breakdown() {
               decoding="async"
               className="block h-auto w-full"
             />
+            <CaptureBadge capture="records-run-cfa759df" />
           </HudFrame>
           <figcaption className="flex flex-wrap items-center gap-x-3 gap-y-1 text-caption text-fg-tertiary">
             <span>{copy.breakdown.capture}</span>
