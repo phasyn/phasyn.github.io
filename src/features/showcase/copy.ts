@@ -89,6 +89,16 @@ export interface ShowcaseCopy {
     social: string;
     socialLead: string;
     singles: string;
+    singlesLead: string;
+    groups: Record<'multishot' | 'video' | 'image', { title: string; lead: string }>;
+    verticalSingles: { title: string; lead: string };
+    showAll: (n: number) => string;
+    firstFrame: string;
+    firstFrameMeta: (seed: string, size: string, seconds: string) => string;
+    showFirstFrame: string;
+    faceReference: (mirrored: boolean) => string;
+    showReferences: string;
+    usedIn: string;
     filterLabel: string;
     all: string;
     category: Record<ShowcaseCategory, string>;
@@ -169,7 +179,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title}（AI 生成影片，靜音循環）`,
     },
     card: {
-      kind: { film: '短片', trailer: '預告', social: '直式短片', 'making-of': '幕後', still: '圖片', fl2va: '首幀 → 影片', ref2va: '參考圖 → 影片', multishot: '多鏡頭', roundtrip: '往返' },
+      kind: { film: '短片', trailer: '預告', social: '直式短片', 'making-of': '幕後', still: '圖片', fl2va: '首幀 → 影片', ref2va: '參考圖 → 影片', multishot: '多鏡頭', vertical: '直式 9:16', roundtrip: '往返' },
       seed: '種子',
       resolution: '解析度',
       endToEnd: '端到端',
@@ -210,9 +220,23 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       social: '直式短片',
       socialLead: '為手機直式生成（448×768）的 9:16 版本。',
       singles: '單次生成的結果',
+      singlesLead: '每一個都是一次生成、沒有剪接，附上完整收據：管線、執行、種子、每一步在哪台機器跑了幾秒。強的排前面。',
+      groups: {
+        multishot: { title: '一個 Prompt，好幾個鏡頭', lead: 'H3 依 Prompt 裡的 [Shot n] 時間標記，在同一次生成裡自己切換機位。' },
+        video: { title: '從一張圖開始的影片', lead: '每一段都以一張 Qwen‑Image 2.1 靜圖當第一幀，H3 生成動作與聲音。' },
+        image: { title: '靜圖', lead: 'Qwen‑Image 2.1 在 RTX 5080 上生成，一張約 26 秒。' },
+      },
+      verticalSingles: { title: '原生 9:16 生成', lead: '448×768 直式，一次生成，附完整收據。' },
+      showAll: (n) => `顯示全部（還有 ${n} 個）`,
+      firstFrame: '第一幀',
+      firstFrameMeta: (seed, size, seconds) => `Qwen‑Image 2.1 · 種子 ${seed} · ${size} · 端到端 ${seconds}`,
+      showFirstFrame: '看第一幀與它的 Prompt',
+      faceReference: (mirrored) => (mirrored ? '臉部特寫（左右鏡像）' : '臉部特寫'),
+      showReferences: '看參考圖',
+      usedIn: '用在',
       filterLabel: '依類型篩選',
       all: '全部',
-      category: { film: '短片', social: '直式短片', image: '圖片', video: '影片', character: '角色', multishot: '多鏡頭' },
+      category: { film: '短片', social: '直式短片', image: '圖片', video: '影片', character: '角色', multishot: '多鏡頭', vertical: '直式 9:16' },
       count: (n) => `${n}\u00A0個結果`,
       more: (n) => `顯示更多（還有 ${n} 個）`,
       empty: '這個類型還沒有結果。',
@@ -311,12 +335,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: '關於這些結果',
       loudness: (loudest, quietest, rates) => `網頁版已做響度正規化；原始輸出約 ${loudest}～${quietest} LUFS、AAC ${rates}。`,
       glyphs: '部分畫面裡的招牌文字，是模型生成的偽文字，不是真實的店名或品牌。',
-      cuts: (scale, mix) => `預告、幕後與直式短片，把原生影片（768×448，直式生成為 448×768）放大到最多 ${scale} 倍，疊在同一鏡頭模糊、壓暗的背景上；只做重新取樣（lanczos 或 bicubic），沒有超解析，也沒有補幀。它們在 H3 自己的聲音下墊了 Suno 生成的配樂（Music generated with Suno），母帶約 ${mix} LUFS。`,
+      cuts: (scale, mix) => `卡片上標示放大倍率的作品（預告、幕後、《屋頂信使》與直式短片），把原生影片（768×448，直式生成為 448×768）放大到最多 ${scale} 倍，疊在同一鏡頭模糊、壓暗的背景上；只做重新取樣（lanczos 或 bicubic），沒有超解析，也沒有補幀。它們在 H3 自己的聲音下墊了 Suno 生成的配樂（Music generated with Suno），母帶約 ${mix} LUFS。`,
       films: (mix) => `短片由多個生成鏡頭在 App 外用 FFmpeg 剪接而成（切點、溶接，部分鏡頭水平翻轉）；標示「配樂：Suno」的短片，在 H3 自己的聲音之上墊了 Suno 生成的配樂（Music generated with Suno）。短片的混音已完成母帶處理（約 ${mix} LUFS），網頁版照原樣使用。`,
       items: [
         '全部是 AI 生成：圖片來自 Qwen‑Image 2.1，影片與聲音來自 MiniMax H3，透過 Phasyn Studio 的控制器 API（t2i‑pc、fl2va‑pc、ref2va‑pc）在作者的機器上生成。「The Courier」是原創角色。',
         '模型授權：MiniMax H3 Community License（含地域限制與使用規範）；Qwen‑Image 2.1 僅限研究與非商業用途。模型權重不隨專案提供。',
-        '單次生成的結果與短片以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版的圖片轉成 WebP；單次生成的影片沿用原始 H.264 畫面串流，只把聲音做了響度正規化。',
+        '單次生成的結果，以及卡片上沒有標示放大倍率的短片，以原生解析度顯示，沒有放大：圖片 1152×672（角色設定圖 768×1024），影片 768×448、24 fps。網頁版的圖片轉成 WebP；單次生成的影片沿用原始 H.264 畫面串流，只把聲音做了響度正規化。',
         '時間是控制器觀察到的端到端時間與步驟時間，不含啟動或切換模型的時間（圖片 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）。',
         '不同 GPU 上的步驟可以同時進行（例如影片解碼與音訊解碼），所以步驟加總可能超過端到端時間。',
       ],
@@ -349,7 +373,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title}（AI 生成の映像、無音でループ）`,
     },
     card: {
-      kind: { film: 'ショートフィルム', trailer: 'トレーラー', social: '縦型ショート', 'making-of': 'メイキング', still: '画像', fl2va: '先頭フレーム → 映像', ref2va: '参照画像 → 映像', multishot: 'マルチショット', roundtrip: 'ラウンドトリップ' },
+      kind: { film: 'ショートフィルム', trailer: 'トレーラー', social: '縦型ショート', 'making-of': 'メイキング', still: '画像', fl2va: '先頭フレーム → 映像', ref2va: '参照画像 → 映像', multishot: 'マルチショット', vertical: '縦型 9:16', roundtrip: 'ラウンドトリップ' },
       seed: 'シード',
       resolution: '解像度',
       endToEnd: 'エンドツーエンド',
@@ -390,9 +414,23 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       social: '縦型ショート',
       socialLead: 'スマートフォン向けに縦型（448×768）で生成した 9:16 版です。',
       singles: '1 回の生成で得た結果',
+      singlesLead: 'どれも 1 回の生成で、編集はしていません。パイプライン、実行、シード、各ステップのマシンと秒数をすべて載せています。強いものから順に並べました。',
+      groups: {
+        multishot: { title: 'ひとつの Prompt、複数のショット', lead: 'Prompt の [Shot n] のタイムスタンプに従い、H3 が 1 回の生成の中でカメラを切り替えます。' },
+        video: { title: '1 枚の画像から始まる映像', lead: 'どれも Qwen‑Image 2.1 の静止画を先頭フレームにして、H3 が動きと音を生成しています。' },
+        image: { title: '静止画', lead: 'Qwen‑Image 2.1 を RTX 5080 で実行し、1 枚あたり約 26 秒です。' },
+      },
+      verticalSingles: { title: 'ネイティブ 9:16 で生成', lead: '448×768 の縦型を 1 回で生成し、記録をすべて載せています。' },
+      showAll: (n) => `すべて表示（残り ${n} 件）`,
+      firstFrame: '先頭フレーム',
+      firstFrameMeta: (seed, size, seconds) => `Qwen‑Image 2.1・シード ${seed}・${size}・エンドツーエンド ${seconds}`,
+      showFirstFrame: '先頭フレームとその Prompt を見る',
+      faceReference: (mirrored) => (mirrored ? '顔のクローズアップ（左右反転）' : '顔のクローズアップ'),
+      showReferences: '参照画像を見る',
+      usedIn: '使用作品',
       filterLabel: '種類で絞り込む',
       all: 'すべて',
-      category: { film: 'ショートフィルム', social: '縦型ショート', image: '画像', video: '映像', character: 'キャラクター', multishot: 'マルチショット' },
+      category: { film: 'ショートフィルム', social: '縦型ショート', image: '画像', video: '映像', character: 'キャラクター', multishot: 'マルチショット', vertical: '縦型 9:16' },
       count: (n) => `${n}\u00A0件`,
       more: (n) => `さらに表示（残り ${n} 件）`,
       empty: 'この種類の結果はまだありません。',
@@ -491,12 +529,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'この作例について',
       loudness: (loudest, quietest, rates) => `Web 版はラウドネスを正規化しています（元の出力は約 ${loudest}〜${quietest} LUFS、AAC ${rates}）。`,
       glyphs: '一部の映像に映る看板の文字は、モデルが生成した疑似的な文字で、実在の店名やブランドではありません。',
-      cuts: (scale, mix) => `トレーラー、メイキング、縦型ショートでは、ネイティブの映像（768×448、縦型の生成は 448×768）を最大 ${scale} 倍に拡大し、同じショットをぼかして暗くした背景に重ねています。リサンプリング（lanczos または bicubic）のみで、超解像やフレーム補間は使っていません。H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷き、マスタリングは約 ${mix} LUFS です。`,
+      cuts: (scale, mix) => `カードに拡大率を記載した作品（トレーラー、メイキング、『屋上の配達人』、縦型ショート）では、ネイティブの映像（768×448、縦型の生成は 448×768）を最大 ${scale} 倍に拡大し、同じショットをぼかして暗くした背景に重ねています。リサンプリング（lanczos または bicubic）のみで、超解像やフレーム補間は使っていません。H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷き、マスタリングは約 ${mix} LUFS です。`,
       films: (mix) => `ショートフィルムは、生成した複数のショットをアプリの外で FFmpeg を使って編集したものです（カット、ディゾルブ、一部のショットは左右反転）。「音楽：Suno」と表示した作品では、H3 自身の音の下に Suno で生成した音楽（Music generated with Suno）を敷いています。ミックスはマスタリング済み（約 ${mix} LUFS）で、Web 版もそのまま使っています。`,
       items: [
         'すべて AI による生成物です。画像は Qwen‑Image 2.1、映像と音は MiniMax H3 で、Phasyn Studio のコントローラー API（t2i‑pc・fl2va‑pc・ref2va‑pc）を通じて作者のマシンで生成しました。「The Courier」はオリジナルのキャラクターです。',
         'モデルのライセンス：MiniMax H3 Community License（地域制限と利用規約あり）、Qwen‑Image 2.1 は研究・非商用のみです。モデルの重みは同梱しません。',
-        '1 回の生成で得た結果とショートフィルムは、ネイティブ解像度のまま拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 版では画像を WebP に変換し、1 回の生成で得た映像は元の H.264 ストリームのまま、音声だけラウドネスを正規化しています。',
+        '1 回の生成で得た結果と、カードに拡大率の記載がないショートフィルムは、ネイティブ解像度のまま拡大せずに表示しています。画像は 1152×672（キャラクターシートは 768×1024）、映像は 768×448・24 fps です。Web 版では画像を WebP に変換し、1 回の生成で得た映像は元の H.264 ストリームのまま、音声だけラウドネスを正規化しています。',
         '時間はコントローラーが観測したエンドツーエンドとステップの時間で、モデルの起動や切り替えの時間（画像 DiT 11.3 秒、dit‑5080 45.9 秒、Ref2VA DiT 40.6 秒）は含みません。',
         '別々の GPU のステップ（映像と音声のデコードなど）は同時に進むことがあるため、ステップの合計がエンドツーエンドの時間を超える場合があります。',
       ],
@@ -529,7 +567,7 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       clipLabel: (title) => `${title} (AI-generated clip, muted loop)`,
     },
     card: {
-      kind: { film: 'Film', trailer: 'Trailer', social: 'Social Cut', 'making-of': 'Making Of', still: 'Image', fl2va: 'First Frame → Video', ref2va: 'Reference → Video', multishot: 'Multi-Shot', roundtrip: 'Round Trip' },
+      kind: { film: 'Film', trailer: 'Trailer', social: 'Social Cut', 'making-of': 'Making Of', still: 'Image', fl2va: 'First Frame → Video', ref2va: 'Reference → Video', multishot: 'Multi-Shot', vertical: 'Vertical 9:16', roundtrip: 'Round Trip' },
       seed: 'Seed',
       resolution: 'Resolution',
       endToEnd: 'End to end',
@@ -570,9 +608,23 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       social: 'Social Cuts',
       socialLead: 'Vertical 9:16 versions for phones.',
       singles: 'Single Generations',
+      singlesLead: 'Each one is a single generation, not edited, with the full receipt: pipeline, run, seed, and every step’s machine and time. Strongest first.',
+      groups: {
+        multishot: { title: 'One Prompt, Several Shots', lead: 'H3 switches camera set-ups on its own, following the [Shot n] timestamps in the prompt, within one generation.' },
+        video: { title: 'Video From a Single Frame', lead: 'Each clip starts from a Qwen‑Image 2.1 still as its first frame; H3 generates the motion and the sound.' },
+        image: { title: 'Stills', lead: 'Qwen‑Image 2.1 on the RTX 5080, about 26 s per still.' },
+      },
+      verticalSingles: { title: 'Generated Natively in 9:16', lead: '448×768, one generation each, with the full receipt.' },
+      showAll: (n) => `Show All (${n} More)`,
+      firstFrame: 'First frame',
+      firstFrameMeta: (seed, size, seconds) => `Qwen‑Image 2.1 · seed ${seed} · ${size} · ${seconds} end to end`,
+      showFirstFrame: 'Show First Frame and Its Prompt',
+      faceReference: (mirrored) => (mirrored ? 'face close-up (mirrored)' : 'face close-up'),
+      showReferences: 'Show Reference Images',
+      usedIn: 'Used in',
       filterLabel: 'Filter by type',
       all: 'All',
-      category: { film: 'Films', social: 'Social Cuts', image: 'Images', video: 'Video', character: 'Character', multishot: 'Multi-Shot' },
+      category: { film: 'Films', social: 'Social Cuts', image: 'Images', video: 'Video', character: 'Character', multishot: 'Multi-Shot', vertical: 'Vertical 9:16' },
       count: (n) => `${n} ${n === 1 ? 'result' : 'results'}`,
       more: (n) => `Show More (${n} Left)`,
       empty: 'No results of this type yet.',
@@ -671,12 +723,12 @@ export const SHOWCASE: Copy<ShowcaseCopy> = {
       title: 'About These Results',
       loudness: (loudest, quietest, rates) => `Web copy is loudness-normalized; the raw output is about ${loudest} to ${quietest} LUFS, AAC ${rates}.`,
       glyphs: 'Signs in some shots carry pseudo-text made up by the model, not real shop names or brands.',
-      cuts: (scale, mix) => `The trailer, the making-of and the vertical cuts frame the native clips (768×448, or 448×768 for vertical renders) at up to ${scale}× on a blurred, darkened copy of the same shot — resampling only (lanczos or bicubic), no super-resolution, no frame interpolation. They lay a Suno music bed (Music generated with Suno) under H3’s own sound, mastered to about ${mix} LUFS.`,
+      cuts: (scale, mix) => `Pieces whose card states a scale (the trailer, the making-of, Rooftop Courier and the vertical cuts) frame the native clips (768×448, or 448×768 for vertical renders) at up to ${scale}× on a blurred, darkened copy of the same shot — resampling only (lanczos or bicubic), no super-resolution, no frame interpolation. They lay a Suno music bed (Music generated with Suno) under H3’s own sound, mastered to about ${mix} LUFS.`,
       films: (mix) => `Films are cut from several generated shots outside the app with FFmpeg (cuts, dissolves; some shots are mirrored). Those marked “Music: Suno” lay a Suno music bed (Music generated with Suno) under H3’s own sound. Film mixes arrive mastered (about ${mix} LUFS) and are used on the web as delivered.`,
       items: [
         'All AI-generated: images by Qwen‑Image 2.1, clips and their sound by MiniMax H3, generated on the author’s machines through Phasyn Studio’s controller API (t2i‑pc, fl2va‑pc, ref2va‑pc). “The Courier” is an original character.',
         'Model licenses: MiniMax H3 Community License (territorial restrictions and acceptable-use policy); Qwen‑Image 2.1 is for research and non-commercial use. Model weights are not included.',
-        'Single results and films are shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. For the web, stills are converted to WebP; single-generation clips keep their original H.264 video stream, and only their audio is loudness-normalized.',
+        'Single results, and films whose card states no scale, are shown at native resolution, never upscaled: stills at 1152×672 (the character sheet at 768×1024), clips at 768×448 and 24 fps. For the web, stills are converted to WebP; single-generation clips keep their original H.264 video stream, and only their audio is loudness-normalized.',
         'Times are controller-observed end-to-end and step times. They leave out starting or switching models (image DiT 11.3 s, dit‑5080 45.9 s, Ref2VA DiT 40.6 s).',
         'Steps on different GPUs can run at the same time (video and audio decode, for example), so step times can add up to more than the end-to-end time.',
       ],

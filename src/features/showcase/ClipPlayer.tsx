@@ -34,6 +34,11 @@ interface ClipPlayerProps {
   priority?: boolean;
   /** Frame aspect (default: the item's own). A different aspect letterboxes the media instead of cropping it. */
   aspect?: number;
+  /**
+   * Muted ambient loop while on screen (the hero theatre). Without it the clip is media-on-play: poster and a play button,
+   * nothing downloaded until the visitor presses play, which starts it with sound.
+   */
+  ambient?: boolean;
   className?: string;
 }
 
@@ -42,7 +47,7 @@ interface ClipPlayerProps {
  * motion), a sound toggle that restarts the clip with the sound H3 generated, and a pause control (WCAG 2.2.2). Native
  * controls are the fallback before hydration and without JavaScript. The video downloads only when it starts playing.
  */
-export function ClipPlayer({ item, sizes, variant = 'compact', priority = false, aspect, className }: ClipPlayerProps) {
+export function ClipPlayer({ item, sizes, variant = 'compact', priority = false, aspect, ambient = false, className }: ClipPlayerProps) {
   const locale = useLocale();
   const copy = SHOWCASE[locale].player;
   const title = item.title[locale];
@@ -57,23 +62,32 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
   const [userPaused, setUserPaused] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [failed, setFailed] = useState(false);
+  // Media-on-play clips attach their source only once the visitor asks for them.
+  const [started, setStarted] = useState(false);
   const clip = item.media.clip;
+  const live = ambient || started;
   const image = item.media.image;
 
   // Ambient loop while visible; sound playback also stops when the clip leaves the screen.
   useEffect(() => {
     const video = videoRef.current;
     if (!video || !hydrated || failed) return;
-    const wantPlay = inView && !userPaused && (sound || !reducedMotion);
+    const wantPlay = live && inView && !userPaused && (ambient ? sound || !reducedMotion : true);
     if (wantPlay) void video.play().catch(() => {});
     else video.pause();
-  }, [hydrated, inView, userPaused, sound, reducedMotion, failed]);
+  }, [hydrated, inView, userPaused, sound, reducedMotion, failed, live, ambient]);
 
-  // Keep the element's muted state in step with sound ownership (another clip may take the sound away).
+  // Keep the element's muted state in step with sound ownership (another clip may take the sound away). A media-on-play
+  // clip that loses the sound pauses instead of carrying on silently.
   useEffect(() => {
     const video = videoRef.current;
-    if (video) video.muted = !sound;
-  }, [sound]);
+    if (!video) return;
+    video.muted = !sound;
+    if (!ambient && started && !sound && !video.paused) {
+      video.pause();
+      setUserPaused(true);
+    }
+  }, [sound, ambient, started]);
 
   useEffect(() => () => {
     if (soundOwner === id) setSoundOwner(null);
@@ -92,6 +106,12 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [playing]);
+
+  const start = () => {
+    setStarted(true);
+    setUserPaused(false);
+    setSoundOwner(id);
+  };
 
   const toggleSound = () => {
     const video = videoRef.current;
@@ -163,11 +183,11 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
         <video
           ref={videoRef}
           className={cn('absolute inset-0 size-full', fit)}
-          src={mediaUrl(clip)}
+          src={live ? mediaUrl(clip) : undefined}
           poster={image.src}
           preload="none"
           muted
-          loop
+          loop={ambient}
           playsInline
           // Native controls until the custom ones are live (no JavaScript, or before hydration).
           controls={!hydrated}
@@ -178,7 +198,20 @@ export function ClipPlayer({ item, sizes, variant = 'compact', priority = false,
         />
       )}
 
-      {hydrated && !failed ? (
+      {hydrated && !failed && !live ? (
+        <button
+          type="button"
+          onClick={start}
+          aria-label={`${copy.play}: ${title}`}
+          className="group/play absolute inset-0 grid place-items-center bg-[radial-gradient(closest-side,rgb(2_4_9_/_0),rgb(2_4_9_/_0.32))] focus-visible:outline-offset-[-6px]"
+        >
+          <span className="pressable grid size-14 place-items-center rounded-full bg-brand-gradient text-on-accent shadow-glow transition-transform group-hover/play:scale-105">
+            <Play className="ml-0.5 size-6 fill-current" aria-hidden />
+          </span>
+        </button>
+      ) : null}
+
+      {hydrated && !failed && live ? (
         <>
           <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-0.5 bg-[rgb(255_255_255_/_0.08)]">
             <span ref={barRef} className="block h-full origin-left scale-x-0 bg-[linear-gradient(90deg,var(--color-brand-cyan),var(--color-brand-blue))]" />

@@ -86,7 +86,7 @@ export function ShowcaseHero() {
           <div className="sc-in grid gap-4" style={at(400)}>
             <HudFrame label={hudLabel(current)} orbit innerClassName="bg-stage">
               <div key={current.slug} className="sc-swap" id="sc-theatre">
-                <ClipPlayer item={current} sizes="(min-width: 1024px) 58vw, 100vw" variant="full" priority className="rounded-xl" />
+                <ClipPlayer item={current} sizes="(min-width: 1024px) 58vw, 100vw" variant="full" ambient={!isEdit(current)} priority className="rounded-xl" />
                 <MediaBadge item={current} />
               </div>
             </HudFrame>
