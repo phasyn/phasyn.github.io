@@ -11,6 +11,8 @@ interface CommonCopy {
   menuOpen: string;
   menuClose: string;
   languageLabel: string;
+  /** The footer's language switcher (a distinct landmark name from the header's). */
+  footerLanguageLabel: string;
   sourceSoon: string;
   personalProject: string;
   footerTagline: string;
@@ -41,6 +43,7 @@ export const COMMON: Copy<CommonCopy> = {
     menuOpen: '開啟選單',
     menuClose: '關閉選單',
     languageLabel: '語言',
+    footerLanguageLabel: '頁尾語言切換',
     sourceSoon: '即將開放原始碼與架構說明',
     personalProject: '個人、非商業專案',
     footerTagline: '從分鏡，到成片。',
@@ -71,6 +74,7 @@ export const COMMON: Copy<CommonCopy> = {
     menuOpen: 'メニューを開く',
     menuClose: 'メニューを閉じる',
     languageLabel: '言語',
+    footerLanguageLabel: 'フッターの言語切り替え',
     sourceSoon: 'ソースコードとアーキテクチャ解説を近日公開',
     personalProject: '個人・非商用プロジェクト',
     footerTagline: '絵コンテから、完成映像まで。',
@@ -101,6 +105,7 @@ export const COMMON: Copy<CommonCopy> = {
     menuOpen: 'Open menu',
     menuClose: 'Close menu',
     languageLabel: 'Language',
+    footerLanguageLabel: 'Footer language',
     sourceSoon: 'Source code and architecture notes — coming soon',
     personalProject: 'Personal, non-commercial project',
     footerTagline: 'From storyboard to synthesis.',

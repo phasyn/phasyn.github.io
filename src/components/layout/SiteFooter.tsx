@@ -69,7 +69,7 @@ export function SiteFooter() {
               </a>
             </li>
           </ul>
-          <LanguageSwitcher full className="mt-3 justify-self-start" />
+          <LanguageSwitcher full label={copy.footerLanguageLabel} className="mt-3 justify-self-start" />
         </div>
       </div>
       <div className="site-container grid gap-2 border-t border-line-subtle py-6 text-caption text-fg-tertiary">

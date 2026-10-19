@@ -14,12 +14,15 @@ function remember(locale: Locale) {
   }
 }
 
-/** Plain links to the same page in each locale; works without JavaScript. */
-export function LanguageSwitcher({ className, full = false }: { className?: string; full?: boolean }) {
+/**
+ * Plain links to the same page in each locale; works without JavaScript. `label` names the landmark when the page has more
+ * than one switcher (header and footer must not both be called 語言 / 言語 / Language).
+ */
+export function LanguageSwitcher({ className, full = false, label }: { className?: string; full?: boolean; label?: string }) {
   const current = useLocale();
   const page = pageFromPath(useLocation().pathname);
   return (
-    <nav aria-label={commonCopy(current).languageLabel} className={cn('flex items-center gap-0.5 rounded-full border border-line bg-sunken/70 p-0.5', className)}>
+    <nav aria-label={label ?? commonCopy(current).languageLabel} className={cn('flex items-center gap-0.5 rounded-full border border-line bg-sunken/70 p-0.5', className)}>
       {LOCALES.map((locale) => {
         const active = locale === current;
         return (

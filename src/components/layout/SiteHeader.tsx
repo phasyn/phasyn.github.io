@@ -137,7 +137,8 @@ export function SiteHeader() {
             ))}
           </ul>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-            <LanguageSwitcher full />
+            {/* From 480 px the bar's own switcher is visible: one header language landmark at a time. */}
+            <LanguageSwitcher full className="sm:hidden" />
             <a href={LINKS.github} target="_blank" rel="noreferrer" className="inline-flex min-h-11 items-center gap-2 text-data text-fg-secondary no-underline hover:text-fg">
               <GitHubMark className="size-4" />
               GitHub
