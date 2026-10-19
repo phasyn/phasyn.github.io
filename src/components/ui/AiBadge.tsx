@@ -8,9 +8,10 @@ import type { Locale } from '../../site/config.ts';
  * - `h3`: video generated with MiniMax H3 (its Community License asks for "Powered by MiniMax H3"; its acceptable-use
  *   policy asks that generated content be clearly marked as machine-generated);
  * - `qwen`: image generated with Qwen-Image 2.1;
- * - `mixed`: screen recordings and films that contain generated media from both.
+ * - `mixed`: screen recordings and films that contain generated media from both;
+ * - `screen`: a real still capture of the app that visibly shows generated media (which captures: src/site/captures.ts).
  */
-export type AiBadgeVariant = 'h3' | 'qwen' | 'mixed';
+export type AiBadgeVariant = 'h3' | 'qwen' | 'mixed' | 'screen';
 
 /** "Powered by MiniMax H3" stays verbatim (English) in every locale. */
 const POWERED = 'Powered by MiniMax H3';
@@ -20,16 +21,19 @@ export const AI_BADGE_TEXT: Copy<Record<AiBadgeVariant, string>> = {
     h3: `AI 生成 · ${POWERED}`,
     qwen: 'AI 生成 · Qwen-Image 2.1',
     mixed: '含 AI 生成內容（MiniMax H3、Qwen-Image 2.1）',
+    screen: '實際畫面 · 含 AI 生成內容',
   },
   ja: {
     h3: `AI 生成 · ${POWERED}`,
     qwen: 'AI 生成 · Qwen-Image 2.1',
     mixed: 'AI 生成コンテンツを含みます（MiniMax H3・Qwen-Image 2.1）',
+    screen: '実際の画面 · AI 生成コンテンツを含みます',
   },
   en: {
     h3: `AI-generated · ${POWERED}`,
     qwen: 'AI-generated · Qwen-Image 2.1',
     mixed: 'Contains AI-generated content (MiniMax H3, Qwen-Image 2.1)',
+    screen: 'Real screen · contains AI-generated content',
   },
 };
 
