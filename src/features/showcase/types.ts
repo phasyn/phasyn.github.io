@@ -13,14 +13,14 @@ import type { Locale } from '../../site/config.ts';
  * `film` (cut from several generated shots, usually with a Suno music bed), `trailer` and `making-of` (landscape cuts),
  * `social` (vertical 9:16 cuts). Single results: `still`, `fl2va`, `ref2va`, `multishot`, `roundtrip`.
  */
-export type ShowcaseKind = 'film' | 'trailer' | 'social' | 'making-of' | 'still' | 'fl2va' | 'ref2va' | 'multishot' | 'roundtrip';
+export type ShowcaseKind = 'film' | 'trailer' | 'social' | 'making-of' | 'still' | 'fl2va' | 'ref2va' | 'multishot' | 'vertical' | 'roundtrip';
 
 /** Kinds that are edits of several runs (no single run, seed or step list). */
 export const EDIT_KINDS: readonly ShowcaseKind[] = ['film', 'trailer', 'social', 'making-of'];
 export type ShowcaseGrade = 'hero' | 'usable';
 
 /** Gallery groups. `film` and `social` get their own rows; the rest are the filters. Derived from `kind` unless overridden. */
-export type ShowcaseCategory = 'film' | 'social' | 'image' | 'video' | 'character' | 'multishot';
+export type ShowcaseCategory = 'film' | 'social' | 'image' | 'video' | 'character' | 'multishot' | 'vertical';
 
 /** Machines of the author's setup; `unknown` is shown as "placement not recorded" (never guessed). */
 export type MachineKey = 'gb10' | 'rtx5080' | 'rtx3060' | 'cpu' | 'unknown';
@@ -80,6 +80,25 @@ export interface ShowcaseItemJson {
   category?: ShowcaseCategory;
   /** Poster frame time for clips, seconds (default: 40 % of the clip). */
   posterAt?: number;
+  /** FL2VA: the Qwen-Image still the clip started from, with its own receipt (`prompt` names a file in the folder). */
+  firstFrame?: ShowcaseFirstFrameJson;
+  /** All reference images of a Ref2VA run (role, sha256, label; `slug` for a published item, `file` in the folder). */
+  references?: { role?: string; sha256?: string; label?: string; slug?: string; file?: string }[];
+}
+
+export interface ShowcaseFirstFrameJson {
+  source?: string;
+  runId?: string;
+  outputId?: string;
+  seed?: number | null;
+  width?: number;
+  height?: number;
+  ditEngine?: string;
+  endToEndSeconds?: number | null;
+  steps?: ShowcaseStepJson[];
+  createdAt?: string;
+  /** File name of the still's prompt in the item folder. */
+  prompt?: string;
 }
 
 export interface ShowcaseStep {
@@ -129,7 +148,28 @@ export interface ShowcaseReference {
   /** Slug of the item it came from, when that item is on the page. */
   slug?: string;
   image?: ShowcaseImage;
-  label?: string;
+}
+
+/** The Qwen-Image 2.1 still an FL2VA clip started from: its own run, receipt, prompt and image. */
+export interface ShowcaseFirstFrame {
+  runId: string;
+  seed: number | null;
+  width: number;
+  height: number;
+  ditEngine: string;
+  endToEndSeconds: number | null;
+  steps: readonly ShowcaseStep[];
+  prompt: string;
+  image: ShowcaseImage;
+}
+
+/** A further reference image of a Ref2VA run that is not a published item (e.g. a face close-up made with t2i-pc). */
+export interface ShowcaseExtraReference {
+  image: ShowcaseImage;
+  runId: string | null;
+  seed: number | null;
+  /** Flipped left-right before use (so details sit on the same side as in the character sheet). */
+  mirrored: boolean;
 }
 
 export interface ShowcaseShot {
@@ -164,6 +204,14 @@ export interface ShowcaseItem {
   /** Edited pieces with a Suno music bed under H3's own sound (from the edit record; credit "Music generated with Suno"). */
   music: boolean;
   reference: ShowcaseReference | null;
+  /** FL2VA: the first-frame still with its receipt, when the record has one. */
+  firstFrame: ShowcaseFirstFrame | null;
+  /** Ref2VA: reference images beyond the linked item (e.g. a mirrored face close-up). */
+  extraReferences: readonly ShowcaseExtraReference[];
+  /** Published films and cuts that use this run (matched by run id). */
+  usedIn: readonly string[];
+  /** Position in the hero theatre (scripts/showcase-curation.json), or null. */
+  featuredRank: number | null;
   grade: ShowcaseGrade;
   createdAt: string;
   /** The exact prompt sent to the model (English; shown with lang="en"). */
