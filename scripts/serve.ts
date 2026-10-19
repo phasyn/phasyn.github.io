@@ -48,6 +48,12 @@ createServer((req, res) => {
   const file = resolveFile(url.pathname);
   const target = file ?? join(root, '404.html');
   const status = file ? 200 : 404;
+  // A rebuild empties build/client for a moment: answer instead of crashing the preview.
+  if (!existsSync(target)) {
+    res.writeHead(503, { 'Content-Type': 'text/plain; charset=utf-8', 'Retry-After': '2' });
+    res.end('Rebuilding, try again in a moment.\n');
+    return;
+  }
   const type = TYPES[extname(target)] ?? 'application/octet-stream';
   const { size } = statSync(target);
   const range = req.headers.range?.match(/bytes=(\d*)-(\d*)/);
@@ -55,9 +61,9 @@ createServer((req, res) => {
     const start = range[1] ? Number(range[1]) : 0;
     const end = range[2] ? Math.min(Number(range[2]), size - 1) : size - 1;
     res.writeHead(206, { 'Content-Type': type, 'Content-Range': `bytes ${start}-${end}/${size}`, 'Accept-Ranges': 'bytes', 'Content-Length': end - start + 1 });
-    createReadStream(target, { start, end }).pipe(res);
+    createReadStream(target, { start, end }).on('error', () => res.destroy()).pipe(res);
     return;
   }
   res.writeHead(status, { 'Content-Type': type, 'Content-Length': size, 'Accept-Ranges': 'bytes' });
-  createReadStream(target).pipe(res);
+  createReadStream(target).on('error', () => res.destroy()).pipe(res);
 }).listen(port, '127.0.0.1', () => console.log(`preview: http://127.0.0.1:${port}/`));
