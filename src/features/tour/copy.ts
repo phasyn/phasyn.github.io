@@ -68,13 +68,13 @@ export const TOUR: Copy<TourCopy> = {
     hero: {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '看它真的跑起來。',
-      lead: '五個章節，都是在英文介面上的真實操作，只有等待機器運算的片段才加速。錄影製作中。',
-      stats: { chapters: '個章節', minutes: '分鐘（預計）', gpus: '顆 GPU', gpusSub: '兩台機器' },
+      lead: '五個章節，都是在英文介面上的真實操作，只有等待機器運算的片段才加速。',
+      stats: { chapters: '個章節', minutes: '分鐘', gpus: '顆 GPU', gpusSub: '兩台機器' },
       start: '從第 1 章開始',
       agent: '或交給 Agent',
       capture: '實際畫面：Image Studio 裡生成完成的 take',
     },
-    index: { heading: '章節', total: (chapters, minutes) => `共 ${chapters} 章 · 預計約 ${minutes} 分鐘` },
+    index: { heading: '章節', total: (chapters, minutes) => `共 ${chapters} 章 · 約 ${minutes} 分鐘` },
     chapter: {
       label: (n) => `第 ${n} 章`,
       planned: (time) => `預計 ${time}`,
@@ -190,7 +190,7 @@ export const TOUR: Copy<TourCopy> = {
     notes: {
       title: '關於這些錄影',
       items: [
-        '每一章都是英文介面上的真實操作，錄影製作中。等待的片段會加速或剪掉，時間一律寫明跑在哪台機器。',
+        '每一章都是英文介面上的真實操作。等待的片段會加速或剪掉，時間一律寫明跑在哪台機器。',
         '這裡展示的是圖片反推 Prompt；影片反推還沒有用真正的模型跑過，所以沒有收錄。',
         '一鍵替換角色（One-Click Character Swap）仍在測試中，不在這次的導覽裡。請只使用你擁有權利的素材，不要冒用真人身分。',
         '白底版本是把圖片放到白色背景上；真正的去背功能即將加入。',
@@ -208,13 +208,13 @@ export const TOUR: Copy<TourCopy> = {
     hero: {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: '実際の操作を、そのまま。',
-      lead: '全 5 章、英語 UI での実際の操作を、マシンの処理を待つ場面だけ早送りして収録します。録画は現在制作中です。',
-      stats: { chapters: '章', minutes: '分（予定）', gpus: 'GPU', gpusSub: '2 台のマシン' },
+      lead: '全 5 章、英語 UI での実際の操作を、マシンの処理を待つ場面だけ早送りして収録しました。',
+      stats: { chapters: '章', minutes: '分', gpus: 'GPU', gpusSub: '2 台のマシン' },
       start: '第 1 章から見る',
       agent: 'エージェントに任せる',
       capture: '実際の画面：Image Studio で生成を終えたテイク',
     },
-    index: { heading: '目次', total: (chapters, minutes) => `全 ${chapters} 章 · 約 ${minutes} 分（予定）` },
+    index: { heading: '目次', total: (chapters, minutes) => `全 ${chapters} 章 · 約 ${minutes} 分` },
     chapter: {
       label: (n) => `第 ${n} 章`,
       planned: (time) => `予定 ${time}`,
@@ -330,7 +330,7 @@ export const TOUR: Copy<TourCopy> = {
     notes: {
       title: 'この録画について',
       items: [
-        '各章は英語 UI での実際の操作です（録画は制作中）。待ち時間は早送りかカットし、時間には必ず実行したマシンを記します。',
+        '各章は英語 UI での実際の操作です。待ち時間は早送りかカットし、時間には必ず実行したマシンを記します。',
         '紹介しているのは画像からの逆引きです。動画からの逆引きは、まだ実際のモデルで動かしていないため収録していません。',
         'One-Click Character Swap（ワンクリックのキャラクター差し替え）はテスト中のため、このガイドには含めていません。権利を持つ素材だけを使い、実在の人物になりすまさないでください。',
         '白背景のコピーは、画像を白い背景に置いたものです。背景除去そのものは近日追加予定です。',
@@ -348,13 +348,13 @@ export const TOUR: Copy<TourCopy> = {
     hero: {
       eyebrow: 'TOUR · 5 CHAPTERS · REAL SCREENS',
       title: 'See It Work. For Real.',
-      lead: 'Five chapters of real sessions in the English\u00a0UI, sped up only where the machines are working. The recordings are still being made.',
-      stats: { chapters: 'chapters', minutes: 'minutes (planned)', gpus: 'GPUs', gpusSub: 'on 2 machines' },
+      lead: 'Five chapters of real sessions in the English\u00a0UI, sped up only where the machines are working.',
+      stats: { chapters: 'chapters', minutes: 'minutes', gpus: 'GPUs', gpusSub: 'on 2 machines' },
       start: 'Start Chapter 1',
       agent: 'Or Hand It to an Agent',
       capture: 'Real screen: a finished take in Image Studio',
     },
-    index: { heading: 'Chapters', total: (chapters, minutes) => `${chapters} chapters · about ${minutes}\u00a0min (planned)` },
+    index: { heading: 'Chapters', total: (chapters, minutes) => `${chapters} chapters · about ${minutes}\u00a0min` },
     chapter: {
       label: (n) => `Chapter ${n}`,
       planned: (time) => `≈ ${time} (planned)`,
@@ -470,7 +470,7 @@ export const TOUR: Copy<TourCopy> = {
     notes: {
       title: 'About These Recordings',
       items: [
-        'Each chapter is a real session in the English UI; the recordings are still being made. Waits are sped up or cut, and every time names the machine that ran it.',
+        'Each chapter is a real session in the English UI. Waits are sped up or cut, and every time names the machine that ran it.',
         'Image to prompt is shown; video to prompt isn’t, because it hasn’t run on the real model yet.',
         'One-Click Character Swap is in testing and isn’t part of this tour. Only use material you have the rights to, and never impersonate a real person.',
         'The white-background copy places the image on white; background removal itself is coming.',

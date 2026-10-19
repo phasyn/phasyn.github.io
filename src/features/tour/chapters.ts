@@ -139,11 +139,14 @@ export const CHAPTERS: readonly ChapterSpec[] = [
     number: 5,
     media: '05-components-records',
     poster: '/images/tour/v5.webp',
-    length: 120,
+    // Final master studio/out/final/tour/05-components-records.mp4: 89.3 s, 1920×1080, 30 fps (ffprobe).
+    length: 89.3,
+    recorded: true,
     steps: [
       { anchor: 'Every render is a pipeline you can see.' },
       { anchor: 'Swap the DiT for another variant.', badge: { devices: ['rtx5080'], measure: range(TODAY.start.ref2vaDit, TODAY.start.fl2vaDit) } },
-      { anchor: 'Set precision per component,' },
+      // The cue reads "Set precision per component;" (docs/film/captions.json), so the anchor stops before the punctuation.
+      { anchor: 'Set precision per component' },
       { anchor: 'See each step, and where it ran.' },
       { anchor: 'Unknown stays unknown, never zero.', badge: { measure: { values: [{ value: COUNTS.recorderMetrics, decimals: 0 }] } } },
       { anchor: 'Compare up to eight recordings.' },
