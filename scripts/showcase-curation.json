@@ -1,0 +1,19 @@
+{
+  "$comment": "Editorial choices for the Showcase, applied by scripts/import-showcase.ts. `exclude`: results not published, with the reason (they stay in their folders). `featured`: the hero theatre, in order (slugs of films, cuts or single results; missing slugs are skipped). Grades and every fact come from item.json; only these two decisions are made here.",
+  "exclude": {
+    "fl2va-dawn-launch": "usable grade: the rocket is small in frame and leaves it in the second half",
+    "fl2va-octopus-tea": "usable grade: an arm turns soft around 4–5 s",
+    "fl2va-raindrop-orchestra": "usable grade: the melody it is about has not been checked by ear",
+    "vertical-courier-rain-run": "usable grade: simple motion and the heaviest web limiting (8.9 dB); the native 9:16 Courier is shown by the lantern release"
+  },
+  "featured": [
+    "rooftop-courier",
+    "trailer-30s",
+    "showreel",
+    "multishot-snow-fox",
+    "fl2va-lightning-jar",
+    "courier-frame-3-door",
+    "dragon-night-market",
+    "fl2va-elevator-sea"
+  ]
+}

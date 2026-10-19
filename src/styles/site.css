@@ -1,0 +1,592 @@
+/*
+ * Marketing-site layer on top of the App's token owner (tokens.css, unchanged copy of the brand
+ * system's tokens.tailwind.css). Everything here is a "brand moment" extension the App does not need:
+ * display type scale, page layout, reveal-on-scroll, and the few site-only effects. Tokens only — no
+ * stray colours outside rgb() alpha variants of brand values.
+ */
+
+@theme {
+  /* Display scale for marketing pages (the App tops out at text-title 24/32). */
+  --text-hero: clamp(2.75rem, 1.35rem + 5.6vw, 6.25rem);
+  --text-hero--line-height: 1.03;
+  --text-hero--font-weight: 650;
+  --text-display: clamp(2.25rem, 1.4rem + 3.4vw, 4.25rem);
+  --text-display--line-height: 1.07;
+  --text-display--font-weight: 650;
+  --text-headline: clamp(1.625rem, 1.2rem + 1.6vw, 2.625rem);
+  --text-headline--line-height: 1.16;
+  --text-headline--font-weight: 600;
+  --text-lead: clamp(1.0625rem, 0.96rem + 0.42vw, 1.3125rem);
+  --text-lead--line-height: 1.6;
+  --text-eyebrow: 0.75rem;
+  --text-eyebrow--line-height: 1rem;
+  --text-eyebrow--font-weight: 600;
+  --radius-3xl: 22px;
+}
+
+/* Latin display type tightens slightly; CJK never gets letter-spacing (DESIGN_GUIDE §8). */
+:root {
+  --display-tracking: -0.022em;
+  --site-header-h: 3.5rem;
+  --site-gutter: clamp(1rem, 0.6rem + 2vw, 2.5rem);
+  --site-max: 76rem;
+  /*
+   * Above-the-fold entrances wait for the first-visit splash; 0 when it is skipped or motion is reduced. Equals HOLD_MS
+   * in IntroSplash.tsx (FE-04): entrances start at 0.7 s and the overlay is gone at 1 s, so a CTA whose own entrance
+   * offset is ≤ ~300 ms is usable by ~1.2 s.
+   */
+  --fx-intro-delay: 700ms;
+}
+
+/*
+ * Large desktops (≥ 1920 px, FE-17): the content column widens and the lead grows a step. Both start from their 1920 px
+ * values and grow with the viewport (column 76 → 84 rem at ~2430 px, lead 21 → 24 px at 2240 px), so nothing jumps.
+ */
+@media (min-width: 120rem) {
+  :root {
+    --site-max: min(84rem, 76rem + (100vw - 120rem) / 4);
+    --text-lead: min(1.5rem, 0.1875rem + 0.9375vw);
+  }
+}
+
+:root.fx-intro-skip {
+  --fx-intro-delay: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --fx-intro-delay: 0ms;
+  }
+}
+
+:root:lang(zh-Hant),
+:root:lang(ja) {
+  --display-tracking: 0;
+}
+
+@utility tracking-display {
+  letter-spacing: var(--display-tracking);
+}
+
+/*
+ * Balanced headline wrapping. CJK headlines only break at punctuation or spaces (keep-all), so words such as 產品 or
+ * 哪台 never split; `anywhere` is the safety valve when a phrase is wider than the line. Japanese additionally uses
+ * phrase-aware breaking where supported.
+ */
+@utility text-balance-cjk {
+  text-wrap: balance;
+  line-break: strict;
+  :root:lang(zh-Hant) &,
+  :root:lang(ja) & {
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+  }
+  :root:lang(ja) & {
+    word-break: auto-phrase;
+  }
+}
+
+@utility site-container {
+  width: 100%;
+  max-width: calc(var(--site-max) + 2 * var(--site-gutter));
+  margin-inline: auto;
+  padding-inline: var(--site-gutter);
+}
+
+/* Section rhythm (FE-17): 64 px on phones up to 128 px from ~1600 px, so a desktop screen is not half empty nebula. */
+@utility site-section {
+  padding-block: clamp(4rem, 2rem + 6vw, 8rem);
+}
+
+/* Short wide-tracked Latin labels only (PHASE · FRAME · SYNTHESIS); never on CJK text. */
+@utility eyebrow {
+  font-size: var(--text-eyebrow);
+  line-height: var(--text-eyebrow--line-height);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
+/*
+ * Copy over the nebula or other FX (FE-02): a soft canvas-coloured halo that is invisible on dark areas and keeps text
+ * readable when a bright aurora band passes behind it. For solid-colour text only (it would darken gradient-clipped text).
+ */
+@utility text-on-fx {
+  text-shadow:
+    0 1px 2px rgb(7 11 20 / 0.85),
+    0 0 24px rgb(7 11 20 / 0.7);
+}
+
+/* Soft brand glow behind hero objects (brand moment only). */
+@utility glow-backdrop {
+  background:
+    radial-gradient(closest-side, rgb(62 137 255 / 0.22), transparent 70%),
+    radial-gradient(60% 50% at 70% 60%, rgb(171 123 255 / 0.14), transparent 70%);
+}
+
+/* Fine film grain to keep large gradients from banding. */
+@utility grain {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+  }
+}
+
+/*
+ * Reveal on scroll without JavaScript: content is visible in the prerendered HTML and only animates
+ * where scroll-driven animations exist and motion is allowed. The range is a fixed 240 px of travel after the top edge
+ * enters (FE-09), so a tall card is fully opaque as soon as its top is 240 px into the viewport instead of staying
+ * half-transparent until it reaches the middle of the screen.
+ */
+@keyframes site-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@utility reveal {
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: site-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 240px;
+    }
+  }
+}
+
+/*
+ * FX layer (BRIEF §4.1): game-grade motion in the brand light. Every effect is decorative, ends in the readable state,
+ * and collapses to the static state under prefers-reduced-motion.
+ */
+@property --fx-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes fx-char-in {
+  0% {
+    opacity: 0;
+    transform: translateY(0.42em) scale(0.94);
+    filter: blur(10px);
+    text-shadow: 0 0 28px rgb(73 207 255 / 0.9);
+  }
+  60% {
+    opacity: 1;
+    filter: blur(0);
+    text-shadow: 0 0 22px rgb(114 125 255 / 0.65);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+    text-shadow: 0 0 0 rgb(114 125 255 / 0);
+  }
+}
+
+@keyframes fx-sweep {
+  from {
+    background-position: 160% 0;
+  }
+  to {
+    background-position: -60% 0;
+  }
+}
+
+@keyframes fx-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    /* The line is 22 % of its frame, so 460 % of its own height crosses the whole frame. */
+    transform: translateY(460%);
+    opacity: 0;
+  }
+}
+
+/*
+ * Animates the registered --fx-angle (style recalc and repaint every frame on the main thread). Kept for short hover/focus
+ * effects in page CSS; never for always-on loops: rotate an element with fx-rotate instead (see fx-orbit).
+ */
+@keyframes fx-spin {
+  to {
+    --fx-angle: 360deg;
+  }
+}
+
+/* Compositor-only turn (transform), for always-on loops such as the orbit light. */
+@keyframes fx-rotate {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes fx-ticker {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes fx-pulse-line {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fx-intro-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+@keyframes fx-intro-mark {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) rotate(-8deg);
+    filter: blur(16px) brightness(2);
+  }
+  45% {
+    opacity: 1;
+    transform: scale(1.04) rotate(0);
+    filter: blur(0) brightness(1.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes fx-intro-line {
+  0% {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+@keyframes fx-intro-out {
+  0%,
+  70% {
+    opacity: 1;
+    visibility: visible;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* The visitor dismissed the splash during its hold (pointer, key, wheel or touch): a short fade instead of a cut. */
+@keyframes fx-intro-leave {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+/* Per-character reveal: `fx-chars` holds spans with --d (delay). `data-fx-play` starts it. */
+@utility fx-chars {
+  & .fx-char {
+    display: inline-block;
+    white-space: pre;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &[data-fx-state="armed"] .fx-char {
+      opacity: 0;
+    }
+    &[data-fx-state="play"] .fx-char {
+      animation: fx-char-in 900ms var(--ease-enter) both;
+      animation-delay: var(--d, 0ms);
+    }
+  }
+}
+
+/*
+ * A tinted light pass across text. Apply to an aria-hidden duplicate laid exactly over the real text (same font,
+ * width and wrapping); the drop-shadow makes the band read as light even over white type.
+ */
+@utility fx-sweep-text {
+  background-image: linear-gradient(100deg, transparent 38%, rgb(160 232 255 / 0.95) 47%, rgb(171 123 255 / 0.85) 53%, transparent 62%);
+  background-size: 250% 100%;
+  background-position: 160% 0;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 10px rgb(73 207 255 / 0.55));
+  pointer-events: none;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fx-sweep 2.4s linear calc(var(--fx-intro-delay) + var(--fx-sweep-delay, 600ms)) both;
+  }
+}
+
+/*
+ * Orbiting light on the 1 px edge of a rounded box (FE-05): put `<span aria-hidden class="fx-orbit" />` inside a positioned
+ * (and isolated) rounded box. The span is the ring (a mask leaves only its 1 px padding); its ::before is a conic-gradient
+ * square at least as large as the box diagonal (container-query units) that turns with `transform`, so the compositor runs
+ * it without style, layout or paint work on the main thread.
+ */
+@utility fx-orbit {
+  position: absolute;
+  inset: -1px;
+  z-index: 1;
+  border-radius: inherit;
+  padding: 1px;
+  pointer-events: none;
+  container-type: size;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: calc(100cqw + 100cqh);
+    width: hypot(100cqw, 100cqh);
+    aspect-ratio: 1;
+    translate: -50% -50%;
+    background: conic-gradient(transparent 0deg, var(--color-brand-cyan) 40deg, var(--color-brand-violet) 90deg, transparent 140deg, transparent 360deg);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: fx-rotate 5s linear infinite;
+    }
+  }
+}
+
+/*
+ * Legacy host-pseudo version of the orbit light (animates --fx-angle on the main thread). Prefer an fx-orbit span; this
+ * stays so existing markup keeps working.
+ */
+@utility fx-orbit-border {
+  position: relative;
+  isolation: isolate;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px;
+    background: conic-gradient(from var(--fx-angle), transparent 0deg, var(--color-brand-cyan) 40deg, var(--color-brand-violet) 90deg, transparent 140deg, transparent 360deg);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    pointer-events: none;
+    z-index: 1;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    &::before {
+      animation: fx-spin 5s linear infinite;
+    }
+  }
+}
+
+@utility fx-ticker-track {
+  display: flex;
+  width: max-content;
+  @media (prefers-reduced-motion: no-preference) {
+    animation: fx-ticker var(--fx-ticker-duration, 48s) linear infinite;
+    &:hover {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@utility fx-scanline {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 22%;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgb(73 207 255 / 0.08) 70%, rgb(73 207 255 / 0.35) 98%, transparent);
+  display: none;
+  @media (prefers-reduced-motion: no-preference) {
+    display: block;
+    animation: fx-scan var(--fx-scan-duration, 5.5s) var(--ease-standard) infinite;
+  }
+}
+
+/*
+ * Film player seek bar (FilmPlayer): a 4 px track with the brand progress inside a 20 px hit area, 6 px in a 44 px hit area
+ * with a larger thumb on touch screens (FE-16). `--film-progress` (0–100 %) is set inline; progress is linear, no springs.
+ */
+@utility film-range {
+  appearance: none;
+  height: 1.25rem;
+  background: transparent;
+  cursor: pointer;
+  --film-track: linear-gradient(90deg, var(--color-brand-cyan), var(--color-brand-blue) var(--film-progress, 0%), rgb(255 255 255 / 0.16) var(--film-progress, 0%));
+  &::-webkit-slider-runnable-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-moz-range-track {
+    height: 4px;
+    border-radius: 9999px;
+    background: var(--film-track);
+  }
+  &::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    margin-top: -4px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  &::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    border: 0;
+    border-radius: 9999px;
+    background: var(--color-playhead);
+  }
+  @media (pointer: coarse) {
+    height: 2.75rem;
+    &::-webkit-slider-runnable-track {
+      height: 6px;
+    }
+    &::-moz-range-track {
+      height: 6px;
+    }
+    &::-webkit-slider-thumb {
+      width: 20px;
+      height: 20px;
+      margin-top: -7px;
+    }
+    &::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}
+
+/*
+ * First-visit splash (see components/fx/IntroSplash.tsx): 1 s in all, holding 700 ms (= --fx-intro-delay) before the
+ * fade. Hidden before paint when seen in the last 7 days; `fx-intro-leaving` is the visitor's skip during the hold.
+ */
+@utility fx-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(60% 50% at 50% 50%, rgb(23 33 57 / 0.95), var(--color-stage) 70%);
+  animation: fx-intro-out 1000ms var(--ease-exit) forwards;
+  pointer-events: none;
+  :root.fx-intro-skip & {
+    display: none;
+  }
+  :root.fx-intro-skip.fx-intro-leaving & {
+    display: grid;
+    animation: fx-intro-leave 160ms var(--ease-exit) forwards;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    display: none;
+  }
+}
+
+@layer base {
+  html {
+    /*
+     * Safety net (FE-01): decorative overflow (light sweeps, glows) must never widen the mobile layout viewport.
+     * `clip` on the root is applied to the viewport as `hidden`; body keeps its own `clip` below.
+     */
+    overflow-x: clip;
+    scroll-padding-top: calc(var(--site-header-h) + 1rem);
+  }
+
+  /*
+   * The page background lives on <html> (first paint #070b14); body stays transparent so the fixed FX backdrop
+   * (z-index −10, painted after the root background) shows through.
+   */
+  body {
+    overflow-x: clip;
+    background-color: transparent;
+  }
+
+  /* Marketing pages use a larger reading size than the App's 14 px body. */
+  main {
+    font-size: var(--text-reading);
+    line-height: var(--text-reading--line-height);
+  }
+
+  /* No single-character last lines (「行。」) in running text. */
+  main p,
+  main li {
+    text-wrap: pretty;
+  }
+
+  /* CJK running text: no small kana, prolonged sound marks or closing punctuation at a line start (kinsoku). */
+  :root:lang(ja) main :is(p, li, dd, figcaption),
+  :root:lang(zh-Hant) main :is(p, li, dd, figcaption) {
+    line-break: strict;
+  }
+
+  /*
+   * Japanese running text breaks between phrases (同じ, 記録 never split) where the browser supports auto-phrase (FE-07);
+   * `break-word` only splits a phrase that cannot fit a line at all and leaves min-content sizes alone.
+   */
+  :root:lang(ja) main :is(p, li, dd, figcaption) {
+    word-break: auto-phrase;
+    overflow-wrap: break-word;
+  }
+
+  /* Japanese card and section headings outside RevealText keep phrases whole where the browser supports it. */
+  :root:lang(ja) main :is(h3, h4) {
+    word-break: auto-phrase;
+    overflow-wrap: anywhere;
+  }
+}
+
+/*
+ * Page blocks far from the viewport pause their CSS animations (FE-05; the layout sets `data-offscreen` with an
+ * IntersectionObserver, half a viewport ahead). `!important` because utilities and page CSS set play-state through the
+ * `animation` shorthand. Scroll-driven animations pick up the scroll position again when they resume.
+ */
+[data-offscreen],
+[data-offscreen]::before,
+[data-offscreen]::after,
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}

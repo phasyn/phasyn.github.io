@@ -1,0 +1,954 @@
+/*
+ * PHASYN Studio — Tailwind v4 版（tokens.tailwind.css）＝ App 的 apps/frontend/src/index.css 原文，一字未改。
+ * 來源：apps/frontend/src/index.css @ 46a411a（index.css 最後變更 1959471；repo DennySORA/phasyn-studio），2026-10-18 以 tools/gen_tokens.py 產生。
+ * 不要手改這個檔：index.css 改了就重跑產生器。名稱與 App（Tailwind v4 @theme）完全相同。
+ * 用法：Tailwind v4 專案把它當成唯一的 token owner（取代你的主要 CSS 入口）；另外要把自訂 utility 登記到 tailwind-merge
+ * （見 SNIPPETS.md 的 lib/cn.ts），否則 cn() 會把 bg-brand-gradient、material-* 等誤當成顏色而合併掉。
+ * 注意：@theme 以 --color-*: initial 清掉了 Tailwind 預設調色盤，white／black／slate… 這些名稱都不存在。
+ */
+@import "tailwindcss";
+
+/*
+ * Phasyn Studio 唯一的設計 token owner（固定 dark，沒有 light/system 分支或主題切換）。共用契約：round6 DESIGN_CONTRACT（含 v2 增補）。
+ * 方向：深空海軍藍底＋單一品牌簽名：青→藍→鳶尾藍→紫（取樣自標誌）；質感像 macOS App——分層的半透明材質（只在側欄與浮層）、
+ * 柔和的多層陰影、連續圓角、出現／移動／回應都用可中斷的彈簧動作；內容面板、表格、表單、檢視器維持實心與清晰。
+ * 既有 token 名稱全部保留（只改數值）。新增名稱：rail、brand-cyan／blue／iris／violet、brand-soft、bg-brand-gradient、
+ * bg-brand-gradient-soft、bg-action-gradient、text-brand-gradient、border-brand-gradient、material-sidebar／popover／sheet／hud、
+ * shadow-glow、shadow-glow-sm、shadow-window、shadow-popover、animate-shimmer、animate-glow-pulse、animate-rise-in、pressable、
+ * stagger、--ease-spring-*／--duration-spring-*。
+ * 對比（WCAG 2.x，sRGB 計算，含 brand-soft 疊在 surface／raised 上；tools/contrast.py）：fg ≥ 12、fg-secondary ≥ 7.9、
+ * fg-tertiary ≥ 5.4、action-fg ≥ 6.4、各語意色 ≥ 6；line-control（必要控制邊界）≥ 3.5；focus ≥ 9；
+ * 白字在 action 深色漸層三個色標上 ≥ 5.1（主要按鈕）；on-accent 深色字在亮色漸層四個色標上 ≥ 5.7。
+ * `dark:` variant 綁定在 index.html 靜態的 data-theme 標記上，不跟隨作業系統偏好。
+ */
+@custom-variant dark (&:where([data-theme="noir"], [data-theme="noir"] *));
+
+@theme {
+  --color-*: initial;
+  /* 表面：rail（側欄實心後備）＜canvas（App 底）＜sunken（輸入、程式碼）＜surface（面板）＜raised（浮起、hover）＜overlay（浮層）。 */
+  --color-canvas: #070b14;
+  --color-rail: #050810;
+  --color-sunken: #04060c;
+  --color-surface: #0b1120;
+  --color-raised: #121a2d;
+  --color-overlay: #172139;
+  --color-selection: #17284d;
+  --color-line-subtle: #162038;
+  --color-line: #222e4a;
+  --color-line-strong: #34446c;
+  --color-line-control: #6d7ca6;
+  --color-fg: #eef3ff;
+  --color-fg-secondary: #b5bfd9;
+  --color-fg-tertiary: #929ec0;
+  --color-fg-disabled: #5d6889;
+  /* 品牌漸層四個色標（取樣自標誌：青、藍、鳶尾藍、紫）與低透明度的品牌底色（選取、目前項目）。 */
+  --color-brand-cyan: #49cfff;
+  --color-brand-blue: #3e89ff;
+  --color-brand-iris: #727dff;
+  --color-brand-violet: #ab7bff;
+  --color-brand-soft: rgb(62 137 255 / 0.14);
+  /*
+   * 操作色系：action＝深品牌藍（指示線、勾選、拖曳把手；主要按鈕另用 bg-action-gradient＋白字）；action-hover／active 是
+   * 亮一階／深一階；action-fg＝連結與目前項目圖示（淺色）；on-accent＝亮色填色上的深色字。
+   */
+  --color-action: #3a78f2;
+  --color-action-hover: #5a90ff;
+  --color-action-active: #2767de;
+  --color-on-accent: #050912;
+  --color-action-fg: #8fb0ff;
+  /* 焦點框用品牌青（與選取的藍底、各狀態色都不同）。 */
+  --color-focus: #5fd6ff;
+  /* 語意色：只標事實（狀態、類型），與品牌漸層區分；一律搭配文字或圖示。 */
+  --color-info: #74c2ff;
+  --color-entity: #c3a3ff;
+  --color-file: #6cd8ca;
+  --color-success: #5bd69a;
+  --color-warning: #ebc07a;
+  --color-danger: #f48792;
+  --color-danger-fill: #f7a3ab;
+  /*
+   * 圖表類別色（資料標記專用，不用於文字、狀態或操作）：dataviz 參考調色盤 dark 步階的前三個，固定順序指派。
+   * 甘特圖的任兩段都可能相鄰，所以以 validate_palette.js --pairs all 驗證：三色相 CVD ΔE ≥ 9.4、一般視覺 ΔE ≥ 20.9、
+   * 對比 ≥ 3:1（surface #0b1120 比原本更深，對比只會更高）；中性灰（協調開銷）數值另有 tooltip 與表格可讀。
+   */
+  --color-series-1: #3987e5;
+  --color-series-2: #d95926;
+  --color-series-3: #199e70;
+  --color-series-neutral: #5e6672;
+  /*
+   * 媒體編輯角色（Studio）：監看器黑場讓影像顏色不受面板色偏影響；影片片段取品牌藍紫、音訊片段取品牌青，
+   * 片段底色是深色（文字仍用 fg）；播放頭用品牌青；裁切與 in/out 用 warning 琥珀。
+   */
+  --color-stage: #020409;
+  --color-clip-video: #1c2152;
+  --color-clip-video-edge: #727dff;
+  --color-clip-audio: #0d3140;
+  --color-clip-audio-edge: #2fbcd4;
+  --color-playhead: #6fe3ff;
+  --color-trim: #ebc07a;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", "PingFang TC", "Noto Sans TC", "Microsoft JhengHei",
+    system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --text-*: initial;
+  --text-title: 24px;
+  --text-title--line-height: 32px;
+  --text-title--font-weight: 600;
+  --text-page: 20px;
+  --text-page--line-height: 28px;
+  --text-page--font-weight: 600;
+  --text-section: 16px;
+  --text-section--line-height: 24px;
+  --text-body: 14px;
+  --text-body--line-height: 22px;
+  --text-data: 13px;
+  --text-data--line-height: 20px;
+  --text-caption: 12px;
+  --text-caption--line-height: 18px;
+  --text-reading: 15px;
+  --text-reading--line-height: 26px;
+  --text-metric: 20px;
+  --text-metric--line-height: 28px;
+
+  /* 圓角：控制 8（md）、面板 12（lg）、對話框／視窗 14（xl）、圖塊 16（2xl）、膠囊 full。 */
+  --radius-*: initial;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-full: 9999px;
+
+  /*
+   * 陰影：edge／raised 是面板的中性結構陰影；overlay／popover（選單、提示、通知）與 window（對話框、側欄單）是多層柔和陰影；
+   * glow／glow-sm 是品牌光暈（藍紫＋一點青），只給主要按鈕 hover／焦點、目前導覽、播放頭、生成中的預覽框。
+   */
+  --shadow-*: initial;
+  --shadow-raised: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-edge: inset 0 1px 0 rgb(255 255 255 / 0.04);
+  --shadow-overlay: 0 18px 48px rgb(0 0 0 / 0.5), 0 2px 8px rgb(0 0 0 / 0.3);
+  --shadow-popover: 0 12px 36px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.28);
+  --shadow-window: inset 0 0 0 0.5px rgb(255 255 255 / 0.06), 0 24px 72px rgb(0 0 0 / 0.55), 0 2px 8px rgb(0 0 0 / 0.3);
+  --shadow-glow-sm: 0 0 0 1px rgb(100 140 255 / 0.38), 0 4px 16px -4px rgb(62 137 255 / 0.6);
+  --shadow-glow: 0 0 0 1px rgb(130 150 255 / 0.42), 0 10px 32px -6px rgb(114 125 255 / 0.55), 0 0 28px -6px rgb(73 207 255 / 0.4);
+
+  --breakpoint-*: initial;
+  --breakpoint-sm: 30rem; /* 480px */
+  --breakpoint-md: 52.5rem; /* 840px：雙欄起點；更窄時側欄改成抽屜 */
+  --breakpoint-lg: 80rem; /* 1280px：Inspector 欄位起點 */
+  --breakpoint-xl: 90rem; /* 1440px：320px Inspector */
+
+  /* Tailwind transition-* utility 沒寫 duration／ease 時用動作 token。 */
+  --default-transition-duration: var(--duration-fast);
+  --default-transition-timing-function: var(--ease-standard);
+
+  /*
+   * 動畫：進場用彈簧（不保留結束狀態；stagger 的延遲期間以 backwards 套用起點）、出場 140 ms ease-exit 並保留（forwards），
+   * 避免卸載前閃回原樣。keyframes 在下方（一律輸出）。
+   */
+  --animate-*: initial;
+  --animate-fade-in: fade-in var(--duration-base) var(--ease-enter);
+  --animate-fade-out: fade-out var(--duration-exit) var(--ease-exit) forwards;
+  --animate-pop-in: pop-in var(--duration-spring-snappy) var(--ease-spring-snappy) backwards;
+  --animate-dialog-in: dialog-in var(--duration-spring-smooth) var(--ease-spring-smooth) backwards;
+  --animate-dialog-out: dialog-out var(--duration-exit) var(--ease-exit) forwards;
+  --animate-sheet-in: sheet-in var(--duration-spring-smooth) var(--ease-spring-smooth) backwards;
+  --animate-sheet-out: sheet-out var(--duration-base) var(--ease-exit) forwards;
+  --animate-drawer-in: drawer-in var(--duration-spring-smooth) var(--ease-spring-smooth) backwards;
+  --animate-drawer-out: drawer-out var(--duration-base) var(--ease-exit) forwards;
+  --animate-toast-in: toast-in var(--duration-spring-bouncy) var(--ease-spring-bouncy) backwards;
+  --animate-toast-out: toast-out var(--duration-exit) var(--ease-exit) forwards;
+  --animate-reveal: reveal var(--duration-spring-snappy) var(--ease-spring-snappy);
+  --animate-spin: spin 1s linear infinite;
+  /* 生成中：進度條上移動的高光（只在含 shimmer 圖層的背景上可見：bg-brand-gradient、bg-brand-gradient-soft、bg-action-gradient、.skeleton）。 */
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  /* 生成中的預覽框：慢速光暈呼吸（2.4 s；只改 box-shadow，不改內容透明度）。 */
+  --animate-glow-pulse: glow-pulse 2.4s ease-in-out infinite;
+}
+
+/*
+ * 頁面／面板／清單項目進場：淡入＋上移 8 px＋0.985→1，smooth 彈簧。延遲寫在動畫本身（--i × 24 ms，最多第 10 項；沒有 --i
+ * 時 0），所以 `stagger` 與 `animate-rise-in`（含 motion-safe: 前綴）不論 class 順序都正確；backwards＝延遲期間停在起點。
+ * 用 @theme inline：值直接寫進 .animate-rise-in，var(--i) 才會在每個元素上解析（寫在 :root 的變數會在 :root 就被代換成 0）。
+ */
+@theme inline {
+  --animate-rise-in: rise-in var(--duration-spring-smooth) var(--ease-spring-smooth) calc(min(var(--i, 0), 10) * 24ms) backwards;
+}
+
+/*
+ * 動作 token（唯一來源；CSS 與 WAAPI〔components/ui/motion.ts 讀 computed style〕共用，所以一律輸出）。
+ *   fast  120 ms：狀態色、底色、邊框（hover／選取）、焦點框出現。
+ *   base  180 ms：一般淡入、側欄單出場。
+ *   slow  240 ms：保留給舊呼叫端。
+ *   exit  140 ms：對話框、遮罩、通知、選單出場（ease-exit）。
+ *   spring-smooth 620 ms：面板、對話框、側欄單、換頁、側欄收合、Inspector 滑入（不回彈）。
+ *   spring-snappy 440 ms：選單、彈出、分頁滑塊、開關、指示線、按下放開（極小回彈）。
+ *   spring-bouncy 720 ms：通知進場、成功打勾、拖放落定、圖塊 hover（明顯回彈）。
+ *   shift 4 px＝內容與選單的位移上限；shift-panel 8 px＝面板、頁面從邊緣或下方進場。
+ * 彈簧是 CSS linear() 取樣（可中斷：過場中途改變目標會從目前位置接續）；播放頭與進度條一律線性移動。
+ * 品牌漸層（--gradient-*）：brand＝青→藍→鳶尾→紫（亮色：筆畫、目前標記、進度、播放頭、焦點光暈）；brand-soft＝同色 16%；
+ * action＝深色漸層（實心主要按鈕，白字）；space＝品牌時刻的深空光暈背景。
+ * 減少動態（prefers-reduced-motion: reduce）：下方全域規則取消所有 CSS 過場、動畫、按壓縮放與 View Transition，WAAPI 由 motion.ts 跳過。
+ */
+@theme static {
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 240ms;
+  --duration-exit: 140ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-enter: cubic-bezier(0.05, 0.7, 0.1, 1);
+  --ease-exit: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --ease-spring-smooth: linear(0, 0.0576, 0.1806, 0.3213, 0.4558, 0.5736, 0.6717, 0.7507, 0.8127, 0.8606, 0.897, 0.9243, 0.9447, 0.9598, 0.9709, 0.979, 0.9849, 0.9892, 0.9923, 0.9945, 0.9961, 0.9972, 0.998, 0.9986, 1);
+  --duration-spring-smooth: 620ms;
+  --ease-spring-snappy: linear(0, 0.0253, 0.088, 0.1722, 0.2663, 0.3626, 0.4557, 0.5423, 0.6205, 0.6896, 0.7495, 0.8005, 0.8432, 0.8786, 0.9075, 0.9307, 0.9492, 0.9637, 0.9748, 0.9833, 0.9897, 0.9943, 0.9976, 0.9999, 1.0014, 1.0023, 1.0028, 1.003, 1.0029, 1.0028, 1.0026, 1.0023, 1.002, 1.0017, 1.0015, 1.0012, 1);
+  --duration-spring-snappy: 440ms;
+  --ease-spring-bouncy: linear(0, 0.0344, 0.1196, 0.2331, 0.3583, 0.4832, 0.5999, 0.7035, 0.7918, 0.8641, 0.9212, 0.9643, 0.9954, 1.0164, 1.0294, 1.0362, 1.0384, 1.0374, 1.0343, 1.03, 1.0252, 1.0204, 1.0159, 1.0118, 1.0084, 1.0055, 1.0033, 1.0015, 1.0003, 0.9994, 0.9989, 0.9986, 0.9985, 0.9986, 0.9987, 0.9988, 1);
+  --duration-spring-bouncy: 720ms;
+  --motion-shift: 4px;
+  --motion-shift-panel: 8px;
+  --gradient-brand: linear-gradient(
+    115deg,
+    var(--color-brand-cyan) 0%,
+    var(--color-brand-blue) 36%,
+    var(--color-brand-iris) 68%,
+    var(--color-brand-violet) 100%
+  );
+  --gradient-brand-soft: linear-gradient(
+    115deg,
+    rgb(73 207 255 / 0.16) 0%,
+    rgb(62 137 255 / 0.16) 36%,
+    rgb(114 125 255 / 0.16) 68%,
+    rgb(171 123 255 / 0.16) 100%
+  );
+  --gradient-action: linear-gradient(115deg, #2767de 0%, #4d5fe3 52%, #7a4fd9 100%);
+  --gradient-space:
+    radial-gradient(120% 70% at 50% -10%, rgb(62 137 255 / 0.16), transparent 62%),
+    radial-gradient(60% 50% at 100% 100%, rgb(171 123 255 / 0.08), transparent 70%);
+}
+
+/* 依介面語言的字體（zh-Hant 是預設；ja／en 由之後的語系工作加入 lang 屬性）。 */
+:lang(ja) {
+  --font-sans: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+}
+
+:lang(en) {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/*
+ * shimmer 的高光位置（registered custom property 才能以 keyframes 補間）。初始 -50%：高光在元素左側外面、看不到；
+ * animate-shimmer 把它從 -30% 移到 130%。
+ */
+@property --shimmer-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: -50%;
+}
+
+/* 亮色品牌漸層（目前項目標記、進度條、筆畫）。含一層平常看不到的 shimmer 高光（animate-shimmer 時掃過）。 */
+@utility bg-brand-gradient {
+  background-image:
+    linear-gradient(
+      105deg,
+      transparent calc(var(--shimmer-x) - 16%),
+      rgb(255 255 255 / 0.42) var(--shimmer-x),
+      transparent calc(var(--shimmer-x) + 16%)
+    ),
+    var(--gradient-brand);
+}
+
+/* 同一組漸層的低透明度版本（選取列、分頁、品牌項目的 hover 底色）。 */
+@utility bg-brand-gradient-soft {
+  background-image:
+    linear-gradient(
+      105deg,
+      transparent calc(var(--shimmer-x) - 16%),
+      rgb(255 255 255 / 0.08) var(--shimmer-x),
+      transparent calc(var(--shimmer-x) + 16%)
+    ),
+    var(--gradient-brand-soft);
+}
+
+/* 深色操作漸層（實心主要按鈕、目前步驟膠囊；白字）。同樣含 shimmer 圖層（進行中的主要按鈕）。 */
+@utility bg-action-gradient {
+  background-image:
+    linear-gradient(
+      105deg,
+      transparent calc(var(--shimmer-x) - 16%),
+      rgb(255 255 255 / 0.22) var(--shimmer-x),
+      transparent calc(var(--shimmer-x) + 16%)
+    ),
+    var(--gradient-action);
+}
+
+/* 漸層文字（字標、少數主視覺數字）；強制色彩下改回系統文字色。 */
+@utility text-brand-gradient {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+
+  @media (forced-colors: active) {
+    background-image: none;
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+}
+
+/*
+ * 1 px 漸層光邊（跟著圓角）：以 ::after 畫在元素邊緣（mask 挖空中間），不影響背景與版面。
+ * 元素自成 stacking context（isolation: isolate），光邊在 z-index -1：畫在元素自己的背景之上、所有子元素之下，
+ * 不會蓋住貼在邊緣的內容（例如節點圖的接點）。position: relative 寫在 :where() 裡（權重 0）：元素本來就是
+ * absolute／fixed／sticky（節點卡、甘特長條）時，位置 utility 一定勝出，不受 CSS 順序影響。
+ */
+@utility border-brand-gradient {
+  isolation: isolate;
+
+  :where(&) {
+    position: relative;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-brand);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  @media (forced-colors: active) {
+    outline: 1px solid CanvasText;
+
+    &::after {
+      display: none;
+    }
+  }
+}
+
+/*
+ * macOS 式材質（vibrancy）：只用在側欄與浮在內容上的東西；內容面板、表格、表單、檢視器、程式碼一律實心。
+ * 不支援 backdrop-filter 時改用接近不透明的同色底；強制色彩下用系統色。
+ */
+@utility material-sidebar {
+  background-color: rgb(10 15 28 / 0.66);
+  -webkit-backdrop-filter: blur(28px) saturate(165%);
+  backdrop-filter: blur(28px) saturate(165%);
+  box-shadow: inset -1px 0 0 rgb(255 255 255 / 0.06);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: rgb(10 15 28 / 0.97);
+  }
+
+  @media (forced-colors: active) {
+    background-color: Canvas;
+  }
+}
+
+@utility material-popover {
+  background-color: rgb(18 26 45 / 0.78);
+  -webkit-backdrop-filter: blur(32px) saturate(180%);
+  backdrop-filter: blur(32px) saturate(180%);
+  box-shadow:
+    inset 0 0 0 0.5px rgb(255 255 255 / 0.08),
+    var(--shadow-popover);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: rgb(18 26 45 / 0.97);
+  }
+
+  @media (forced-colors: active) {
+    background-color: Canvas;
+  }
+}
+
+@utility material-sheet {
+  background-color: rgb(14 21 37 / 0.88);
+  -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
+  box-shadow: var(--shadow-window);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: rgb(14 21 37 / 0.98);
+  }
+
+  @media (forced-colors: active) {
+    background-color: Canvas;
+  }
+}
+
+@utility material-hud {
+  background-color: rgb(6 10 18 / 0.55);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    background-color: rgb(6 10 18 / 0.85);
+  }
+
+  @media (forced-colors: active) {
+    background-color: Canvas;
+  }
+}
+
+/*
+ * 按壓回饋（按鈕、圖塊、膠囊、導覽項目、工具列圖示）：按下 90 ms 縮到 0.97，放開以 snappy 彈簧回彈；顏色類過場 120 ms。
+ * 自帶完整的 transition 清單（不要再和 transition-* utility 疊用）。減少動態時不縮放。
+ */
+@utility pressable {
+  transition-property: color, background-color, border-color, outline-color, outline-offset, text-decoration-color, fill, stroke, opacity, box-shadow,
+    filter, scale;
+  transition-duration: var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast),
+    var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-spring-snappy);
+  transition-timing-function: var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard),
+    var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard),
+    var(--ease-spring-snappy);
+
+  &:active:not(:disabled, [aria-disabled="true"]) {
+    scale: 0.97;
+    transition-duration: var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast),
+      var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), var(--duration-fast), 90ms;
+    transition-timing-function: var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard),
+      var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), var(--ease-standard), ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:active:not(:disabled, [aria-disabled="true"]) {
+      scale: none;
+    }
+  }
+}
+
+/*
+ * 清單逐項進場：每項 `style={{ "--i": index }}`，延遲 index × 24 ms（最多算到第 10 項）。animate-rise-in 自己就帶這個延遲
+ * （不受 class 順序影響，所以搭配 rise-in 時 stagger 可有可無）；stagger 讓其他進場動畫（例如 animate-fade-in、
+ * animate-pop-in）也能逐項延遲（它設的值與 rise-in 內建的一樣，順序前後都一致）。fill-mode backwards：延遲期間就停在起點
+ * （透明），不會先閃出來再出現。--i 註冊成不繼承，巢狀元素不會誤用外層的序號。
+ */
+@property --i {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@utility stagger {
+  animation-delay: calc(min(var(--i, 0), 10) * 24ms);
+  animation-fill-mode: backwards;
+}
+
+/* 位移一律用 transform（不動 translate／scale 屬性，Tailwind 的置中 translate 不受影響）。 */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* 選單、彈出：從觸發端那一側（--motion-pop-y，預設從上方 4 px）縮放 0.96→1 並淡入。 */
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-pop-y, calc(var(--motion-shift) * -1))) scale(0.96);
+  }
+}
+
+@keyframes dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.94);
+  }
+}
+
+@keyframes dialog-out {
+  to {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes sheet-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* 行動版側欄（抽屜）由左緣滑入／滑出。 */
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes drawer-out {
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* 通知：從右上方滑入（bouncy），出場往右淡出。 */
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate(16px, -6px) scale(0.96);
+  }
+}
+
+@keyframes toast-out {
+  to {
+    opacity: 0;
+    transform: translateX(var(--motion-shift-panel)) scale(0.98);
+  }
+}
+
+/* 展開的內容（說明段落、可收合區段、details）：淡入＋由上方 2 px。 */
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-shift) * -0.5));
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes shimmer {
+  from {
+    --shimmer-x: -30%;
+  }
+
+  to {
+    --shimmer-x: 130%;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: var(--shadow-glow-sm);
+  }
+
+  50% {
+    box-shadow: var(--shadow-glow);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-shift-panel)) scale(0.985);
+  }
+}
+
+/* 品牌標誌的呼吸（啟動畫面、讀取中）：只改透明度，不位移。 */
+@keyframes brand-breathe {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* 換頁時主要內容的進場（View Transition 的 ::view-transition-new(main-content)）。 */
+@keyframes vt-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-shift-panel));
+  }
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    background-color: var(--color-canvas);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: var(--color-canvas);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /*
+   * lang 屬性在子元素上時重新套用該語言的字體（font-family 是繼承的計算值）。只比對「自己帶 lang 屬性」的元素且權重為 0：
+   * 用 :lang(ja)／:lang(en) 會比對所有後代並壓過 code／kbd／samp／pre 的等寬字（B1 發現的問題）。
+   */
+  :where([lang]) {
+    font-family: var(--font-sans);
+  }
+
+  /* 介面圖示（lucide）一律 1.75 筆畫（契約 v2）；圖表、節點圖等自己的 SVG 不受影響。 */
+  svg.lucide {
+    stroke-width: 1.75;
+  }
+
+  /* 細捲軸（每個面板都是自己的 scroll owner）：拇指用 line-strong，滑過時亮一階。 */
+  * {
+    scrollbar-width: thin;
+  }
+
+  ::-webkit-scrollbar {
+    inline-size: 10px;
+    block-size: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+    background-color: var(--color-line-strong);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-line-control);
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  /* 焦點框：品牌青 2 px；出現時從 4 px 外收到 2 px（120 ms，減少動態時直接出現）。 */
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: rgb(62 137 255 / 0.38);
+    color: var(--color-fg);
+  }
+
+  a {
+    color: var(--color-action-fg);
+    text-underline-offset: 3px;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    font-family: var(--font-mono);
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: var(--color-fg-tertiary);
+    opacity: 1;
+  }
+
+  /* 原生 select 選單與日期控制同樣使用深色系統控制。 */
+  select,
+  option {
+    background-color: var(--color-sunken);
+    color: var(--color-fg);
+  }
+
+  /* 原生勾選、單選、滑桿用深品牌藍（瀏覽器自動配白色勾）。 */
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  progress {
+    accent-color: var(--color-action);
+  }
+
+  [hidden] {
+    display: none !important;
+  }
+
+  /*
+   * 互動元素的預設過場（顏色、底色、邊框、陰影、焦點框位移；--duration-fast、--ease-standard）：讓沒有自己寫 transition 的列、
+   * 分頁、選項、連結也一致地平滑變色。:where() 不加權重，任何 transition-* utility 或 pressable 都會覆寫。
+   */
+  :where(a, button, summary, [role="tab"], [role="treeitem"], [role="option"], [role="menuitem"], [role="row"], tr) {
+    outline-offset: 4px;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, box-shadow, outline-offset;
+    transition-duration: var(--duration-fast);
+    transition-timing-function: var(--ease-standard);
+  }
+
+  :where(a, button, summary, [role="tab"], [role="treeitem"], [role="option"], [role="menuitem"], [role="row"], tr):focus-visible {
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* 一般群組面板：實心 surface＋中性內緣，不額外加陰影。 */
+  .panel {
+    min-inline-size: 0;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-lg);
+    background-color: var(--color-surface);
+    box-shadow: var(--shadow-edge);
+  }
+
+  /* 每個 view 最多兩處的 raised major region：帶一點品牌藍的頂光 + 內緣 + 中性陰影。 */
+  .panel-raised {
+    background-image: linear-gradient(180deg, rgb(120 150 255 / 0.05), transparent 88px);
+    box-shadow: var(--shadow-raised);
+  }
+
+  /*
+   * 浮在內容上的小型浮層（選單、提示、通知、提及清單、圖表 tooltip）：popover 材質（半透明＋模糊＋0.5 px 亮邊＋多層陰影）。
+   * 保留 1 px 實線邊框（呼叫端會用 border-l-2＋語意色覆寫）。文字對比以 overlay 色計算；模糊讓後方的亮暗變化平均掉。
+   */
+  .overlay-surface {
+    border: 1px solid rgb(255 255 255 / 0.08);
+    border-radius: var(--radius-lg);
+    background-color: rgb(18 26 45 / 0.86);
+    background-image: linear-gradient(180deg, rgb(140 165 255 / 0.06), transparent 96px);
+    box-shadow:
+      inset 0 0 0 0.5px rgb(255 255 255 / 0.04),
+      var(--shadow-popover);
+    color: var(--color-fg);
+    -webkit-backdrop-filter: blur(32px) saturate(180%);
+    backdrop-filter: blur(32px) saturate(180%);
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .overlay-surface {
+      background-color: var(--color-overlay);
+    }
+  }
+
+  .machine {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+    overflow-wrap: anywhere;
+  }
+
+  /* 讀取中的佔位：raised 底＋shimmer 高光（animate-shimmer 時掃過；減少動態時是靜態的底色）。 */
+  .skeleton {
+    border-radius: var(--radius-md);
+    background-color: var(--color-raised);
+    background-image: linear-gradient(
+      105deg,
+      transparent calc(var(--shimmer-x) - 18%),
+      rgb(150 175 255 / 0.1) var(--shimmer-x),
+      transparent calc(var(--shimmer-x) + 18%)
+    );
+  }
+
+  .sr-only-focusable:not(:focus):not(:focus-within) {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  /* 分頁／導覽指示線（components/ui/active-indicator.tsx）：以 snappy 彈簧滑到新位置；第一次定位前不顯示。 */
+  [data-tab-indicator] {
+    transition:
+      transform var(--duration-spring-snappy) var(--ease-spring-snappy),
+      opacity var(--duration-fast) linear;
+  }
+
+  [data-tab-indicator]:not([data-state="visible"]) {
+    opacity: 0;
+  }
+
+  /*
+   * 漸層光邊的獨立圖層（畫在內容之上，z-index 2）：GeneratingFrame 用在滿版的預覽影像／影片——border-brand-gradient
+   * 的光邊在內容底下，會被滿版媒體蓋住。
+   */
+  .brand-edge {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--gradient-brand);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box exclude,
+      linear-gradient(#000 0 0);
+    pointer-events: none;
+  }
+
+  /* common/Disclosure：支援 ::details-content 的瀏覽器以 smooth 彈簧展開高度（其他瀏覽器照原生 details 直接開合）。 */
+  .disclosure {
+    interpolate-size: allow-keywords;
+  }
+
+  .disclosure::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    transition:
+      block-size var(--duration-spring-smooth) var(--ease-spring-smooth),
+      content-visibility var(--duration-spring-smooth) allow-discrete;
+  }
+
+  .disclosure[open]::details-content {
+    block-size: auto;
+  }
+
+  /* 品牌標誌的呼吸（只在 motion-safe 時播放；全域規則在減少動態時取消）。 */
+  .brand-breathe {
+    animation: brand-breathe 2.8s ease-in-out infinite;
+  }
+}
+
+/*
+ * View Transitions（react-router 的 viewTransition）：換頁時整頁 200 ms 交叉淡化，主要內容（main-content）淡入＋上移 8 px（smooth 彈簧）。
+ * 側欄收合（:active-view-transition-type(sidebar)）：側欄、頂欄與主要內容以 smooth 彈簧變形到新位置與寬度，
+ * 快照不縮放（object-fit: none，靠左上），邊界外裁切。減少動態時全部取消（直接換頁／直接收合）。
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: var(--ease-standard);
+}
+
+::view-transition-old(main-content) {
+  animation: var(--duration-exit) var(--ease-exit) both fade-out;
+}
+
+::view-transition-new(main-content) {
+  animation: var(--duration-spring-smooth) var(--ease-spring-smooth) both vt-rise;
+}
+
+/* Studio：點 take 縮圖時縮圖飛進監看器（view-transition-name: studio-take-hero，U2）走 smooth 彈簧，不用瀏覽器預設 250 ms。 */
+::view-transition-group(studio-take-hero) {
+  animation-duration: var(--duration-spring-smooth);
+  animation-timing-function: var(--ease-spring-smooth);
+}
+
+:active-view-transition-type(sidebar) {
+  &::view-transition-group(shell-sidebar),
+  &::view-transition-group(shell-topbar),
+  &::view-transition-group(main-content) {
+    overflow: clip;
+    animation-duration: var(--duration-spring-smooth);
+    animation-timing-function: var(--ease-spring-smooth);
+  }
+
+  &::view-transition-old(shell-sidebar),
+  &::view-transition-new(shell-sidebar),
+  &::view-transition-old(shell-topbar),
+  &::view-transition-new(shell-topbar),
+  &::view-transition-old(main-content),
+  &::view-transition-new(main-content) {
+    inline-size: auto;
+    block-size: 100%;
+    object-fit: none;
+    object-position: left top;
+  }
+
+  &::view-transition-old(shell-sidebar) {
+    animation: var(--duration-exit) var(--ease-exit) both fade-out;
+  }
+
+  &::view-transition-new(shell-sidebar) {
+    animation: var(--duration-spring-smooth) var(--ease-spring-smooth) both fade-in;
+  }
+
+  &::view-transition-old(shell-topbar),
+  &::view-transition-old(main-content) {
+    animation: none;
+    opacity: 0;
+  }
+
+  &::view-transition-new(shell-topbar),
+  &::view-transition-new(main-content) {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .panel,
+  .panel-raised,
+  .overlay-surface {
+    background-image: none;
+    box-shadow: none;
+    border: 1px solid CanvasText;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  [aria-current="page"],
+  [aria-current="step"],
+  [aria-pressed="true"],
+  [aria-selected="true"] {
+    outline: 2px solid Highlight;
+    outline-offset: -2px;
+  }
+
+  /* 強制色彩下底色會被系統色取代：指示線改用 Highlight 才看得到。 */
+  [data-tab-indicator] {
+    forced-color-adjust: none;
+    background: Highlight;
+  }
+
+  .forced-text {
+    forced-color-adjust: auto;
+  }
+
+  .brand-edge {
+    display: none;
+  }
+
+  [data-generating] {
+    outline: 2px solid Highlight;
+  }
+}
