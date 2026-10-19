@@ -104,7 +104,9 @@ export const CHAPTERS: readonly ChapterSpec[] = [
     number: 3,
     media: '03-timeline-export',
     poster: '/images/tour/v3.webp',
-    length: 70,
+    // Final master studio/out/final/tour/03-timeline-export.mp4: 47.1 s, 1920×1080, 30 fps (ffprobe).
+    length: 47.1,
+    recorded: true,
     steps: [
       { anchor: 'Arrange shots on a real timeline.' },
       { anchor: 'Split, trim and snap, frame-accurate.' },
