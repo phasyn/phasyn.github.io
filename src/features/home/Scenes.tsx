@@ -322,8 +322,8 @@ export function CtaScene() {
 }
 
 /**
- * The intro film (INTRO_FILM_READY in data.ts): one 1080p video for every locale, with neutral on-screen text (wordmark and
- * phasyn.dev only); its lines are per-locale WebVTT captions, shown over the video while it plays with sound.
+ * The intro film (INTRO_FILM_READY in data.ts): one 1080p video per locale with its lines designed into the picture, so it
+ * has no WebVTT track (the film has no dialogue; the figcaption says what it shows).
  */
 export function FilmScene() {
   const t = useCopy(HOME).film;
@@ -332,12 +332,7 @@ export function FilmScene() {
       <figure className="site-container reveal relative mx-auto grid w-full max-w-[60rem] gap-3">
         <HudFrame label="INTRO FILM">
           <FilmPlayer
-            src="films/intro.mp4"
-            captions={{
-              'zh-hant': '/captions/films/intro.zh-hant.vtt',
-              ja: '/captions/films/intro.ja.vtt',
-              en: '/captions/films/intro.en.vtt',
-            }}
+            src={{ 'zh-hant': 'films/intro.zh-hant.mp4', ja: 'films/intro.ja.mp4', en: 'films/intro.en.mp4' }}
             // The video's own poster attribute: the film opens on black, so a poster drawn under the video would be hidden by
             // the first frame once metadata loads.
             poster="/images/home/film-poster.webp"

@@ -8,7 +8,7 @@ import type { Work } from '../../site/works.ts';
 import { WORKS } from '../../site/works.gen.ts';
 
 /**
- * The intro film block on Home (November 2026 film: <media base>/films/intro.mp4, captions in public/captions/films). Set to
+ * The intro film block on Home (November 2026 film: <media base>/films/intro.<locale>.mp4, titles burned in per locale). Set to
  * false to hide the block, e.g. while a new cut is being made.
  */
 export const INTRO_FILM_READY = true as boolean;
