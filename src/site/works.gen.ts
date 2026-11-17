@@ -38,6 +38,41 @@ export const WORKS: readonly Work[] = [
     "featured": null
   },
   {
+    "slug": "foresight",
+    "title": {
+      "zh-hant": "拉普拉斯的星儀",
+      "ja": "ラプラスの星儀",
+      "en": "The Foresight Sphere"
+    },
+    "jaFallback": false,
+    "category": "battle",
+    "orientation": "landscape",
+    "seconds": 8.71,
+    "fps": 24,
+    "width": 2560,
+    "height": 1472,
+    "features": [
+      "oneTake",
+      "characterRef",
+      "steps8",
+      "softvl2x",
+      "sound"
+    ],
+    "run": "e82d00b9",
+    "seed": 20263801,
+    "media": {
+      "web": "works/foresight.web.mp4",
+      "hd": "works/foresight.hd.mp4",
+      "poster": {
+        "src": "/images/works/foresight-poster-1920.webp",
+        "srcSet": "/images/works/foresight-poster-1920.webp 1920w, /images/works/foresight-poster-1280.webp 1280w, /images/works/foresight-poster-640.webp 640w",
+        "width": 1920,
+        "height": 1104
+      }
+    },
+    "featured": null
+  },
+  {
     "slug": "seal-vs-foresight",
     "title": {
       "zh-hant": "封禁對星儀",
