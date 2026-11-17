@@ -1,0 +1,30 @@
+WEBVTT
+Language: en
+
+title
+00:00:09.200 --> 00:00:11.900
+Animation with sound, made on your own GPU.
+
+describe
+00:00:11.958 --> 00:00:14.300
+Describe the shot in words.
+
+compare
+00:00:14.333 --> 00:00:16.700
+Compare takes and pick the best one.
+
+edit
+00:00:16.750 --> 00:00:19.100
+Cut the film on a timeline.
+
+images
+00:00:19.167 --> 00:00:21.500
+Generate character and scene images in Image Studio.
+
+works
+00:00:21.800 --> 00:00:27.400
+These shots were all generated with Phasyn Studio.
+
+end
+00:00:43.600 --> 00:00:48.300
+Phasyn Studio · open source · Apache-2.0

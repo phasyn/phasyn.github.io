@@ -1,0 +1,10 @@
+# Prettier 3 also skips everything in .gitignore.
+# Verbatim copy of the brand system's token sheet (README: never edit).
+src/styles/tokens.css
+# Generated files: the generator named in each header owns the layout.
+*.gen.ts
+pnpm-lock.yaml
+# Published assets and data downloads.
+public/
+# Markdown keeps its hand layout (Prettier pads every table row to the widest cell).
+*.md

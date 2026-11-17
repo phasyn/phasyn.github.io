@@ -1,0 +1,292 @@
+/*
+ * Home page layer: keynote scenes. Content is complete in the prerendered HTML; motion is limited to reveals (hero entrance,
+ * headline glow, scroll-driven stage reveal and the pinned step scenes) and collapses to the same static content under
+ * prefers-reduced-motion. The capture stage itself lives in site.css (shared with the Tour).
+ */
+
+/* One idea per screen: generous rhythm, centred. */
+.home-scene {
+  padding-block: clamp(5rem, 3rem + 7vw, 10rem);
+}
+
+/*
+ * Pinned scene with several focus steps: taller than the screen, its content sticks under the header while the page scrolls
+ * through the steps (Scene.tsx reads the progress). Without motion it is an ordinary scene and the step buttons switch.
+ */
+.home-pin {
+  padding-block: clamp(5rem, 3rem + 7vw, 10rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-pin {
+    padding-block: 0;
+    height: calc(100svh + (var(--steps, 1) - 1) * 70svh);
+  }
+  .home-pin-inner {
+    position: sticky;
+    top: var(--site-header-h);
+    display: grid;
+    align-content: center;
+    min-height: calc(100svh - var(--site-header-h));
+    padding-block: clamp(1rem, 0.5rem + 2vh, 2.5rem);
+  }
+}
+
+/* One screen per scene: the stage gives up width before the headline, the stage and its steps outgrow the screen. */
+.home-stage {
+  max-width: min(68rem, max(20rem, calc((100svh - var(--site-header-h) - 22rem) * 1.6)));
+}
+
+/* Headlines sized so a 10–12 character CJK line fits a 390 px phone without a one-character second line. */
+.home-title {
+  font-size: clamp(1.875rem, 1.2rem + 3.3vw, 4.25rem);
+  line-height: 1.1;
+  font-weight: 650;
+}
+
+.home-hero-title {
+  font-size: clamp(2.125rem, 1.1rem + 5vw, 6.25rem);
+  line-height: 1.06;
+  font-weight: 650;
+}
+
+/* HUD index above each headline: two hairlines in the brand light. */
+.home-tag-line {
+  display: inline-block;
+  width: 2rem;
+  height: 1px;
+  background: var(--gradient-brand);
+  box-shadow: 0 0 10px rgb(73 207 255 / 0.55);
+  transform-origin: left center;
+}
+
+/* Hero: full-bleed media sits under a scrim that keeps the type at AA on any frame. */
+.home-hero-scrim {
+  background:
+    linear-gradient(
+      to top,
+      var(--color-canvas) 0%,
+      rgb(7 11 20 / 0.84) 24%,
+      rgb(7 11 20 / 0.6) 40%,
+      rgb(7 11 20 / 0.2) 62%,
+      rgb(7 11 20 / 0.45)
+    ),
+    /* Behind the headline block (lower left), where a white costume can pass under the last characters of a line. */
+    radial-gradient(62% 42% at 26% 70%, rgb(7 11 20 / 0.62), transparent 78%),
+    radial-gradient(70% 60% at 15% 85%, rgb(7 11 20 / 0.7), transparent 70%);
+}
+
+/* The hero still's subject position; the portrait still (Hero.tsx <source>) has its own. */
+.home-hero-still {
+  object-position: var(--home-focus, 50% 50%);
+}
+@media (max-aspect-ratio: 3/4) {
+  .home-hero-still {
+    object-position: var(--home-portrait-focus, var(--home-focus, 50% 50%));
+  }
+}
+
+@keyframes home-in {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+  }
+}
+
+@keyframes home-media-in {
+  from {
+    opacity: 0;
+    scale: 1.06;
+  }
+}
+
+/* The primary call to action breathes its light once, after the entrance. */
+.home-cta {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 0 0 1px rgb(73 207 255 / 0.25),
+    0 8px 30px rgb(62 137 255 / 0.35);
+}
+
+/* A thin ring of light around the mark in the "local" scene when it has no illustration (static). */
+.home-ring {
+  border: 1px solid rgb(73 207 255 / 0.28);
+  box-shadow:
+    0 0 40px rgb(62 137 255 / 0.25),
+    inset 0 0 30px rgb(171 123 255 / 0.18);
+}
+
+/*
+ * Scene illustration (SceneArt.tsx): a full-bleed band that opens a scene. Its edges fade to transparent (a mask, so the
+ * nebula behind shows through, never a flat band edge) and the next scene is pulled up over its faded lower part, so the
+ * headline rises out of the art while the capture below stays clear of it. `tall` is the picture of its own scene (your
+ * own computer, the close): the headline sits inside its lower part, over a night scrim. The image is 12% taller than the
+ * band for the scroll drift. Heights live on :root because the next scene reads them too.
+ */
+:root {
+  --home-art-h: clamp(15rem, 10rem + 26vw, 34rem);
+  --home-art-tall-h: clamp(22rem, 14rem + 34vw, 44rem);
+}
+@media (orientation: portrait) {
+  :root {
+    --home-art-h: clamp(16rem, 44svh, 30rem);
+    --home-art-tall-h: clamp(20rem, 58svh, 36rem);
+  }
+}
+.home-art {
+  --home-art-overlap: 0.34;
+  height: var(--home-art-h);
+}
+.home-art + * {
+  margin-top: calc(var(--home-art-h) * -0.34);
+}
+/*
+ * A band after a scene starts inside that scene's bottom padding (its top edge is a transparent fade anyway), and on phones
+ * the first band starts inside the hero's bottom padding, so no screen-high gap opens above a band.
+ */
+.home-scene + .home-art {
+  margin-top: calc(clamp(5rem, 3rem + 7vw, 10rem) * -0.75);
+}
+@media (orientation: portrait) {
+  .home-hero + .home-art {
+    --hero-overlap: 3rem;
+    margin-top: calc(var(--hero-overlap) * -1);
+  }
+}
+/*
+ * The hero ends in the canvas colour; the first band fades in over a longer stretch (its still's subject sits lower) and
+ * the night under it starts in the canvas colour too, so no edge shows between them.
+ */
+.home-hero + .home-art {
+  --art-fade: 26%;
+}
+.home-hero + .home-art::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: -1;
+  height: 45%;
+  background: linear-gradient(to bottom, var(--color-canvas) var(--hero-overlap, 0px), transparent);
+  pointer-events: none;
+}
+.home-art-tall {
+  --home-art-overlap: 0.4;
+  height: var(--home-art-tall-h);
+}
+.home-art-tall + .home-scene {
+  margin-top: calc(var(--home-art-tall-h) * -0.4);
+  padding-top: 0;
+}
+.home-art-frame {
+  /* Decorative; where a band reaches into the padding above it, clicks still go to the scene. */
+  pointer-events: none;
+  mask-image:
+    linear-gradient(to bottom, transparent, #000 var(--art-fade, 12%), #000 52%, transparent 96%),
+    linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  mask-composite: intersect;
+}
+/*
+ * The image starts just below the band's top edge (inside the top fade, which it never needs to fill) and runs past the
+ * bottom, so a still's top rows (the characters' heads) sit in the clear part of the band, under the fade, at any width.
+ * On portrait screens the crop is the full still height, so the image and the top fade both start lower (its edge stays
+ * inside the fade).
+ */
+.home-art-img {
+  top: 2%;
+  height: 112%;
+  opacity: 0.92;
+  object-position: var(--art-focus, 50% 50%);
+}
+@media (orientation: portrait) {
+  .home-art-frame {
+    mask-image:
+      linear-gradient(to bottom, transparent 10%, #000 var(--art-fade, 21%), #000 52%, transparent 96%),
+      linear-gradient(to right, transparent, #000 14%, #000 86%, transparent);
+  }
+  .home-art-img {
+    top: 12%;
+    object-position: var(--art-focus-portrait, var(--art-focus, 50% 50%));
+  }
+  /* A still with several characters side by side (art.ts `portraitFit`) shows its whole width on a phone. */
+  .home-art-img[data-fit='width'] {
+    height: auto;
+    /* Its own soft top edge (only hair tips sit there): a bright sky would otherwise draw a line at the band's fade. */
+    mask-image: linear-gradient(to bottom, transparent, #000 10%);
+  }
+}
+/* Night scrim under the part the next headline covers (deeper in a tall illustration, where the headline sits inside). */
+.home-art-frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgb(7 11 20 / 0.74) 66%, rgb(7 11 20 / 0.92) 84%);
+}
+.home-art-tall .home-art-frame::after {
+  background: linear-gradient(to bottom, transparent 34%, rgb(7 11 20 / 0.8) 58%, rgb(7 11 20 / 0.92) 72%);
+}
+/* The disclosure sits at the art's lower right, above the part the headline covers. */
+.home-art-badge {
+  bottom: calc(var(--home-art-overlap) * 100% + 0.75rem);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .home-in {
+    animation: home-in 900ms var(--ease-enter) both;
+    animation-delay: calc(var(--fx-intro-delay, 0ms) + var(--home-at, 0ms));
+  }
+  .home-hero-media {
+    animation: home-media-in 1800ms var(--ease-enter) both;
+    animation-delay: var(--fx-intro-delay, 0ms);
+  }
+  @supports (animation-timeline: view()) {
+    .home-tag .home-tag-line {
+      animation: home-line linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 30%;
+    }
+    /* Tiles in a row arrive one after another as the row enters. */
+    .home-tile {
+      animation-range: entry calc(var(--i, 0) * 40px) entry calc(240px + var(--i, 0) * 40px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* The art brightens and settles as it arrives, then drifts slower than the page. */
+    .home-art-frame {
+      animation: home-art-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 45%;
+    }
+    .home-art-img {
+      animation: home-art-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes home-art-in {
+  from {
+    opacity: 0;
+    scale: 1.04;
+  }
+}
+
+@keyframes home-art-drift {
+  from {
+    translate: 0 -5%;
+  }
+  to {
+    translate: 0 5%;
+  }
+}
+
+@keyframes home-line {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+}

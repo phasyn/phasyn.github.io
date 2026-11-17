@@ -1,0 +1,10 @@
+packages:
+  - .
+engineStrict: true
+strictPeerDependencies: true
+strictDepBuilds: true
+verifyDepsBeforeRun: error
+allowBuilds:
+  esbuild: true
+minimumReleaseAgeExclude:
+  - lucide-react@1.59.0

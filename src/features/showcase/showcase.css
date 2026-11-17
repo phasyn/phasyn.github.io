@@ -1,0 +1,54 @@
+/*
+ * Showcase page layer: the few effects utilities cannot express. Content is complete in the prerendered HTML; motion is
+ * layered on top and collapses to the same, static content under prefers-reduced-motion (tokens.css cancels animations).
+ */
+
+/* Eyebrow light line (draws in with its heading where scroll timelines exist). */
+.sc-eyebrow-line {
+  display: inline-block;
+  height: 1px;
+  flex: none;
+  background: var(--gradient-brand);
+  box-shadow: 0 0 10px rgb(73 207 255 / 0.55);
+  transform-origin: left center;
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .sc-heading .sc-eyebrow-line {
+      animation: sc-line-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 10% cover 32%;
+    }
+  }
+}
+
+@keyframes sc-line-draw {
+  from {
+    transform: scaleX(0);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* Hero entrances after the first-visit splash (--fx-intro-delay is 0 when it is skipped). */
+@keyframes sc-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .sc-in {
+    animation: sc-in 900ms var(--ease-enter) both;
+    animation-delay: calc(var(--fx-intro-delay, 0ms) + var(--sc-at, 0ms));
+  }
+}
