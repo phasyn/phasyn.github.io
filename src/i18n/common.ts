@@ -50,7 +50,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: '從分鏡，到成片。',
     footerMadeBy: '由 DennySORA 開發的個人、非商業專案。',
     footerCredits:
-      '示範圖片與影片以 Phasyn Studio（MiniMax H3、Qwen-Image 2.1）生成；網站的圖示和背景由 OpenAI Codex 以 AI 生成；影片配樂以 Suno 生成。',
+      '示範圖片與影片以 Phasyn Studio（MiniMax H3、Qwen-Image 2.1）生成；網站的圖示和背景由 OpenAI Codex 以 AI 生成；影片配樂以 Suno 生成。示範角色的造型來自網路社群的同人創作，原作者為 ZipZipPipe 與上善無形（溟月），版權歸原作者所有，本站僅作非商業示範。',
     footerLicense:
       'Phasyn Studio 以 Apache License 2.0 開源。名稱和標誌不在授權範圍內，見 NOTICE。不包含 AI 模型。每個模型都有自己的授權，也限制了使用的地區和方式：MiniMax-H3 和它做出來的影片，不能在歐盟、英國、韓國和美國使用或展示，Qwen-Image 2.1 只能用於非商業用途。用 MiniMax-H3 做出來的影片，不能拿去訓練其他 AI 模型。只使用你有權利的圖片、影片和聲音，也不要把 AI 生成的內容當成真的或冒充別人。',
     h3License:
@@ -84,7 +84,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: '絵コンテから、完成映像まで。',
     footerMadeBy: 'DennySORA が開発する個人・非商用プロジェクトです。',
     footerCredits:
-      'デモの画像と動画は Phasyn Studio（MiniMax H3、Qwen-Image 2.1）で生成しています。サイトのアイコンと背景は OpenAI Codex で生成した AI 画像、映像の音楽は Suno で生成したものです。',
+      'デモの画像と動画は Phasyn Studio（MiniMax H3、Qwen-Image 2.1）で生成しています。サイトのアイコンと背景は OpenAI Codex で生成した AI 画像、映像の音楽は Suno で生成したものです。デモに登場するキャラクターのデザインはネットコミュニティの二次創作によるもので、原作者は ZipZipPipe と上善無形（溟月）です。著作権は原作者に帰属し、本サイトでは非商用のデモとしてのみ使用しています。',
     footerLicense:
       'Phasyn Studio は Apache License 2.0 のオープンソースです。名称とロゴはライセンスの対象外です（NOTICE を参照）。AI モデルは含まれていません。モデルにはそれぞれ独自のライセンスがあり、使える地域や使い方も限られています。MiniMax-H3 とそれで作った動画は、EU、英国、韓国、米国では使用も公開もできません。Qwen-Image 2.1 は非商用でのみ使えます。MiniMax-H3 で作った動画を、ほかの AI モデルの学習に使うことはできません。権利を持っている画像・動画・音声だけを使い、AI で生成した内容を本物のように見せたり、他人になりすましたりしないでください。',
     h3License:
@@ -113,7 +113,7 @@ export const COMMON: Copy<CommonCopy> = {
     footerTagline: 'From storyboard to synthesis.',
     footerMadeBy: 'A personal, non-commercial project by DennySORA.',
     footerCredits:
-      'Demo images and videos are generated with Phasyn Studio (MiniMax H3, Qwen-Image 2.1). Site icons and backgrounds are AI-generated with OpenAI Codex; film music is generated with Suno.',
+      'Demo images and videos are generated with Phasyn Studio (MiniMax H3, Qwen-Image 2.1). Site icons and backgrounds are AI-generated with OpenAI Codex; film music is generated with Suno. The demo characters are fan designs from the online community by ZipZipPipe and 上善無形 (溟月); all rights remain with the original creators, and they appear here only as a non-commercial demo.',
     footerLicense:
       'Phasyn Studio is open source under the Apache License 2.0. The name and logo are not covered by the license; see NOTICE. No AI models are included. Each model has its own license, which also limits where and how it can be used: MiniMax-H3 and the videos made with it may not be used or shown in the EU, the UK, South Korea or the USA, and Qwen-Image 2.1 is for non-commercial use only. Videos made with MiniMax-H3 may not be used to train other AI models. Only use images, video and sound you have the rights to, and never pass off AI-generated content as real or pretend to be someone else.',
     h3License:
