@@ -7,7 +7,6 @@ import { ABOUT } from './copy.ts';
 import { CapabilityGrid, PipelineFigure, RentalFigure, SetupFigure } from './figures.tsx';
 import { cn } from '../../lib/cn.ts';
 import { Lead, Prose, Statement, StorySection, useBodyClass, useDisplayBreak } from './parts.tsx';
-import { Roadmap } from './Roadmap.tsx';
 import { SectionIndex } from './SectionIndex.tsx';
 import { StatusChip } from './status.tsx';
 
@@ -106,12 +105,6 @@ export function AboutPage() {
                 <p className={cn('text-fg [text-wrap:pretty]', body, display)}>{copy.editing.artcraft}</p>
                 <StatusChip status="planned" className="justify-self-start" />
               </div>
-            </StorySection>
-
-            <StorySection id="roadmap" title={copy.titles.roadmap}>
-              <Prose paragraphs={[copy.roadmap.intro]} />
-              <Roadmap roadmap={copy.roadmap} />
-              <Lead className="mt-12 md:mt-14">{copy.roadmap.outro}</Lead>
             </StorySection>
           </article>
         </div>

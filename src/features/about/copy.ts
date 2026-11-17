@@ -19,7 +19,7 @@ import type { Copy } from '../../i18n/locale.tsx';
  * TTS, sliders/LoRA and third-party models not done; plug-ins partly done (data-only packs).
  */
 
-export const SECTION_IDS = ['why', 'built', 'today', 'scale', 'editing', 'roadmap', 'contact'] as const;
+export const SECTION_IDS = ['why', 'built', 'today', 'scale', 'editing', 'contact'] as const;
 export type SectionId = (typeof SECTION_IDS)[number];
 
 /** Decorative wide-tracked Latin labels above each section title (brand EN_LABEL style, `aria-hidden`); same in every locale. */
@@ -29,7 +29,6 @@ export const SECTION_TAGS: Record<SectionId, string> = {
   today: 'Today',
   scale: 'Scale out',
   editing: 'Prompts',
-  roadmap: 'Roadmap',
   contact: 'Contact',
 };
 
@@ -113,10 +112,7 @@ export const ABOUT: Copy<AboutCopy> = {
     hero: {
       eyebrow: 'About · Phasyn Studio',
       title: ['為什麼要自己做？'],
-      standfirst: [
-        '受夠了又爛又貴的影片生成服務，我乾脆自己做了一套。',
-        '這篇寫它為什麼存在、現在能做什麼，以及接下來的計畫。',
-      ],
+      standfirst: ['受夠了又爛又貴的影片生成服務，我乾脆自己做了一套。', '這篇寫它為什麼存在，以及現在能做什麼。'],
       bylineLabel: '作者',
       startReading: '開始閱讀',
     },
@@ -128,7 +124,6 @@ export const ABOUT: Copy<AboutCopy> = {
       today: '現在能做什麼',
       scale: '為擴充而設計',
       editing: '編輯與 Prompt',
-      roadmap: '接下來要做的',
       contact: '原始碼與聯絡',
     },
     why: {
@@ -235,7 +230,7 @@ export const ABOUT: Copy<AboutCopy> = {
       title: ['なぜ、', '自分で作るのか。'],
       standfirst: [
         '質が悪くて高い動画生成サービスにうんざりして、自分で作ることにしました。',
-        'なぜ作ったのか、今なにができるのか、そしてこれからの計画を書きます。',
+        'なぜ作ったのか、そして今なにができるのかを書きます。',
       ],
       bylineLabel: '筆者',
       startReading: '読みはじめる',
@@ -248,7 +243,6 @@ export const ABOUT: Copy<AboutCopy> = {
       today: '今できること',
       scale: '拡張を前提にした設計',
       editing: '編集とプロンプト',
-      roadmap: 'これから作るもの',
       contact: 'ソースコードと連絡先',
     },
     why: {
@@ -371,7 +365,7 @@ export const ABOUT: Copy<AboutCopy> = {
       title: ['Why Build It Myself?'],
       standfirst: [
         'I got fed up with bad, overpriced video generators, so I built my own.',
-        'Here’s why it exists, what it does today, and what comes next.',
+        'Here’s why it exists and what it does today.',
       ],
       bylineLabel: 'Written by',
       startReading: 'Start Reading',
@@ -384,7 +378,6 @@ export const ABOUT: Copy<AboutCopy> = {
       today: 'What It Does Today',
       scale: 'Built to Scale Out',
       editing: 'Editing and Prompts',
-      roadmap: 'What’s Next',
       contact: 'Source Code and Contact',
     },
     why: {
