@@ -127,7 +127,7 @@ export const HOME: Copy<HomeCopy> = {
     },
     film: {
       videoTitle: 'Phasyn Studio 介紹影片',
-      note: '48 秒的介紹影片：寫鏡頭、挑版本、剪輯和 Image Studio 是真實介面的錄影，角色和作品畫面由 Phasyn Studio 生成（MiniMax H3、Qwen‑Image 2.1）。播放時會顯示字幕。',
+      note: '69 秒的介紹影片：寫鏡頭、比較版本、剪輯、Image Studio 和匯出是真實介面的錄影，角色、圖片和作品畫面由 Phasyn Studio 生成（MiniMax H3、Qwen‑Image 2.1）。播放時會顯示字幕。',
     },
   },
 
@@ -217,7 +217,7 @@ export const HOME: Copy<HomeCopy> = {
     },
     film: {
       videoTitle: 'Phasyn Studio 紹介映像',
-      note: '48 秒の紹介映像です。カットの記述、テイク選び、編集、Image Studio は実際の画面の録画で、キャラクターと作品の映像は Phasyn Studio で生成しました（MiniMax H3・Qwen‑Image 2.1）。再生すると字幕が表示されます。',
+      note: '69 秒の紹介映像です。カットの記述、テイクの比較、編集、Image Studio、書き出しは実際の画面の録画で、キャラクター、画像、作品の映像は Phasyn Studio で生成しました（MiniMax H3・Qwen‑Image 2.1）。再生すると字幕が表示されます。',
     },
   },
 
@@ -307,7 +307,7 @@ export const HOME: Copy<HomeCopy> = {
     },
     film: {
       videoTitle: 'Phasyn Studio introduction film',
-      note: 'A 48-second introduction. Writing a shot, picking takes, editing and Image Studio are real screen recordings; the characters and works were generated with Phasyn Studio (MiniMax H3, Qwen‑Image 2.1). Captions appear when it plays.',
+      note: 'A 69-second introduction. Writing a shot, comparing takes, editing, Image Studio and export are real screen recordings; the characters, pictures and works were generated with Phasyn Studio (MiniMax H3, Qwen‑Image 2.1). Captions appear when it plays.',
     },
   },
 };
