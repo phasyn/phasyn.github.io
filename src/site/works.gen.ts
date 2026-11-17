@@ -38,41 +38,6 @@ export const WORKS: readonly Work[] = [
     "featured": null
   },
   {
-    "slug": "foresight",
-    "title": {
-      "zh-hant": "拉普拉斯的星儀",
-      "ja": "ラプラスの星儀",
-      "en": "The Foresight Sphere"
-    },
-    "jaFallback": false,
-    "category": "battle",
-    "orientation": "landscape",
-    "seconds": 8.71,
-    "fps": 24,
-    "width": 2560,
-    "height": 1472,
-    "features": [
-      "oneTake",
-      "characterRef",
-      "steps8",
-      "softvl2x",
-      "sound"
-    ],
-    "run": "e82d00b9",
-    "seed": 20263801,
-    "media": {
-      "web": "works/foresight.web.mp4",
-      "hd": "works/foresight.hd.mp4",
-      "poster": {
-        "src": "/images/works/foresight-poster-1920.webp",
-        "srcSet": "/images/works/foresight-poster-1920.webp 1920w, /images/works/foresight-poster-1280.webp 1280w, /images/works/foresight-poster-640.webp 640w",
-        "width": 1920,
-        "height": 1104
-      }
-    },
-    "featured": null
-  },
-  {
     "slug": "worlds-net",
     "title": {
       "zh-hant": "千萬世界",
@@ -178,111 +143,6 @@ export const WORKS: readonly Work[] = [
     "featured": null
   },
   {
-    "slug": "school-rooftop",
-    "title": {
-      "zh-hant": "夕陽頂樓",
-      "ja": "夕暮れの屋上",
-      "en": "The Rooftop at Dusk"
-    },
-    "jaFallback": false,
-    "category": "daily",
-    "orientation": "landscape",
-    "seconds": 8.71,
-    "fps": 24,
-    "width": 2560,
-    "height": 1472,
-    "features": [
-      "oneTake",
-      "characterRef",
-      "steps8",
-      "softvl2x",
-      "sound"
-    ],
-    "run": "c37880f9",
-    "seed": 20261880,
-    "media": {
-      "web": "works/school-rooftop.web.mp4",
-      "hd": "works/school-rooftop.hd.mp4",
-      "poster": {
-        "src": "/images/works/school-rooftop-poster-1920.webp",
-        "srcSet": "/images/works/school-rooftop-poster-1920.webp 1920w, /images/works/school-rooftop-poster-1280.webp 1280w, /images/works/school-rooftop-poster-640.webp 640w",
-        "width": 1920,
-        "height": 1104
-      }
-    },
-    "featured": null
-  },
-  {
-    "slug": "neon-umbrella-vertical",
-    "title": {
-      "zh-hant": "霓虹雨夜的透明傘",
-      "ja": "ネオン雨夜のビニール傘",
-      "en": "Clear Umbrella in Neon Rain"
-    },
-    "jaFallback": false,
-    "category": "daily",
-    "orientation": "portrait",
-    "seconds": 4.46,
-    "fps": 24,
-    "width": 1472,
-    "height": 2560,
-    "features": [
-      "oneTake",
-      "characterRef",
-      "steps8",
-      "softvl2x",
-      "sound"
-    ],
-    "run": "5aab821a",
-    "seed": 20263080,
-    "media": {
-      "web": "works/neon-umbrella-vertical.web.mp4",
-      "hd": "works/neon-umbrella-vertical.hd.mp4",
-      "poster": {
-        "src": "/images/works/neon-umbrella-vertical-poster-1920.webp",
-        "srcSet": "/images/works/neon-umbrella-vertical-poster-1920.webp 1104w, /images/works/neon-umbrella-vertical-poster-1280.webp 736w, /images/works/neon-umbrella-vertical-poster-640.webp 368w",
-        "width": 1104,
-        "height": 1920
-      }
-    },
-    "featured": null
-  },
-  {
-    "slug": "pixel-glide",
-    "title": {
-      "zh-hant": "像素滑翔",
-      "ja": "ピクセルの滑空",
-      "en": "Pixel Glide"
-    },
-    "jaFallback": false,
-    "category": "fantasy",
-    "orientation": "landscape",
-    "seconds": 8.71,
-    "fps": 24,
-    "width": 2560,
-    "height": 1472,
-    "features": [
-      "oneTake",
-      "characterRef",
-      "steps8",
-      "softvl2x",
-      "sound"
-    ],
-    "run": "812b9971",
-    "seed": 20261860,
-    "media": {
-      "web": "works/pixel-glide.web.mp4",
-      "hd": "works/pixel-glide.hd.mp4",
-      "poster": {
-        "src": "/images/works/pixel-glide-poster-1920.webp",
-        "srcSet": "/images/works/pixel-glide-poster-1920.webp 1920w, /images/works/pixel-glide-poster-1280.webp 1280w, /images/works/pixel-glide-poster-640.webp 640w",
-        "width": 1920,
-        "height": 1104
-      }
-    },
-    "featured": null
-  },
-  {
     "slug": "ruins-runes",
     "title": {
       "zh-hant": "雨中廢墟的符文",
@@ -311,41 +171,6 @@ export const WORKS: readonly Work[] = [
       "poster": {
         "src": "/images/works/ruins-runes-poster-1920.webp",
         "srcSet": "/images/works/ruins-runes-poster-1920.webp 1920w, /images/works/ruins-runes-poster-1280.webp 1280w, /images/works/ruins-runes-poster-640.webp 640w",
-        "width": 1920,
-        "height": 1104
-      }
-    },
-    "featured": null
-  },
-  {
-    "slug": "starlit-greenhouse",
-    "title": {
-      "zh-hant": "星光溫室",
-      "ja": "星あかりの温室",
-      "en": "The Starlit Greenhouse"
-    },
-    "jaFallback": false,
-    "category": "fantasy",
-    "orientation": "landscape",
-    "seconds": 8.71,
-    "fps": 24,
-    "width": 2560,
-    "height": 1472,
-    "features": [
-      "oneTake",
-      "characterRef",
-      "steps8",
-      "softvl2x",
-      "sound"
-    ],
-    "run": "0598e103",
-    "seed": 20261890,
-    "media": {
-      "web": "works/starlit-greenhouse.web.mp4",
-      "hd": "works/starlit-greenhouse.hd.mp4",
-      "poster": {
-        "src": "/images/works/starlit-greenhouse-poster-1920.webp",
-        "srcSet": "/images/works/starlit-greenhouse-poster-1920.webp 1920w, /images/works/starlit-greenhouse-poster-1280.webp 1280w, /images/works/starlit-greenhouse-poster-640.webp 640w",
         "width": 1920,
         "height": 1104
       }
